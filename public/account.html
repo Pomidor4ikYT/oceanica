@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Oceanica Travel — Мій кабінет</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="account.css" />
+</head>
+<body class="cabinet-page">
+  <header>
+    <div class="brand">
+      <div class="brand-bubble">🌊</div>
+      <div class="brand-name">Oceanica Travel</div>
+    </div>
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Головна</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle" href="#">Відпочинки ▾</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item active" href="cruise.html">🚢 Круїзи</a>
+          <a class="dropdown-item" href="tours.html">✈️ Тури</a>
+          <a class="dropdown-item" href="island.html">🏝️ Острови</a>
+        </div>
+      </div>
+      <a class="nav-link active" href="account.html">Мій кабінет</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2 class="section-title">Мій кабінет</h2>
+
+    <!-- Профіль -->
+    <div class="profile-card">
+      <div class="avatar-large">В</div>
+      <div class="profile-info">
+        <h3>Швед Віталій</h3>
+        <p>shvedvitaliy@example.com</p>
+        <p>+380 97 123 45 67</p>
+        <p>Дата реєстрації: 03.03.2026</p>
+      </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value" id="bookedCount">0</div>
+        <div class="stat-label">Заброньовано</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="favoritesCount">0</div>
+        <div class="stat-label">В обраному</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalTrips">0</div>
+        <div class="stat-label">Всього подорожей</div>
+      </div>
+    </div>
+
+    <!-- Вкладки -->
+    <div class="cabinet-tabs">
+      <button class="tab-btn active" data-tab="booked">Заброньовані</button>
+      <button class="tab-btn" data-tab="favorites">Улюблені</button>
+      <button class="tab-btn" data-tab="settings">Налаштування</button>
+    </div>
+
+    <!-- Контент вкладок -->
+    <div class="tab-content active" id="booked">
+      <div class="items-list" id="bookedList"></div>
+    </div>
+
+    <div class="tab-content" id="favorites">
+      <div class="items-list" id="favoritesList"></div>
+    </div>
+
+    <div class="tab-content" id="settings">
+      <div class="settings-form">
+        <h3>Зміна особистих даних</h3>
+        <div class="form-group">
+          <label>Ім'я</label>
+          <input type="text" id="settingsName" value="Швед Віталій" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="settingsEmail" value="shvedvitaliy@example.com" />
+        </div>
+        <div class="form-group">
+          <label>Телефон</label>
+          <input type="tel" id="settingsPhone" value="+380971234567" />
+        </div>
+        <div class="form-group">
+          <label>Новий пароль</label>
+          <input type="password" id="settingsPassword" placeholder="Залиште порожнім, якщо не хочете змінювати" />
+        </div>
+        <button class="save-settings btn-outline">Зберегти зміни</button>
+        <div class="settings-message"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="f-col">
+        <h4>Oceanica Travel</h4>
+        <p>Ми організовуємо подорожі, які запам’ятовуються. Комфорт, сервіс, прозорість — наші принципи.</p>
+      </div>
+      <div class="f-col">
+        <h4>Контакти</h4>
+        <p>Тел: +380 97 123 45 67</p>
+        <p>Email: hello@oceanica.travel</p>
+      </div>
+      <div class="f-col">
+        <h4>Навігація</h4>
+        <p><a href="index.html">Головна</a></p>
+        <p><a href="tours.html">Тури</a></p>
+        <p><a href="island.html">Острови</a></p>
+        <p><a href="cruise.html">Круїзи</a></p>
+        <p><a href="account.html">Мій кабінет</a></p>
+      </div>
+      <div class="f-col">
+        <h4>Соцмережі</h4>
+        <p><a href="#">Instagram</a> • <a href="#">Facebook</a> • <a href="#">TikTok</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Oceanica Travel</span>
+      <span>З любов’ю до моря та пригод 🌊</span>
+    </div>
+  </footer>
+
+<script src="auth.js"></script>
+<script src="account.js"></script>
+</body>
+</html>

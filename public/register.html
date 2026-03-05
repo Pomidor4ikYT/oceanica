@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Реєстрація — Oceanica Travel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    .auth-container {
+      max-width: 400px;
+      margin: 4rem auto;
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .auth-container h2 {
+      color: #0f4c81;
+      margin-bottom: 1.5rem;
+    }
+    .auth-container .form-group {
+      margin-bottom: 1.2rem;
+    }
+    .auth-container label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #0f4c81;
+    }
+    .auth-container input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+    }
+    .auth-container button {
+      width: 100%;
+      padding: 1rem;
+      background: #0f4c81;
+      color: white;
+      border: none;
+      border-radius: 40px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .auth-container button:hover {
+      background: #1e7fb0;
+    }
+    .auth-container p {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .auth-container a {
+      color: #0f4c81;
+      font-weight: 600;
+    }
+    .error-message {
+      color: #dc2626;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      min-height: 20px;
+    }
+    .success-message {
+      color: #10b981;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-bubble">🌊</div>
+      <div class="brand-name">Oceanica Travel</div>
+    </div>
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Головна</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle" href="#">Відпочинки ▾</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="cruise.html">🚢 Круїзи</a>
+          <a class="dropdown-item" href="tours.html">✈️ Тури</a>
+          <a class="dropdown-item" href="island.html">🏝️ Острови</a>
+        </div>
+      </div>
+      <a class="nav-link" href="account.html">Мій кабінет</a>
+    </nav>
+  </header>
+
+  <div class="auth-container">
+    <h2>Реєстрація</h2>
+    <form id="registerForm">
+      <div class="form-group">
+        <label>Ім'я</label>
+        <input type="text" id="regName" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="regEmail" required>
+      </div>
+      <div class="form-group">
+        <label>Телефон</label>
+        <input type="tel" id="regPhone">
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" id="regPassword" required>
+      </div>
+      <button type="submit" id="submitBtn">Зареєструватися</button>
+    </form>
+    <p>Вже є акаунт? <a href="login.html">Увійти</a></p>
+    <div class="error-message" id="errorMessage"></div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="f-col">
+        <h4>Oceanica Travel</h4>
+        <p>Ми організовуємо подорожі, які запам’ятовуються. Комфорт, сервіс, прозорість — наші принципи.</p>
+      </div>
+      <div class="f-col">
+        <h4>Контакти</h4>
+        <p>Тел: +380 97 123 45 67</p>
+        <p>Email: hello@oceanica.travel</p>
+      </div>
+      <div class="f-col">
+        <h4>Навігація</h4>
+        <p><a href="index.html">Головна</a></p>
+        <p><a href="tours.html">Тури</a></p>
+        <p><a href="island.html">Острови</a></p>
+        <p><a href="cruise.html">Круїзи</a></p>
+        <p><a href="account.html">Мій кабінет</a></p>
+      </div>
+      <div class="f-col">
+        <h4>Соцмережі</h4>
+        <p><a href="#">Instagram</a> • <a href="#">Facebook</a> • <a href="#">TikTok</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Oceanica Travel</span>
+      <span>З любов’ю до моря та пригод 🌊</span>
+    </div>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script>
+    (function() {
+      const form = document.getElementById('registerForm');
+      const errorMessage = document.getElementById('errorMessage');
+      const submitBtn = document.getElementById('submitBtn');
+      
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const password = document.getElementById('regPassword').value;
+        
+        // Відключаємо кнопку
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Реєстрація...';
+        errorMessage.textContent = '';
+        
+        try {
+          console.log('Спроба реєстрації:', { name, email, phone });
+          const result = await window.auth.register(name, email, phone, password);
+          console.log('Результат реєстрації:', result);
+          
+          if (result.success) {
+            errorMessage.style.color = '#10b981';
+            errorMessage.textContent = 'Реєстрація успішна! Перенаправлення...';
+            setTimeout(() => {
+              window.location.href = 'account.html';
+            }, 500);
+          } else {
+            errorMessage.style.color = '#dc2626';
+            errorMessage.textContent = result.message || 'Помилка реєстрації';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Зареєструватися';
+          }
+        } catch (error) {
+          console.error('Помилка:', error);
+          errorMessage.style.color = '#dc2626';
+          errorMessage.textContent = 'Помилка з\'єднання з сервером';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Зареєструватися';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

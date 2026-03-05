@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Oceanica Travel — Круїзи</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="cruise.css" />
+</head>
+<body class="cruises-page">
+  <header>
+    <div class="brand">
+      <div class="brand-bubble">🌊</div>
+      <div class="brand-name">Oceanica Travel</div>
+    </div>
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Головна</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle active" href="#">Відпочинки ▾</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item active" href="cruise.html">🚢 Круїзи</a>
+          <a class="dropdown-item" href="tours.html">✈️ Тури</a>
+          <a class="dropdown-item" href="island.html">🏝️ Острови</a>
+        </div>
+      </div>
+      <a class="nav-link" href="account.html">Мій кабінет</a>
+    </nav>
+  </header>
+
+  <div id="mainView">
+    <!-- ========== Слайдер акційних круїзів (плавний) ========== -->
+    <section class="offers-slider" id="dealsSection">
+      <div class="slides" id="sliderSlides">
+        <div class="offer-slide" style="background-image:url('cruiseimg/cruise_sale1.jpg');" data-cruise="mediterranean">
+          <div class="offer-caption">
+            <div class="offer-caption-inner">
+              <div class="cap-left">
+                <div class="cap-pill">-25%</div>
+                <h2 class="cap-title">Середземне море</h2>
+                <p class="cap-sub">Італія, Греція, Іспанія • 7 ночей</p>
+                <div class="price-block">
+                  <span class="old-price">56 900 грн</span>
+                  <span class="new-price">42 500 грн</span>
+                </div>
+                <p class="cap-desc">Античні міста, мальовничі острови та середземноморська кухня</p>
+              </div>
+              <button class="cap-cta slide-detail-btn" data-cruise="mediterranean">Детальніше</button>
+            </div>
+          </div>
+        </div>
+        <div class="offer-slide" style="background-image:url('cruiseimg/cruise_sale2.jpg');" data-cruise="caribbean">
+          <div class="offer-caption">
+            <div class="offer-caption-inner">
+              <div class="cap-left">
+                <div class="cap-pill">-20%</div>
+                <h2 class="cap-title">Карибські острови</h2>
+                <p class="cap-sub">Багами, Ямайка • 10 ночей</p>
+                <div class="price-block">
+                  <span class="old-price">84 500 грн</span>
+                  <span class="new-price">67 800 грн</span>
+                </div>
+                <p class="cap-desc">Білі пляжі, бірюзова вода, дайвінг серед коралових рифів</p>
+              </div>
+              <button class="cap-cta slide-detail-btn" data-cruise="caribbean">Детальніше</button>
+            </div>
+          </div>
+        </div>
+        <div class="offer-slide" style="background-image:url('cruiseimg/cruise_sale3.jpg');" data-cruise="norway">
+          <div class="offer-caption">
+            <div class="offer-caption-inner">
+              <div class="cap-left">
+                <div class="cap-pill">-15%</div>
+                <h2 class="cap-title">Норвезькі фіорди</h2>
+                <p class="cap-sub">Берген, Гейрангер • 8 ночей</p>
+                <div class="price-block">
+                  <span class="old-price">62 800 грн</span>
+                  <span class="new-price">53 200 грн</span>
+                </div>
+                <p class="cap-desc">Льодовики, водоспади, північне сяйво</p>
+              </div>
+              <button class="cap-cta slide-detail-btn" data-cruise="norway">Детальніше</button>
+            </div>
+          </div>
+        </div>
+        <div class="offer-slide" style="background-image:url('cruiseimg/cruise_sale4.jpg');" data-cruise="alaska">
+          <div class="offer-caption">
+            <div class="offer-caption-inner">
+              <div class="cap-left">
+                <div class="cap-pill">-18%</div>
+                <h2 class="cap-title">Аляска</h2>
+                <p class="cap-sub">Джуно, Сьюард • 9 ночей</p>
+                <div class="price-block">
+                  <span class="old-price">75 000 грн</span>
+                  <span class="new-price">61 500 грн</span>
+                </div>
+                <p class="cap-desc">Величні льодовики, кити, національні парки</p>
+              </div>
+              <button class="cap-cta slide-detail-btn" data-cruise="alaska">Детальніше</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="slider-arrow prev" aria-label="Попередній">‹</button>
+      <button class="slider-arrow next" aria-label="Наступний">›</button>
+    </section>
+
+    <!-- ========== Пошук за датою ========== -->
+    <div style="text-align:center;">
+      <div class="date-search">
+        <label for="datePicker">Оберіть дату круїзу:</label>
+        <input type="date" id="datePicker" />
+        <button id="searchByDate">Показати круїзи</button>
+        <button id="clearSearch" class="clear-btn">Очистити</button>
+      </div>
+      <div class="available-dates-note" id="availableDatesNote"></div>
+    </div>
+
+    <!-- Результати пошуку за датою -->
+    <div class="container">
+      <h3 class="section-title" style="margin-top: 2rem;" id="searchResultsTitle">Знайдені круїзи</h3>
+      <div id="searchResults" class="cards-grid"></div>
+    </div>
+
+    <!-- ========== Переваги круїзів ========== -->
+    <section class="container">
+      <h2 class="section-title">Чому круїзи з нами</h2>
+      <div class="features cruise-features">
+        <div class="feature-item">
+          <div class="feature-icon">🚢</div>
+          <div class="feature-title">Сучасні лайнери</div>
+          <div class="feature-desc">Найкомфортніші судна з усіма зручностями</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🌍</div>
+          <div class="feature-title">Понад 30 маршрутів</div>
+          <div class="feature-desc">Від Карибів до Антарктиди</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🍽️</div>
+          <div class="feature-title">Все включено</div>
+          <div class="feature-desc">Харчування, напої, розваги на борту</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">👨‍✈️</div>
+          <div class="feature-title">Досвідчені капітани</div>
+          <div class="feature-desc">Безпека та професійна команда</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Спеціальна пропозиція (банер) ========== -->
+    <section class="container">
+      <div class="special-offer">
+        <div class="offer-content">
+          <span class="offer-tag">🔥 Гаряча пропозиція</span>
+          <h3>Круїз навколо світу</h3>
+          <p>120 днів • 6 континентів • 30 країн</p>
+          <div class="offer-price">
+            <span class="old-price">980 000 грн</span>
+            <span class="new-price">799 000 грн</span>
+          </div>
+          <button class="btn-primary" id="worldCruiseBtn">Дізнатися більше</button>
+        </div>
+        <div class="offer-image" style="background-image:url('cruiseimg/world_cruise.jpg');"></div>
+      </div>
+    </section>
+
+    <!-- ========== Фільтр категорій та сітка круїзів ========== -->
+    <section class="container" id="cruisesSection">
+      <div class="section-header">
+        <h2 class="section-title">🚢 Круїзи мрії</h2>
+        <button id="filterBtn" class="filter-btn">Категорії</button>
+      </div>
+
+      <!-- Панель фільтрації -->
+      <div id="filterPanel" class="filter-panel">
+        <div class="category-chips" id="categoryChips"></div>
+      </div>
+
+      <!-- Сітка карток (12 штук) -->
+      <div class="cards-grid" id="cruisesGrid">
+        <!-- Картки будуть вставлені з JS -->
+      </div>
+    </section>
+
+    <!-- ========== Підписка на новини ========== -->
+    <section class="container newsletter">
+      <h3>Будьте в курсі круїзних акцій</h3>
+      <p>Підпишіться на розсилку та отримуйте найкращі пропозиції першими</p>
+      <div class="newsletter-form">
+        <input type="email" class="newsletter-input" placeholder="Ваш email" />
+        <button class="newsletter-btn">Підписатися</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ========== Модальні вікна ========== -->
+  <div id="modalDetails" class="modal-overlay">
+    <div class="modal-container">
+      <div style="position:relative;">
+        <img id="modalDetailsImg" class="modal-header-img" src="" alt="" />
+        <button id="modalDetailsClose" class="modal-close">✕</button>
+      </div>
+      <div class="modal-content">
+        <span id="modalDetailsBadge" class="modal-badge"></span>
+        <div class="modal-tabs">
+          <button class="modal-tab active" data-tab="info">Інфо</button>
+          <button class="modal-tab" data-tab="reviews">Відгуки</button>
+        </div>
+        <div class="modal-panel active" data-panel="info">
+          <h2 id="modalDetailsTitle" class="modal-title"></h2>
+          <div id="modalDetailsSubtitle" class="modal-subtitle"></div>
+          <div id="modalDetailsPrice" class="modal-price"></div>
+          <div id="modalDetailsChips" class="modal-chips"></div>
+          <div id="modalDetailsDescription" class="modal-description"></div>
+          <div id="modalDetailsInfo" class="modal-info-grid"></div>
+          <div class="modal-actions">
+            <button id="modalDetailsBook" class="btn-primary">Забронювати</button>
+            <button id="modalDetailsClose2" class="btn-outline">Закрити</button>
+          </div>
+        </div>
+        <div class="modal-panel" data-panel="reviews">
+          <div id="modalReviewsList" class="modal-reviews"></div>
+          <div class="modal-review-form">
+            <h3>Додати відгук</h3>
+            <div class="mrf-row">
+              <input class="mrf-input" id="mrfName" type="text" placeholder="Ваше ім'я" />
+              <div class="star-input" id="mrfStars" data-value="5">
+                <span data-star="1">★</span><span data-star="2">★</span><span data-star="3">★</span><span data-star="4">★</span><span data-star="5">★</span>
+              </div>
+            </div>
+            <div class="mrf-row">
+              <textarea class="mrf-textarea" id="mrfText" placeholder="Ваші враження..."></textarea>
+            </div>
+            <div class="mrf-actions">
+              <button class="mrf-clear" id="mrfClear" type="button">Очистити</button>
+              <button class="mrf-btn mrf-submit" id="mrfSubmit" type="button">Надіслати</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalBook" class="modal-overlay">
+    <div class="modal-container modal-book">
+      <div class="modal-book-header">
+        <button id="modalBookClose" class="modal-close" style="background:rgba(255,255,255,0.2);color:#fff">✕</button>
+        <h3 id="modalBookTitle">Бронювання круїзу</h3>
+        <p id="modalBookSubtitle"></p>
+      </div>
+      <div class="modal-book-content">
+        <form id="modalBookForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Ваше ім'я *</label>
+              <input name="name" class="form-input" placeholder="Введіть ваше ім'я" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Телефон *</label>
+              <input name="phone" class="form-input" type="tel" placeholder="+380 XX XXX XX XX" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input name="email" class="form-input" type="email" placeholder="your@email.com" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Дата відправки *</label>
+              <input name="date" class="form-input" type="date" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Кількість осіб</label>
+              <select name="persons" class="form-select">
+                <option value="1">1 особа</option>
+                <option value="2" selected>2 особи</option>
+                <option value="3">3 особи</option>
+                <option value="4">4 особи</option>
+                <option value="5+">5+ осіб</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Коментар або побажання</label>
+            <textarea name="comment" class="form-textarea" placeholder="Залиште свої побажання або запитання..."></textarea>
+          </div>
+          <button type="submit" class="form-submit">Підтвердити бронювання</button>
+          <div id="modalBookSuccess" class="form-success">
+            ✓ Дякуємо! Ваше бронювання прийнято. Ми зв'яжемося з вами найближчим часом.
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Футер ========== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="f-col">
+        <h4>Oceanica Travel</h4>
+        <p>Ми організовуємо подорожі, які запам’ятовуються. Комфорт, сервіс, прозорість — наші принципи.</p>
+      </div>
+      <div class="f-col">
+        <h4>Контакти</h4>
+        <p>Тел: +380 97 123 45 67</p>
+        <p>Email: hello@oceanica.travel</p>
+      </div>
+      <div class="f-col">
+        <h4>Навігація</h4>
+        <p><a href="index.html">Головна</a></p>
+        <p><a href="cruise.html">Круїзи</a></p>
+        <p><a href="tours.html">Тури</a></p>
+        <p><a href="islands.html">Острови</a></p>
+        <p><a href="account.html">Мій кабінет</a></p>
+      </div>
+      <div class="f-col">
+        <h4>Соцмережі</h4>
+        <p><a href="#">Instagram</a> • <a href="#">Facebook</a> • <a href="#">TikTok</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Oceanica Travel</span>
+      <span>З любов’ю до моря та пригод 🌊</span>
+    </div>
+  </footer>
+
+  <!-- Підключення зовнішнього JavaScript -->
+   <script src="auth.js"></script>
+  <script src="cruise.js"></script>
+</body>
+</html>
