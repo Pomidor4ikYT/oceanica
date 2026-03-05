@@ -21,6 +21,28 @@
   box-shadow: 0 20px 30px -10px rgba(0,0,0,0.3);
 }
 
+/* Спінер завантаження */
+#loading-spinner {
+  font-size: 1.2rem;
+  color: #0f4c81;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Плавна поява контенту */
+#app-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .offer-content {
   flex: 1;
   padding: 3rem;

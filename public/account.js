@@ -8,8 +8,15 @@
   const token = window.auth?.getToken?.();
   if (!token) {
     window.location.href = 'login.html';
-    return;
+    return; // редірект, контент не покажеться
   }
+
+  // Якщо токен є — показуємо контент і ховаємо спінер
+  document.getElementById('loading-spinner').style.display = 'none';
+  document.getElementById('app-content').style.display = 'block';
+
+  // ... далі твій код без змін
+
 
   // ========== Поточні дані ==========
   let favorites = [];
