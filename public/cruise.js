@@ -2,6 +2,9 @@
   const qs = (sel, ctx) => (ctx || document).querySelector(sel);
   const qsa = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
 
+  // Поточний елемент для бронювання
+  let currentBookingItem = null;
+
   // ========== Функції модалок ==========
   function disableBodyScroll() { document.body.classList.add('modal-open'); }
   function enableBodyScroll() { document.body.classList.remove('modal-open'); }
@@ -32,110 +35,82 @@
     });
   }
 
-  // ========== Робота з улюбленими (з авторизацією) ==========
-  function getCurrentUser() {
-    return window.auth?.getCurrentUser?.() || null;
-  }
-
-  function getFavoritesKey() {
-    const user = getCurrentUser();
-    return user ? `oceanica_favorites_${user}` : null;
-  }
-
-  function getFavorites() {
-    const key = getFavoritesKey();
-    if (!key) return [];
+  // ========== Завантаження улюблених з сервера ==========
+  async function loadFavorites() {
+    if (!window.auth?.getToken()) return;
     try {
-      return JSON.parse(localStorage.getItem(key)) || [];
-    } catch {
-      return [];
-    }
-  }
-
-  function saveFavorites(fav) {
-    const key = getFavoritesKey();
-    if (key) localStorage.setItem(key, JSON.stringify(fav));
-  }
-
-  function toggleFavorite(card) {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      showToast('🔒 Увійдіть, щоб додавати в обране', 'info');
-      setTimeout(() => { window.location.href = 'login.html'; }, 1500);
-      return;
-    }
-
-    const title = card.querySelector('.card-title')?.textContent?.trim();
-    if (!title) return;
-
-    const favs = getFavorites();
-    const idx = favs.findIndex(item => item.title === title);
-
-    if (idx === -1) {
-      // Додаємо
-      const image = card.querySelector('.card-img')?.src || '';
-      const price = card.querySelector('.card-price')?.textContent?.trim() || '';
-      const meta = card.querySelector('.card-meta')?.textContent?.trim() || '';
-      const badge = card.querySelector('.badge')?.textContent?.trim() || '';
-      const chips = Array.from(card.querySelectorAll('.chips .chip')).map(c => c.textContent.trim());
-      const category = card.dataset.category || '';
-
-      favs.push({
-        title,
-        image,
-        price,
-        meta,
-        badge,
-        chips,
-        category
+      const favs = await window.auth.getFavorites();
+      const favTitles = new Set(favs.map(f => f.title));
+      qsa('.card').forEach(card => {
+        const title = qs('.card-title', card)?.textContent?.trim();
+        if (title && favTitles.has(title)) {
+          qs('.fav', card)?.classList.add('active');
+        }
       });
-    } else {
-      // Видаляємо
-      favs.splice(idx, 1);
+    } catch (error) {
+      console.error('Помилка завантаження улюблених:', error);
     }
-
-    saveFavorites(favs);
-  }
-
-  function initFavorites() {
-    const favTitles = new Set(getFavorites().map(item => item.title));
-    document.querySelectorAll('.card').forEach(card => {
-      const title = card.querySelector('.card-title')?.textContent?.trim();
-      if (title && favTitles.has(title)) {
-        card.querySelector('.fav')?.classList.add('active');
-      }
-    });
   }
 
   // ========== Toast ==========
-function showToast(msg, type = 'success') {
-  const old = document.querySelector('.toast-notification');
-  if (old) old.remove();
+  function showToast(msg, type = 'success') {
+    const old = document.querySelector('.toast-notification');
+    if (old) old.remove();
 
-  const toast = document.createElement('div');
-  toast.className = `toast-notification ${type}`;
-  toast.textContent = msg;
-  document.body.appendChild(toast);
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
 
-  setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
 
   // ========== Глобальний обробник кліку на лайк ==========
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', async (e) => {
     const favBtn = e.target.closest('.fav');
     if (favBtn) {
       e.preventDefault();
       e.stopPropagation();
       const card = favBtn.closest('.card');
       if (!card) return;
-      // Перемикаємо клас (візуально)
-      favBtn.classList.toggle('active');
-      // Зберігаємо в localStorage
-      toggleFavorite(card);
+
+      if (!window.auth?.getToken()) {
+        showToast('🔒 Увійдіть, щоб додавати в обране', 'info');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+        return;
+      }
+
+      const title = qs('.card-title', card)?.textContent?.trim() || '';
+      const image = qs('.card-img', card)?.src || '';
+      const price = qs('.card-price', card)?.textContent?.trim() || '';
+      const meta = qs('.card-meta', card)?.textContent?.trim() || '';
+      const badge = qs('.badge', card)?.textContent?.trim() || '';
+      const chips = qsa('.chips .chip', card).map(c => c.textContent.trim());
+      const category = card.dataset.category || '';
+
+      const item = { title, image, price, meta, badge, chips, category };
+
+      try {
+        const result = await window.auth.toggleFavorite(item);
+        if (result.success) {
+          if (result.action === 'added') {
+            favBtn.classList.add('active');
+            showToast('✅ Додано в улюблені', 'success');
+          } else if (result.action === 'removed') {
+            favBtn.classList.remove('active');
+            showToast('🗑️ Видалено з улюблених', 'info');
+          }
+        } else {
+          showToast(result.message || 'Помилка', 'error');
+        }
+      } catch (error) {
+        console.error('Помилка:', error);
+        showToast('Помилка з\'єднання', 'error');
+      }
     }
   });
 
@@ -160,7 +135,7 @@ function showToast(msg, type = 'success') {
     updateSlider();
   }
 
-  // ========== Дані круїзів (без змін) ==========
+  // ========== Дані круїзів ==========
   const today = new Date();
   const year = 2026;
   const month = '03';
@@ -334,7 +309,7 @@ function showToast(msg, type = 'success') {
       { title: 'Балтійське море', cat: 'temperate' }
     ];
     cruisesGrid.innerHTML = cruiseList.map(c => createCruiseCard(c.title, c.cat)).join('');
-    initFavorites();
+    loadFavorites();
   }
 
   // ========== Фільтр категорій ==========
@@ -447,10 +422,10 @@ function showToast(msg, type = 'success') {
         ];
         const filtered = cruiseList.filter(c => foundTitles.includes(c.title));
         searchResultsDiv.innerHTML = filtered.map(c => createCruiseCard(c.title, c.cat)).join('');
-        initFavorites();
+        loadFavorites();
         searchResultsDiv.classList.add('visible');
         searchResultsTitle.classList.add('visible');
-showToast(`✅ Знайдено круїзів: ${foundTitles.length}`, 'success');
+        showToast(`✅ Знайдено круїзів: ${foundTitles.length}`, 'success');
       } else {
         searchResultsDiv.classList.remove('visible');
         searchResultsTitle.classList.remove('visible');
@@ -618,13 +593,46 @@ showToast(`✅ Знайдено круїзів: ${foundTitles.length}`, 'success
   if (detailsModal) detailsModal.addEventListener('click', e => { if (e.target === detailsModal) closeDetails(); });
   if (bookModal) bookModal.addEventListener('click', e => { if (e.target === bookModal) closeBook(); });
   if (modalDetailsBook) modalDetailsBook.addEventListener('click', () => { closeDetails(); openBookModal({ title: modalDetailsTitle?.textContent?.trim() }); });
-  if (modalBookForm) modalBookForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const successEl = qs('#modalBookSuccess', bookModal);
-    if (successEl) { successEl.classList.add('active'); successEl.style.display = 'block'; }
-    successEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    setTimeout(closeBook, 3000);
-  });
+
+  if (modalBookForm) {
+    modalBookForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!window.auth?.getToken()) {
+        showToast('🔒 Увійдіть, щоб забронювати', 'info');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+        return;
+      }
+      if (!currentBookingItem) {
+        showToast('Помилка: дані туру відсутні', 'error');
+        return;
+      }
+      const dateInput = qs('input[name="date"]', modalBookForm);
+      if (!dateInput.value) {
+        showToast('Оберіть дату', 'error');
+        return;
+      }
+      const [y, m, d] = dateInput.value.split('-');
+      const bookingDate = `${d}.${m}.${y}`;
+      const bookingItem = { ...currentBookingItem, bookingDate };
+      try {
+        const result = await window.auth.addBooking(bookingItem);
+        if (result.success) {
+          const successEl = qs('#modalBookSuccess', bookModal);
+          if (successEl) {
+            successEl.classList.add('active');
+            successEl.style.display = 'block';
+          }
+          successEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          setTimeout(closeBook, 3000);
+        } else {
+          showToast(result.message || 'Помилка бронювання', 'error');
+        }
+      } catch (error) {
+        console.error('Помилка бронювання:', error);
+        showToast('Помилка з\'єднання', 'error');
+      }
+    });
+  }
 
   // ========== Обробник для кнопки "Дізнатися більше" в гарячій пропозиції ==========
   const worldCruiseBtn = document.getElementById('worldCruiseBtn');
@@ -678,8 +686,14 @@ showToast(`✅ Знайдено круїзів: ${foundTitles.length}`, 'success
       const card = bookBtn.closest('.card');
       if (card) {
         const title = qs('.card-title', card)?.textContent?.trim() || '';
-        const data = cruiseDetailsData[title] || { title };
-        openBookModal(data);
+        const image = qs('.card-img', card)?.src || '';
+        const price = qs('.card-price', card)?.textContent?.trim() || '';
+        const meta = qs('.card-meta', card)?.textContent?.trim() || '';
+        const badge = qs('.badge', card)?.textContent?.trim() || '';
+        const chips = qsa('.chips .chip', card).map(c => c.textContent.trim());
+        const category = card.dataset.category || '';
+        currentBookingItem = { title, image, price, meta, badge, chips, category };
+        openBookModal(currentBookingItem);
       }
     }
   });
