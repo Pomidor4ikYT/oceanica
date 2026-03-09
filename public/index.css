@@ -1550,3 +1550,27 @@ footer {
 .login-btn:hover {
   background: #1e7fb0;
 }
+/* Виправлення позиції меню користувача */
+.user-section {
+  margin-left: auto; /* притискає до правого краю, але не виходить за межі */
+}
+
+.user-dropdown .dropdown-menu {
+  right: 0;
+  left: auto; /* переконуємось, що не зліва */
+}
+
+/* Для мобільних пристроїв */
+@media (max-width: 768px) {
+  .user-section {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+  .user-dropdown .dropdown-menu {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

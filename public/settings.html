@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Налаштування — Oceanica Travel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    .settings-container {
+      max-width: 600px;
+      margin: 3rem auto;
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .settings-container h2 {
+      color: #0f4c81;
+      margin-bottom: 2rem;
+    }
+    .avatar-section {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .avatar-preview {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(145deg, #0f4c81, #1e7fb0);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: white;
+      font-weight: 700;
+    }
+    .avatar-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .color-picker {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .color-option {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s;
+    }
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+    .color-option.selected {
+      border-color: #0f4c81;
+      transform: scale(1.1);
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #0f4c81;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+    }
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 1rem;
+    }
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+    .message {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border-radius: 12px;
+      display: none;
+    }
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      display: block;
+    }
+    .message.error {
+      background: #fee2e2;
+      color: #b91c1c;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-bubble">🌊</div>
+      <div class="brand-name">Oceanica Travel</div>
+    </div>
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Головна</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle" href="#">Відпочинки ▾</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="cruise.html">🚢 Круїзи</a>
+          <a class="dropdown-item" href="tours.html">✈️ Тури</a>
+          <a class="dropdown-item" href="island.html">🏝️ Острови</a>
+        </div>
+      </div>
+      <div id="userSection" class="user-section"></div>
+    </nav>
+  </header>
+
+  <div class="settings-container">
+    <h2>⚙️ Налаштування профілю</h2>
+
+    <!-- Аватар -->
+    <div class="avatar-section">
+      <div class="avatar-preview" id="avatarPreview">В</div>
+      <div class="avatar-actions">
+        <p>Оберіть колір аватара:</p>
+        <div class="color-picker" id="colorPicker">
+          <div class="color-option" style="background:#0f4c81" data-color="#0f4c81"></div>
+          <div class="color-option" style="background:#1e7fb0" data-color="#1e7fb0"></div>
+          <div class="color-option" style="background:#2c7a7a" data-color="#2c7a7a"></div>
+          <div class="color-option" style="background:#b45309" data-color="#b45309"></div>
+          <div class="color-option" style="background:#6b21a8" data-color="#6b21a8"></div>
+          <div class="color-option" style="background:#be123c" data-color="#be123c"></div>
+        </div>
+        <button class="btn-outline" id="uploadAvatarBtn">📷 Завантажити фото</button>
+        <small>(Завантаження фото буде реалізовано пізніше)</small>
+      </div>
+    </div>
+
+    <!-- Форма -->
+    <form id="settingsForm">
+      <div class="form-group">
+        <label>Ім'я</label>
+        <input type="text" id="settingsName" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="settingsEmail" required>
+      </div>
+      <div class="form-group">
+        <label>Телефон</label>
+        <input type="tel" id="settingsPhone">
+      </div>
+      <div class="form-group">
+        <label>Опис (коротко про себе)</label>
+        <textarea id="settingsBio" placeholder="Наприклад: люблю подорожі, мрію відвідати Антарктиду..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Новий пароль (залиште порожнім, якщо не хочете змінювати)</label>
+        <input type="password" id="settingsPassword">
+      </div>
+      <div class="form-group">
+        <label>Підтвердження пароля</label>
+        <input type="password" id="settingsConfirmPassword">
+      </div>
+
+      <button type="submit" class="btn-primary" style="width:100%;">Зберегти зміни</button>
+    </form>
+
+    <button class="btn-danger" id="deleteAccountBtn">🗑️ Видалити акаунт</button>
+
+    <div class="message" id="settingsMessage"></div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="f-col">
+        <h4>Oceanica Travel</h4>
+        <p>Ми організовуємо подорожі, які запам’ятовуються. Комфорт, сервіс, прозорість — наші принципи.</p>
+      </div>
+      <div class="f-col">
+        <h4>Контакти</h4>
+        <p>Тел: +380 97 123 45 67</p>
+        <p>Email: hello@oceanica.travel</p>
+      </div>
+      <div class="f-col">
+        <h4>Навігація</h4>
+        <p><a href="index.html">Головна</a></p>
+        <p><a href="tours.html">Тури</a></p>
+        <p><a href="island.html">Острови</a></p>
+        <p><a href="cruise.html">Круїзи</a></p>
+        <p><a href="account.html">Профіль</a></p>
+        <p><a href="settings.html">Налаштування</a></p>
+      </div>
+      <div class="f-col">
+        <h4>Соцмережі</h4>
+        <p><a href="#">Instagram</a> • <a href="#">Facebook</a> • <a href="#">TikTok</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Oceanica Travel</span>
+      <span>З любов’ю до моря та пригод 🌊</span>
+    </div>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="header.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

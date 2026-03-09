@@ -297,4 +297,52 @@ if (tabParam) {
   const targetTab = document.querySelector(`.tab-btn[data-tab="${tabParam}"]`);
   if (targetTab) targetTab.click();
 }
+function updateStats() {
+  const bookedCount = bookings.length;
+  const favCount = favorites.length;
+  const total = bookedCount + favCount;
+  
+  // Приблизна сума (якщо є ціна)
+  const totalSpent = bookings.reduce((sum, b) => {
+    const price = parseInt(b.price?.replace(/\D/g, '')) || 0;
+    return sum + price;
+  }, 0);
+  
+  // Найчастіша категорія в улюблених
+  const categoryCount = {};
+  favorites.forEach(f => {
+    const cat = f.category || 'інше';
+    categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+  });
+  let favCat = '—';
+  let max = 0;
+  for (const [cat, count] of Object.entries(categoryCount)) {
+    if (count > max) {
+      max = count;
+      favCat = cat;
+    }
+  }
+  // Мапінг категорій на емодзі
+  const catEmoji = {
+    beach: '🏖️',
+    excursion: '🏛️',
+    mountain: '⛰️',
+    tropical: '🏝️',
+    volcanic: '🌋',
+    exotic: '✨',
+    warm: '☀️',
+    cold: '❄️',
+    temperate: '🌊'
+  };
+  favCat = catEmoji[favCat] || favCat;
+
+  qs('#bookedCount').textContent = bookedCount;
+  qs('#favoritesCount').textContent = favCount;
+  qs('#totalTrips').textContent = total;
+  qs('#totalSpent').textContent = totalSpent.toLocaleString() + ' грн';
+  qs('#favCategory').textContent = favCat;
+}
+<div style="text-align: center; margin: 2rem 0;">
+  <a href="settings.html" class="btn-outline">⚙️ Налаштування профілю</a>
+</div>
 })();

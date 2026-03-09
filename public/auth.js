@@ -268,6 +268,25 @@ function getUserFromToken() {
     return null;
   }
 }
+async function updateUser(updates) {
+  const token = getToken();
+  if (!token) return { success: false, message: 'Не авторизовано' };
+
+  try {
+    const response = await fetch(`${API_URL}/user`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(updates)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Помилка оновлення:', error);
+    return { success: false, message: 'Помилка з\'єднання' };
+  }
+}
 // Експорт
 window.auth = {
   getCurrentUser,
@@ -282,6 +301,7 @@ window.auth = {
   getBookings,
   addBooking,
   deleteBooking,
-  getUserFromToken  
+  getUserFromToken,
+    updateUser 
 };
 })();

@@ -173,6 +173,60 @@ app.get('/user', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Помилка бази даних' });
   }
 });
+// ОНОВЛЕННЯ ДАНИХ КОРИСТУВАЧА
+app.put('/user', authenticateToken, async (req, res) => {
+  const { name, email, phone, bio, password } = req.body;
+  const userEmail = req.user.email;
+
+  try {
+    // Перевірка, чи новий email не зайнятий іншим користувачем
+    if (email && email !== userEmail) {
+      const existing = await pool.query('SELECT email FROM users WHERE email = $1', [email]);
+      if (existing.rows.length > 0) {
+        return res.status(400).json({ success: false, message: 'Цей email вже використовується' });
+      }
+    }
+
+    let query = 'UPDATE users SET ';
+    const values = [];
+    const updates = [];
+
+    if (name) { updates.push(`name = $${values.length+1}`); values.push(name); }
+    if (email) { updates.push(`email = $${values.length+1}`); values.push(email); }
+    if (phone !== undefined) { updates.push(`phone = $${values.length+1}`); values.push(phone); }
+    if (bio !== undefined) { updates.push(`bio = $${values.length+1}`); values.push(bio); }
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updates.push(`password = $${values.length+1}`);
+      values.push(hashedPassword);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ success: false, message: 'Немає даних для оновлення' });
+    }
+
+    query += updates.join(', ') + ` WHERE email = $${values.length+1} RETURNING name, email, phone, bio`;
+    values.push(userEmail);
+
+    const result = await pool.query(query, values);
+    const updatedUser = result.rows[0];
+
+    // Якщо email змінився, створити новий токен
+    let token = null;
+    if (email && email !== userEmail) {
+      token = jwt.sign({ email: updatedUser.email, name: updatedUser.name }, SECRET_KEY, { expiresIn: '7d' });
+    }
+
+    res.json({
+      success: true,
+      user: updatedUser,
+      token: token // якщо email змінився, передаємо новий токен
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Помилка сервера' });
+  }
+});
 
 // ========== ОТРИМАННЯ ОБРАНОГО ==========
 app.get('/favorites', authenticateToken, async (req, res) => {
