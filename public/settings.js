@@ -1,14 +1,12 @@
-// settings.js
+// public/settings.js
 (function() {
   const qs = (sel) => document.querySelector(sel);
 
-  // Перевірка авторизації
   if (!window.auth?.getToken()) {
     window.location.href = 'login.html';
     return;
   }
 
-  // Завантаження поточних даних користувача
   async function loadUserData() {
     try {
       const userData = await window.auth.getUserData();
@@ -17,7 +15,6 @@
         qs('#settingsEmail').value = userData.email || '';
         qs('#settingsPhone').value = userData.phone || '';
         qs('#settingsBio').value = userData.bio || '';
-        // Оновити аватар (колір може зберігатися в localStorage)
         const savedColor = localStorage.getItem('avatarColor') || '#0f4c81';
         document.querySelector(`.color-option[data-color="${savedColor}"]`)?.classList.add('selected');
         qs('#avatarPreview').style.background = savedColor;
@@ -28,7 +25,6 @@
     }
   }
 
-  // Вибір кольору аватара
   const colorOptions = qs('#colorPicker');
   colorOptions.addEventListener('click', (e) => {
     const option = e.target.closest('.color-option');
@@ -40,12 +36,10 @@
     localStorage.setItem('avatarColor', color);
   });
 
-  // Завантаження фото (демо)
   qs('#uploadAvatarBtn').addEventListener('click', () => {
     alert('Функція завантаження фото буде доступна найближчим часом.');
   });
 
-  // Збереження змін
   qs('#settingsForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -56,7 +50,6 @@
     const password = qs('#settingsPassword').value;
     const confirm = qs('#settingsConfirmPassword').value;
 
-    // Перевірка пароля
     if (password && password !== confirm) {
       showMessage('Паролі не співпадають', 'error');
       return;
@@ -69,7 +62,9 @@
       const result = await window.auth.updateUser(updates);
       if (result.success) {
         showMessage('Дані успішно оновлено!', 'success');
-        // Оновити ім'я в аватарі шапки
+        if (result.token) {
+          localStorage.setItem('oceanica_token', result.token);
+        }
         window.dispatchEvent(new Event('authChange'));
       } else {
         showMessage(result.message || 'Помилка оновлення', 'error');
@@ -79,15 +74,9 @@
     }
   });
 
-  // Видалення акаунта
   qs('#deleteAccountBtn').addEventListener('click', async () => {
     if (!confirm('Ви впевнені, що хочете видалити акаунт? Це незворотна дія.')) return;
-    try {
-      // Тут має бути виклик API видалення
-      alert('Функція видалення акаунта тимчасово недоступна.');
-    } catch (error) {
-      console.error(error);
-    }
+    alert('Функція видалення акаунта тимчасово недоступна.');
   });
 
   function showMessage(text, type) {

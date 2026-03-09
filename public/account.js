@@ -1,56 +1,82 @@
-// account.js
+// public/account.js
 (function() {
-  // ========== Допоміжні функції ==========
-  const qs = (sel, ctx) => (ctx || document).querySelector(sel);
-  const qsa = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
+  const qs = (sel) => document.querySelector(sel);
+  const qsa = (sel) => Array.from(document.querySelectorAll(sel));
 
-  // ========== Перевірка авторизації ==========
-  const token = window.auth?.getToken?.();
-  if (!token) {
+  // Перевірка авторизації
+  if (!window.auth?.getToken()) {
     window.location.href = 'login.html';
-    return; // редірект, контент не покажеться
+    return;
   }
 
-  // Якщо токен є — показуємо контент і ховаємо спінер
+  // Показуємо контент
   document.getElementById('loading-spinner').style.display = 'none';
   document.getElementById('app-content').style.display = 'block';
 
-  // ... далі твій код без змін
-
-
-  // ========== Поточні дані ==========
   let favorites = [];
   let bookings = [];
 
-  // ========== Завантаження даних з сервера ==========
+  // Завантаження даних з сервера
   async function loadData() {
     try {
-      // Завантажуємо улюблені
-      const favResult = await window.auth.getFavorites();
-      favorites = favResult || [];
-      
-      // Завантажуємо бронювання
-      const bookResult = await window.auth.getBookings();
-      bookings = bookResult || [];
-      
+      favorites = await window.auth.getFavorites();
+      bookings = await window.auth.getBookings();
       updateStats();
+      renderBooked();
+      renderFavorites();
     } catch (error) {
       console.error('Помилка завантаження даних:', error);
       showToast('Помилка завантаження даних', 'error');
     }
   }
 
-  // ========== Оновлення статистики ==========
+  // Оновлення статистики
   function updateStats() {
     const bookedCount = bookings.length;
     const favCount = favorites.length;
     const total = bookedCount + favCount;
+
+    // Сума витрат
+    const totalSpent = bookings.reduce((sum, b) => {
+      const price = parseInt(b.price?.replace(/\D/g, '')) || 0;
+      return sum + price;
+    }, 0);
+
+    // Найчастіша категорія
+    const categoryCount = {};
+    favorites.forEach(f => {
+      const cat = f.category || 'інше';
+      categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+    });
+    let favCat = '—';
+    let max = 0;
+    for (const [cat, count] of Object.entries(categoryCount)) {
+      if (count > max) {
+        max = count;
+        favCat = cat;
+      }
+    }
+    const catEmoji = {
+      beach: '🏖️',
+      excursion: '🏛️',
+      mountain: '⛰️',
+      tropical: '🏝️',
+      volcanic: '🌋',
+      exotic: '✨',
+      warm: '☀️',
+      cold: '❄️',
+      temperate: '🌊'
+    };
+    favCat = catEmoji[favCat] || favCat;
+
     qs('#bookedCount').textContent = bookedCount;
     qs('#favoritesCount').textContent = favCount;
     qs('#totalTrips').textContent = total;
+    qs('#totalSpent').textContent = totalSpent.toLocaleString() + ' грн';
+    qs('#favCategory').textContent = favCat;
   }
 
-  // ========== Завантаження даних профілю ==========
+  // Завантаження профілю
   async function loadUserProfile() {
     try {
       const userData = await window.auth.getUserData();
@@ -66,11 +92,10 @@
     }
   }
 
-  // ========== Функція створення HTML картки з даних ==========
+  // Функція створення картки
   function createCardFromItem(item, type) {
     const chipsHtml = (item.chips || []).map(chip => `<span class="chip">${chip}</span>`).join('');
     const badge = item.badge || (type === 'booked' ? '✅ Заброньовано' : '❤️ Улюблене');
-
     const dateInfo = item.bookingDate ? `<p style="margin-top: 0.5rem; color: #0f4c81;">Заїзд: ${item.bookingDate}</p>` : '';
 
     return `
@@ -78,9 +103,7 @@
         <div class="card-img-wrap">
           <img class="card-img" src="${item.image}" alt="${item.title}" />
           <span class="badge">${badge}</span>
-          ${type === 'favorite' 
-            ? '<button class="fav active" title="Видалити з улюблених"></button>' 
-            : ''}
+          ${type === 'favorite' ? '<button class="fav active" title="Видалити з улюблених"></button>' : ''}
         </div>
         <div class="card-body">
           <h3 class="card-title">${item.title}</h3>
@@ -91,13 +114,11 @@
           <div class="card-actions">
             <div class="left-actions">
               ${type === 'booked' 
-                ? '<button class="btn-outline cancel-booking">Скасувати бронювання</button>' 
+                ? '<button class="btn-outline cancel-booking" data-id="' + item.id + '">Скасувати бронювання</button>' 
                 : '<button class="btn-primary book-again">Забронювати знову</button>'}
             </div>
             <div class="right-actions">
-              ${type === 'favorite' 
-                ? '<button class="btn-outline remove-fav">Видалити</button>' 
-                : ''}
+              ${type === 'favorite' ? '<button class="btn-outline remove-fav">Видалити</button>' : ''}
             </div>
           </div>
         </div>
@@ -105,7 +126,7 @@
     `;
   }
 
-  // ========== Відображення заброньованих ==========
+  // Відображення заброньованих
   function renderBooked() {
     const container = qs('#bookedList');
     if (!container) return;
@@ -117,27 +138,25 @@
 
     container.innerHTML = bookings.map(item => createCardFromItem(item, 'booked')).join('');
 
-    qsa('.cancel-booking').forEach((btn) => {
+    qsa('.cancel-booking').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
-        const card = btn.closest('.card');
-        const title = qs('.card-title', card)?.textContent?.trim();
-        if (title && confirm(`Скасувати бронювання "${title}"?`)) {
-          const result = await window.auth.deleteBooking(title);
+        const id = btn.dataset.id;
+        if (!id) return;
+        if (confirm('Скасувати бронювання?')) {
+          const result = await window.auth.deleteBooking(id);
           if (result.success) {
             await loadData();
-            renderBooked();
-            renderFavorites();
             showToast('Бронювання скасовано', 'info');
           } else {
-            showToast('Помилка скасування', 'error');
+            showToast(result.message || 'Помилка скасування', 'error');
           }
         }
       });
     });
   }
 
-  // ========== Відображення улюблених ==========
+  // Відображення улюблених
   function renderFavorites() {
     const container = qs('#favoritesList');
     if (!container) return;
@@ -149,7 +168,7 @@
 
     container.innerHTML = favorites.map(item => createCardFromItem(item, 'favorite')).join('');
 
-    qsa('.remove-fav').forEach((btn) => {
+    qsa('.remove-fav').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
         const card = btn.closest('.card');
@@ -158,7 +177,6 @@
           const result = await window.auth.toggleFavorite({ title });
           if (result.success) {
             await loadData();
-            renderFavorites();
             showToast('Видалено з улюблених', 'info');
           } else {
             showToast('Помилка видалення', 'error');
@@ -167,21 +185,17 @@
       });
     });
 
-    qsa('.book-again').forEach((btn) => {
+    qsa('.book-again').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
         const card = btn.closest('.card');
         const title = qs('.card-title', card)?.textContent?.trim();
         const item = favorites.find(f => f.title === title);
         if (item) {
-          const bookingItem = { 
-            ...item, 
-            bookingDate: new Date().toLocaleDateString('uk-UA') 
-          };
+          const bookingItem = { ...item, bookingDate: new Date().toLocaleDateString('uk-UA') };
           const result = await window.auth.addBooking(bookingItem);
           if (result.success) {
             await loadData();
-            renderBooked();
             showToast(`Тур "${title}" заброньовано!`, 'success');
           } else {
             showToast('Помилка бронювання', 'error');
@@ -191,14 +205,7 @@
     });
   }
 
-  // ========== Повне оновлення сторінки ==========
-  async function refresh() {
-    await loadData();
-    renderBooked();
-    renderFavorites();
-  }
-
-  // ========== Перемикання вкладок з анімацією ==========
+  // Ініціалізація вкладок
   function initTabs() {
     const tabs = qsa('.tab-btn');
     const contents = qsa('.tab-content');
@@ -206,33 +213,17 @@
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         const targetId = tab.dataset.tab;
-
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
         contents.forEach(c => {
-          if (c.classList.contains('active')) {
-            c.style.opacity = '0';
-            setTimeout(() => {
-              c.classList.remove('active');
-              c.style.opacity = '';
-            }, 150);
-          }
+          c.classList.remove('active');
+          if (c.id === targetId) c.classList.add('active');
         });
-
-        setTimeout(() => {
-          tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-
-          const target = document.getElementById(targetId);
-          target.classList.add('active');
-          target.style.opacity = '0';
-          setTimeout(() => {
-            target.style.opacity = '1';
-          }, 20);
-        }, 150);
       });
     });
   }
 
-  // ========== Налаштування + кнопка виходу ==========
+  // Налаштування
   function initSettings() {
     const saveBtn = qs('.save-settings');
     const nameInput = qs('#settingsName');
@@ -241,108 +232,58 @@
     const passwordInput = qs('#settingsPassword');
     const messageDiv = qs('.settings-message');
 
-    if (saveBtn) {
-      saveBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        messageDiv.textContent = 'Функція зміни даних тимчасово недоступна';
+    saveBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const updates = {};
+      if (nameInput.value.trim()) updates.name = nameInput.value.trim();
+      if (emailInput.value.trim()) updates.email = emailInput.value.trim();
+      if (phoneInput.value.trim()) updates.phone = phoneInput.value.trim();
+      if (passwordInput.value) updates.password = passwordInput.value;
+
+      const result = await window.auth.updateUser(updates);
+      if (result.success) {
+        messageDiv.textContent = 'Дані успішно оновлено!';
         messageDiv.classList.add('success');
-        setTimeout(() => {
-          messageDiv.textContent = '';
-          messageDiv.classList.remove('success');
-        }, 3000);
-      });
-    }
+        if (result.token) {
+          // оновити токен
+          localStorage.setItem('oceanica_token', result.token);
+        }
+        loadUserProfile(); // оновити профіль
+      } else {
+        messageDiv.textContent = result.message || 'Помилка оновлення';
+        messageDiv.classList.add('error');
+      }
+      setTimeout(() => {
+        messageDiv.textContent = '';
+        messageDiv.classList.remove('success', 'error');
+      }, 3000);
+    });
 
-    // Додаємо кнопку виходу
+    // Кнопка виходу
     const settingsForm = qs('.settings-form');
-    if (settingsForm) {
-const logoutBtn = document.createElement('button');
-logoutBtn.textContent = 'Вийти';
-logoutBtn.classList.add('btn-outline', 'logout-btn'); // додано другий клас
-logoutBtn.addEventListener('click', () => {
-  window.auth?.logout();
-});
-settingsForm.appendChild(logoutBtn);
-    }
+    const logoutBtn = document.createElement('button');
+    logoutBtn.textContent = 'Вийти';
+    logoutBtn.classList.add('btn-outline', 'logout-btn');
+    logoutBtn.addEventListener('click', () => window.auth.logout());
+    settingsForm.appendChild(logoutBtn);
   }
 
-  // ========== Toast-повідомлення ==========
-  function showToast(msg, type = 'success') {
-    const oldToast = qs('.toast-notification');
-    if (oldToast) oldToast.remove();
-
-    const toast = document.createElement('div');
-    toast.className = `toast-notification ${type}`;
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+  function showToast(msg, type) {
+    window.utils?.showToast(msg, type);
   }
 
-  // ========== Ініціалізація при завантаженні ==========
+  // Ініціалізація при завантаженні
   window.addEventListener('DOMContentLoaded', async () => {
     await loadUserProfile();
     initTabs();
     initSettings();
-    await refresh();
-  });
-  // Після ініціалізації вкладок
-const urlParams = new URLSearchParams(window.location.search);
-const tabParam = urlParams.get('tab');
-if (tabParam) {
-  const targetTab = document.querySelector(`.tab-btn[data-tab="${tabParam}"]`);
-  if (targetTab) targetTab.click();
-}
-function updateStats() {
-  const bookedCount = bookings.length;
-  const favCount = favorites.length;
-  const total = bookedCount + favCount;
-  
-  // Приблизна сума (якщо є ціна)
-  const totalSpent = bookings.reduce((sum, b) => {
-    const price = parseInt(b.price?.replace(/\D/g, '')) || 0;
-    return sum + price;
-  }, 0);
-  
-  // Найчастіша категорія в улюблених
-  const categoryCount = {};
-  favorites.forEach(f => {
-    const cat = f.category || 'інше';
-    categoryCount[cat] = (categoryCount[cat] || 0) + 1;
-  });
-  let favCat = '—';
-  let max = 0;
-  for (const [cat, count] of Object.entries(categoryCount)) {
-    if (count > max) {
-      max = count;
-      favCat = cat;
-    }
-  }
-  // Мапінг категорій на емодзі
-  const catEmoji = {
-    beach: '🏖️',
-    excursion: '🏛️',
-    mountain: '⛰️',
-    tropical: '🏝️',
-    volcanic: '🌋',
-    exotic: '✨',
-    warm: '☀️',
-    cold: '❄️',
-    temperate: '🌊'
-  };
-  favCat = catEmoji[favCat] || favCat;
+    await loadData();
 
-  qs('#bookedCount').textContent = bookedCount;
-  qs('#favoritesCount').textContent = favCount;
-  qs('#totalTrips').textContent = total;
-  qs('#totalSpent').textContent = totalSpent.toLocaleString() + ' грн';
-  qs('#favCategory').textContent = favCat;
-}
-<div style="text-align: center; margin: 2rem 0;">
-  <a href="settings.html" class="btn-outline">⚙️ Налаштування профілю</a>
-</div>
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam) {
+      const targetTab = document.querySelector(`.tab-btn[data-tab="${tabParam}"]`);
+      if (targetTab) targetTab.click();
+    }
+  });
 })();

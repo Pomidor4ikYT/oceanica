@@ -1,6 +1,6 @@
 // server/server.js
 const express = require('express');
-const { Pool } = require('pg'); // замість sqlite3
+const { Pool } = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -8,24 +8,23 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SECRET_KEY = process.env.SECRET_KEY || 'your-secret-key-change-this';
+const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key-change-this'; // обов'язково змінити в продакшені!
 
-// Підключення до PostgreSQL через змінну оточення
+// Підключення до PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // Render вимагає SSL
+  ssl: { rejectUnauthorized: false }
 });
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Статичні файли
 app.use(express.static(path.join(__dirname, '../public')));
 
 // ========== Ініціалізація таблиць ==========
 async function initDb() {
   try {
+    // Таблиця користувачів
     await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -33,29 +32,31 @@ async function initDb() {
         email TEXT UNIQUE NOT NULL,
         phone TEXT,
         password TEXT NOT NULL,
-        registered TEXT NOT NULL
+        registered TEXT NOT NULL,
+        bio TEXT
       )
     `);
 
+    // Таблиця обраного
     await pool.query(`
       CREATE TABLE IF NOT EXISTS favorites (
         id SERIAL PRIMARY KEY,
-        user_email TEXT NOT NULL,
+        user_email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
         title TEXT NOT NULL,
         image TEXT,
         price TEXT,
         meta TEXT,
         badge TEXT,
         chips TEXT,
-        category TEXT,
-        FOREIGN KEY (user_email) REFERENCES users(email)
+        category TEXT
       )
     `);
 
+    // Таблиця бронювань
     await pool.query(`
       CREATE TABLE IF NOT EXISTS bookings (
         id SERIAL PRIMARY KEY,
-        user_email TEXT NOT NULL,
+        user_email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
         title TEXT NOT NULL,
         image TEXT,
         price TEXT,
@@ -63,8 +64,26 @@ async function initDb() {
         badge TEXT,
         chips TEXT,
         category TEXT,
-        bookingDate TEXT,
-        FOREIGN KEY (user_email) REFERENCES users(email)
+        bookingDate TEXT
+      )
+    `);
+
+    // Таблиця турів (для динамічного завантаження)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS tours (
+        id SERIAL PRIMARY KEY,
+        type TEXT NOT NULL, -- 'tour', 'cruise', 'island'
+        title TEXT NOT NULL,
+        description TEXT,
+        price TEXT,
+        duration TEXT,
+        groupSize TEXT,
+        accommodation TEXT,
+        badge TEXT,
+        category TEXT,
+        image TEXT,
+        departureDates TEXT, -- JSON масив
+        chips TEXT -- JSON масив
       )
     `);
 
@@ -150,7 +169,8 @@ app.post('/login', async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone || '',
-        registered: user.registered
+        registered: user.registered,
+        bio: user.bio || ''
       }
     });
   } catch (error) {
@@ -162,7 +182,7 @@ app.post('/login', async (req, res) => {
 // ========== ОТРИМАННЯ ДАНИХ КОРИСТУВАЧА ==========
 app.get('/user', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT name, email, phone, registered FROM users WHERE email = $1', [req.user.email]);
+    const result = await pool.query('SELECT name, email, phone, registered, bio FROM users WHERE email = $1', [req.user.email]);
     const user = result.rows[0];
     if (!user) {
       return res.status(404).json({ success: false, message: 'Користувача не знайдено' });
@@ -173,7 +193,8 @@ app.get('/user', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Помилка бази даних' });
   }
 });
-// ОНОВЛЕННЯ ДАНИХ КОРИСТУВАЧА
+
+// ========== ОНОВЛЕННЯ ДАНИХ КОРИСТУВАЧА ==========
 app.put('/user', authenticateToken, async (req, res) => {
   const { name, email, phone, bio, password } = req.body;
   const userEmail = req.user.email;
@@ -211,7 +232,6 @@ app.put('/user', authenticateToken, async (req, res) => {
     const result = await pool.query(query, values);
     const updatedUser = result.rows[0];
 
-    // Якщо email змінився, створити новий токен
     let token = null;
     if (email && email !== userEmail) {
       token = jwt.sign({ email: updatedUser.email, name: updatedUser.name }, SECRET_KEY, { expiresIn: '7d' });
@@ -220,7 +240,7 @@ app.put('/user', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       user: updatedUser,
-      token: token // якщо email змінився, передаємо новий токен
+      token
     });
   } catch (error) {
     console.error(error);
@@ -261,11 +281,9 @@ app.post('/favorites', authenticateToken, async (req, res) => {
     );
 
     if (existing.rows.length > 0) {
-      // Видаляємо
       await pool.query('DELETE FROM favorites WHERE id = $1', [existing.rows[0].id]);
       res.json({ success: true, message: 'Видалено з обраного', action: 'removed' });
     } else {
-      // Додаємо
       const chipsJson = chips ? JSON.stringify(chips) : null;
       await pool.query(
         'INSERT INTO favorites (user_email, title, image, price, meta, badge, chips, category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
@@ -321,13 +339,12 @@ app.post('/bookings', authenticateToken, async (req, res) => {
 });
 
 // ========== ВИДАЛЕННЯ БРОНЮВАННЯ ==========
-app.delete('/bookings/:title', authenticateToken, async (req, res) => {
-  const title = decodeURIComponent(req.params.title);
-
+app.delete('/bookings/:id', authenticateToken, async (req, res) => {
+  const id = req.params.id;
   try {
     const result = await pool.query(
-      'DELETE FROM bookings WHERE user_email = $1 AND title = $2',
-      [req.user.email, title]
+      'DELETE FROM bookings WHERE id = $1 AND user_email = $2',
+      [id, req.user.email]
     );
     if (result.rowCount === 0) {
       return res.status(404).json({ success: false, message: 'Бронювання не знайдено' });
@@ -339,12 +356,44 @@ app.delete('/bookings/:title', authenticateToken, async (req, res) => {
   }
 });
 
-// ========== ПЕРЕВІРКА, ЩО СЕРВЕР ПРАЦЮЄ ==========
+// ========== ЕНДПОІНТИ ДЛЯ ОТРИМАННЯ ТУРІВ ==========
+app.get('/api/tours', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM tours WHERE type = 'tour'");
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/api/cruises', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM tours WHERE type = 'cruise'");
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/api/islands', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM tours WHERE type = 'island'");
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// (Опціонально) ендпоінт для пошуку за датою (можна реалізувати пізніше)
+
+// ========== ГОЛОВНА СТОРІНКА API ==========
 app.get('/', (req, res) => {
   res.send('Oceanica Travel API is running');
 });
 
-// Запуск сервера
 app.listen(PORT, () => {
   console.log(`Сервер запущено на порту ${PORT}`);
   console.log(`Статичні файли з папки: ${path.join(__dirname, '../public')}`);

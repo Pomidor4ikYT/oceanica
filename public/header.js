@@ -1,3 +1,4 @@
+// public/header.js
 (function() {
   const qs = (sel) => document.querySelector(sel);
 
@@ -5,8 +6,7 @@
     const userSection = qs('#userSection');
     if (!userSection) return;
 
-    const token = window.auth?.getToken();
-    const user = token ? window.auth.getUserFromToken() : null;
+    const user = window.auth?.getUserFromToken();
 
     if (!user) {
       userSection.innerHTML = `<a href="login.html" class="nav-link login-btn">Увійти</a>`;
@@ -14,17 +14,17 @@
     }
 
     const initial = (user.name || 'К').charAt(0).toUpperCase();
-userSection.innerHTML = `
-  <div class="user-dropdown">
-    <div class="avatar" id="avatarTrigger">${initial}</div>
-    <div class="dropdown-menu" id="userDropdown">
-      <a href="account.html" class="dropdown-item">👤 Профіль</a>
-      <a href="settings.html" class="dropdown-item">⚙️ Налаштування</a>
-      <div class="dropdown-divider"></div>
-      <button class="dropdown-item" id="logoutBtn">🚪 Вийти</button>
-    </div>
-  </div>
-`;
+    userSection.innerHTML = `
+      <div class="user-dropdown">
+        <div class="avatar" id="avatarTrigger">${initial}</div>
+        <div class="dropdown-menu" id="userDropdown">
+          <a href="account.html" class="dropdown-item">👤 Профіль</a>
+          <a href="settings.html" class="dropdown-item">⚙️ Налаштування</a>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item" id="logoutBtn">🚪 Вийти</button>
+        </div>
+      </div>
+    `;
 
     const avatar = qs('#avatarTrigger');
     const menu = qs('#userDropdown');
