@@ -290,4 +290,11 @@ settingsForm.appendChild(logoutBtn);
     initSettings();
     await refresh();
   });
+  // Після ініціалізації вкладок
+const urlParams = new URLSearchParams(window.location.search);
+const tabParam = urlParams.get('tab');
+if (tabParam) {
+  const targetTab = document.querySelector(`.tab-btn[data-tab="${tabParam}"]`);
+  if (targetTab) targetTab.click();
+}
 })();
