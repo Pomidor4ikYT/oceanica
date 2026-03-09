@@ -268,19 +268,20 @@ function getUserFromToken() {
     return null;
   }
 }
-  // Експорт
-  window.auth = {
-    getCurrentUser,
-    logout,
-    requireAuth,
-    register,
-    login,
-    getUserData,
-    getToken,
-    getFavorites,
-    toggleFavorite,
-    getBookings,
-    addBooking,
-    deleteBooking
-  };
+// Експорт
+window.auth = {
+  getCurrentUser,
+  logout,
+  requireAuth,
+  register,
+  login,
+  getUserData,
+  getToken,
+  getFavorites,
+  toggleFavorite,
+  getBookings,
+  addBooking,
+  deleteBooking,
+  getUserFromToken  
+};
 })();
