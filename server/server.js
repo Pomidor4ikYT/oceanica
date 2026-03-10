@@ -301,7 +301,7 @@ app.post('/favorites', authenticateToken, async (req, res) => {
 app.get('/bookings', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT title, image, price, meta, badge, chips, category, bookingDate FROM bookings WHERE user_email = $1',
+      'SELECT id, title, image, price, meta, badge, chips, category, bookingDate FROM bookings WHERE user_email = $1',
       [req.user.email]
     );
     const bookings = result.rows.map(row => ({
@@ -353,6 +353,18 @@ app.delete('/bookings/:id', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Помилка видалення' });
+  }
+});
+
+// ========== ВИДАЛЕННЯ АКАУНТА ==========
+app.delete('/user', authenticateToken, async (req, res) => {
+  try {
+    // Завдяки ON DELETE CASCADE видаляться всі бронювання та улюблені автоматично
+    await pool.query('DELETE FROM users WHERE email = $1', [req.user.email]);
+    res.json({ success: true, message: 'Акаунт видалено' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Помилка видалення акаунта' });
   }
 });
 

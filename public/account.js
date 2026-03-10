@@ -115,7 +115,7 @@
             <div class="left-actions">
               ${type === 'booked' 
                 ? '<button class="btn-outline cancel-booking" data-id="' + item.id + '">Скасувати бронювання</button>' 
-                : '<button class="btn-primary book-again">Забронювати знову</button>'}
+                : '<button class="btn-primary book-again">Забронювати</button>'}
             </div>
             <div class="right-actions">
               ${type === 'favorite' ? '<button class="btn-outline remove-fav">Видалити</button>' : ''}
@@ -143,7 +143,7 @@
         e.preventDefault();
         const id = btn.dataset.id;
         if (!id) return;
-        if (confirm('Скасувати бронювання?')) {
+        if (confirm('Ви дійсно хочете скасувати це бронювання?')) {
           const result = await window.auth.deleteBooking(id);
           if (result.success) {
             await loadData();
@@ -223,50 +223,6 @@
     });
   }
 
-  // Налаштування
-  function initSettings() {
-    const saveBtn = qs('.save-settings');
-    const nameInput = qs('#settingsName');
-    const emailInput = qs('#settingsEmail');
-    const phoneInput = qs('#settingsPhone');
-    const passwordInput = qs('#settingsPassword');
-    const messageDiv = qs('.settings-message');
-
-    saveBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      const updates = {};
-      if (nameInput.value.trim()) updates.name = nameInput.value.trim();
-      if (emailInput.value.trim()) updates.email = emailInput.value.trim();
-      if (phoneInput.value.trim()) updates.phone = phoneInput.value.trim();
-      if (passwordInput.value) updates.password = passwordInput.value;
-
-      const result = await window.auth.updateUser(updates);
-      if (result.success) {
-        messageDiv.textContent = 'Дані успішно оновлено!';
-        messageDiv.classList.add('success');
-        if (result.token) {
-          // оновити токен
-          localStorage.setItem('oceanica_token', result.token);
-        }
-        loadUserProfile(); // оновити профіль
-      } else {
-        messageDiv.textContent = result.message || 'Помилка оновлення';
-        messageDiv.classList.add('error');
-      }
-      setTimeout(() => {
-        messageDiv.textContent = '';
-        messageDiv.classList.remove('success', 'error');
-      }, 3000);
-    });
-
-    // Кнопка виходу
-    const settingsForm = qs('.settings-form');
-    const logoutBtn = document.createElement('button');
-    logoutBtn.textContent = 'Вийти';
-    logoutBtn.classList.add('btn-outline', 'logout-btn');
-    logoutBtn.addEventListener('click', () => window.auth.logout());
-    settingsForm.appendChild(logoutBtn);
-  }
 
   function showToast(msg, type) {
     window.utils?.showToast(msg, type);
@@ -276,7 +232,6 @@
   window.addEventListener('DOMContentLoaded', async () => {
     await loadUserProfile();
     initTabs();
-    initSettings();
     await loadData();
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -286,4 +241,5 @@
       if (targetTab) targetTab.click();
     }
   });
-})();
+
+})(); 

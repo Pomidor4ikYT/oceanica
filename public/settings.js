@@ -74,10 +74,29 @@
     }
   });
 
-  qs('#deleteAccountBtn').addEventListener('click', async () => {
-    if (!confirm('Ви впевнені, що хочете видалити акаунт? Це незворотна дія.')) return;
-    alert('Функція видалення акаунта тимчасово недоступна.');
-  });
+qs('#deleteAccountBtn').addEventListener('click', async () => {
+  if (!confirm('Ви впевнені, що хочете видалити акаунт? Це незворотна дія. Всі ваші дані (бронювання, улюблені) будуть втрачені.')) return;
+  
+  const token = window.auth.getToken();
+  if (!token) return;
+  
+  try {
+    const response = await fetch('/user', {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+    if (data.success) {
+      window.utils?.showToast('Акаунт видалено', 'info');
+      window.auth.logout(); // перенаправлення на index.html
+    } else {
+      window.utils?.showToast(data.message || 'Помилка видалення', 'error');
+    }
+  } catch (error) {
+    console.error(error);
+    window.utils?.showToast('Помилка з\'єднання', 'error');
+  }
+});
 
   function showMessage(text, type) {
     const msg = qs('#settingsMessage');

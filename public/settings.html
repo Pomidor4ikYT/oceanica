@@ -114,6 +114,35 @@
       color: #b91c1c;
       display: block;
     }
+      .settings-form .btn-outline,
+  .settings-form .btn-danger {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-sizing: border-box;
+  }
+  .settings-form .btn-outline {
+    background: transparent;
+    border: 2px solid #0f4c81;
+    color: #0f4c81;
+  }
+  .settings-form .btn-outline:hover {
+    background: #0f4c81;
+    color: white;
+  }
+  .settings-form .btn-danger {
+    background: #dc2626;
+    border: 2px solid #dc2626;
+    color: white;
+  }
+  .settings-form .btn-danger:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+  }
   </style>
 </head>
 <body>
@@ -225,6 +254,7 @@
 
   <script src="auth.js"></script>
   <script src="header.js"></script>
+  <script src="utils.js"></script>
   <script src="settings.js"></script>
 </body>
 </html>
