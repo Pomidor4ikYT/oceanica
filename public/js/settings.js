@@ -132,7 +132,7 @@
     if (!token) return;
     
     try {
-      const response = await fetch('/user', {
+      const response = await fetch('/api/auth/user', {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

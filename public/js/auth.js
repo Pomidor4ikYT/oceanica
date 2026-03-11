@@ -54,7 +54,7 @@
   // ========== Реєстрація ==========
   async function register(name, email, phone, password) {
     try {
-      const response = await fetch(`${API_URL}/register`, {
+      const response = await fetch(`/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, phone, password })
@@ -80,7 +80,7 @@
   // ========== Вхід ==========
   async function login(email, password) {
     try {
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -140,7 +140,7 @@
     }
     
     try {
-      const response = await fetch(`${API_URL}/user`, {
+      const response = await fetch(`/api/auth/user`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -187,7 +187,7 @@
     const token = getToken();
     if (!token) return [];
     try {
-      const response = await fetch(`${API_URL}/favorites`, {
+      const response = await fetch(`/api/favorites`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.status === 401) {
@@ -206,7 +206,7 @@
     const token = getToken();
     if (!token) return { success: false, message: 'Не авторизовано' };
     try {
-      const response = await fetch(`${API_URL}/favorites`, {
+      const response = await fetch(`/api/favorites`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +230,7 @@
     const token = getToken();
     if (!token) return [];
     try {
-      const response = await fetch(`${API_URL}/bookings`, {
+      const response = await fetch(`/api/bookings`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.status === 401) {
@@ -249,7 +249,7 @@
     const token = getToken();
     if (!token) return { success: false, message: 'Не авторизовано' };
     try {
-      const response = await fetch(`${API_URL}/bookings`, {
+      const response = await fetch(`/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -272,7 +272,7 @@
     const token = getToken();
     if (!token) return { success: false, message: 'Не авторизовано' };
     try {
-      const response = await fetch(`${API_URL}/bookings/${id}`, {
+      const response = await fetch(`/api/bookings/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -292,7 +292,7 @@
     const token = getToken();
     if (!token) return { success: false, message: 'Не авторизовано' };
     try {
-      const response = await fetch(`${API_URL}/user`, {
+      const response = await fetch(`/api/auth/user`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

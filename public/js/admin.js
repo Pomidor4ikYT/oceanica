@@ -923,7 +923,7 @@
     
     try {
       const token = window.auth.getToken();
-      const response = await fetch(`/admin/${type}`, {
+      const response = await fetch(`/api/admin/${type}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -1060,7 +1060,7 @@
   window.editItem = async function(type, id) {
     try {
       const token = window.auth.getToken();
-      const response = await fetch(`/admin/${type}`, {
+      const response = await fetch(`/api/admin/${type}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -1221,7 +1221,7 @@
     
     try {
       const token = window.auth.getToken();
-      const response = await fetch(`/admin/${type}/${id}`, {
+      const response = await fetch(`/api/admin/${type}/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -1322,7 +1322,7 @@
 
     try {
       const token = window.auth.getToken();
-      const url = isEdit ? `/admin/${type}/${id}` : `/admin/${type}`;
+      const url = isEdit ? `/api/admin/${type}/${id}` : `/api/admin/${type}`;
       const method = isEdit ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
@@ -1385,7 +1385,7 @@
   async function loadUsers() {
     try {
       const token = window.auth.getToken();
-      const response = await fetch('/admin/users', {
+      const response = await fetch('/api/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -1462,7 +1462,7 @@
   window.changeUserRole = async function(userId, newRole) {
     try {
       const token = window.auth.getToken();
-      const response = await fetch(`/admin/users/${userId}/role`, {
+      const response = await fetch(`/api/admin/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -1491,7 +1491,7 @@
   async function loadAllBookings() {
     try {
       const token = window.auth.getToken();
-      const response = await fetch('/admin/bookings/all', {
+      const response = await fetch('/api/admin/bookings/all', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
