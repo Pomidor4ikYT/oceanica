@@ -371,15 +371,162 @@
     });
   }
 
-  // --- Глобальний обробник кнопок "Детальніше" та "Забронювати" ---
-  let currentDetailsCallback = null;
-  let currentBookingCallback = null;
-
-  utils.setupItemHandlers = function(detailsCallback, bookingCallback) {
-    currentDetailsCallback = detailsCallback;
-    currentBookingCallback = bookingCallback;
-  };
-
+// Функція налаштування обробників для карток
+function setupItemHandlers(getDetailsFn, getBookingItemFn) {
+  // Обробники для кнопок "Детальніше" на картках
+  document.querySelectorAll('.btn-outline').forEach(btn => {
+    // Видаляємо старі обробники, щоб не було дублів
+    btn.removeEventListener('click', window.detailsHandler);
+    
+    // Створюємо новий обробник
+    window.detailsHandler = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const card = this.closest('.card');
+      if (!card) return;
+      
+      const details = getDetailsFn(card);
+      const bookingItem = getBookingItemFn(card);
+      
+      showDetailsModal(details, bookingItem);
+    };
+    
+    btn.addEventListener('click', window.detailsHandler);
+  });
+  
+  // Функція для показу модального вікна з деталями
+function showDetailsModal(details, bookingItem) {
+  const modal = document.getElementById('modalDetails');
+  if (!modal) return;
+  
+  // Заповнюємо дані
+  document.getElementById('modalDetailsImg').src = details.img || '';
+  document.getElementById('modalDetailsImg').alt = details.title || '';
+  document.getElementById('modalDetailsBadge').textContent = details.badge || '';
+  document.getElementById('modalDetailsTitle').textContent = details.title || '';
+  document.getElementById('modalDetailsSubtitle').textContent = details.subtitle || '';
+  document.getElementById('modalDetailsPrice').textContent = details.price || '';
+  
+  // Заповнюємо теги
+  const chipsContainer = document.getElementById('modalDetailsChips');
+  if (chipsContainer) {
+    chipsContainer.innerHTML = '';
+    if (details.tags && details.tags.length) {
+      details.tags.forEach(tag => {
+        const chip = document.createElement('span');
+        chip.className = 'modal-chip';
+        chip.textContent = tag;
+        chipsContainer.appendChild(chip);
+      });
+    }
+  }
+  
+  // Заповнюємо опис
+  document.getElementById('modalDetailsDescription').textContent = details.description || '';
+  
+  // Заповнюємо інформаційну сітку
+  const infoGrid = document.getElementById('modalDetailsInfo');
+  if (infoGrid) {
+    infoGrid.innerHTML = `
+      <div class="modal-info-item">
+        <span class="modal-info-label">Тривалість</span>
+        <span class="modal-info-value">${details.duration || '—'}</span>
+      </div>
+      <div class="modal-info-item">
+        <span class="modal-info-label">Група</span>
+        <span class="modal-info-value">${details.groupSize || '—'}</span>
+      </div>
+      <div class="modal-info-item">
+        <span class="modal-info-label">Проживання</span>
+        <span class="modal-info-value">${details.accommodation || '—'}</span>
+      </div>
+      <div class="modal-info-item">
+        <span class="modal-info-label">Дати вильотів</span>
+        <span class="modal-info-value">${details.departureDates ? details.departureDates.join(', ') : '—'}</span>
+      </div>
+    `;
+  }
+  
+  // Зберігаємо bookingItem для використання при бронюванні
+  modal.dataset.bookingItem = JSON.stringify(bookingItem);
+  
+  // Показуємо модальне вікно
+  modal.classList.add('active');
+}
+  // Обробники для кнопок "Забронювати" на картках
+  document.querySelectorAll('.btn-primary').forEach(btn => {
+    btn.removeEventListener('click', window.bookHandler);
+    
+    window.bookHandler = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const card = this.closest('.card');
+      if (!card) return;
+      
+      const bookingItem = getBookingItemFn(card);
+      showBookModal(bookingItem);
+    };
+    
+    btn.addEventListener('click', window.bookHandler);
+  });
+  
+  // Обробник для кнопки "Забронювати" в модальному вікні деталей
+  const modalDetailsBook = document.getElementById('modalDetailsBook');
+  if (modalDetailsBook) {
+    modalDetailsBook.removeEventListener('click', window.modalBookHandler);
+    
+    window.modalBookHandler = function() {
+      const modal = document.getElementById('modalDetails');
+      if (!modal) return;
+      
+      // Отримуємо дані з модального вікна
+      const title = document.getElementById('modalDetailsTitle')?.textContent || '';
+      const price = document.getElementById('modalDetailsPrice')?.textContent || '';
+      const img = document.getElementById('modalDetailsImg')?.src || '';
+      const badge = document.getElementById('modalDetailsBadge')?.textContent || '';
+      
+      // Отримуємо теги
+      const chipsContainer = document.getElementById('modalDetailsChips');
+      const chips = chipsContainer ? Array.from(chipsContainer.querySelectorAll('.modal-chip')).map(c => c.textContent) : [];
+      
+      const bookingItem = {
+        title,
+        price,
+        image: img,
+        badge,
+        chips,
+        meta: document.getElementById('modalDetailsSubtitle')?.textContent || '',
+        category: ''
+      };
+      
+      // Закриваємо модальне вікно деталей
+      modal.classList.remove('active');
+      
+      // Відкриваємо модальне вікно бронювання
+      showBookModal(bookingItem);
+    };
+    
+    modalDetailsBook.addEventListener('click', window.modalBookHandler);
+  }
+}// Функція для показу модального вікна бронювання
+function showBookModal(item) {
+  const modal = document.getElementById('modalBook');
+  if (!modal) return;
+  
+  document.getElementById('modalBookTitle').textContent = `Бронювання: ${item.title || ''}`;
+  document.getElementById('modalBookSubtitle').textContent = `${item.meta || ''} • ${item.price || ''}`;
+  
+  // Очищаємо форму
+  const form = document.getElementById('modalBookForm');
+  if (form) {
+    form.reset();
+    document.getElementById('modalBookSuccess').classList.remove('active');
+  }
+  
+  modal.classList.add('active');
+}
   // Встановлюємо глобальний слухач один раз
   document.addEventListener('click', (e) => {
     const detailBtn = e.target.closest('.btn-outline:not(.modal-close)') || e.target.closest('.slide-detail-btn');

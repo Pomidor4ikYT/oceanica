@@ -41,7 +41,11 @@
         logout(); // токен прострочений
         return null;
       }
-      return { name: payload.name || 'Користувач', email: payload.email };
+      return { 
+        name: payload.name || 'Користувач', 
+        email: payload.email,
+        role: payload.role || 'user'
+      };
     } catch {
       return null;
     }
@@ -59,7 +63,11 @@
       if (data.success && data.token) {
         setToken(data.token);
         setUserEmail(data.user?.email || email);
-        return { success: true, user: data.user };
+        return { 
+          success: true, 
+          user: data.user,
+          role: data.user?.role || 'user'
+        };
       } else {
         return { success: false, message: data.message || 'Помилка реєстрації' };
       }
@@ -81,7 +89,11 @@
       if (data.success && data.token) {
         setToken(data.token);
         setUserEmail(data.user?.email || email);
-        return { success: true, user: data.user };
+        return { 
+          success: true, 
+          user: data.user,
+          role: data.user?.role || 'user'
+        };
       } else {
         return { success: false, message: data.message || 'Невірний email або пароль' };
       }
@@ -115,6 +127,16 @@
     } catch (error) {
       console.error(error);
       return null;
+    }
+  }
+
+  // ========== Перевірка чи є користувач адміністратором ==========
+  async function isAdmin() {
+    try {
+      const userData = await getUserData();
+      return userData?.role === 'admin';
+    } catch {
+      return false;
     }
   }
 
@@ -257,6 +279,28 @@
     }
   }
 
+  // ========== Функція для перевірки доступу до адмін-панелі ==========
+  async function requireAdmin() {
+    const token = getToken();
+    if (!token) {
+      window.location.href = 'login.html';
+      return false;
+    }
+
+    try {
+      const userData = await getUserData();
+      if (!userData || userData.role !== 'admin') {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Помилка перевірки прав адміністратора:', error);
+      window.location.href = 'index.html';
+      return false;
+    }
+  }
+
   // Експорт
   window.auth = {
     getToken,
@@ -264,9 +308,11 @@
     getUserFromToken,
     logout,
     requireAuth,
+    requireAdmin,
     register,
     login,
     getUserData,
+    isAdmin,
     getFavorites,
     toggleFavorite,
     getBookings,

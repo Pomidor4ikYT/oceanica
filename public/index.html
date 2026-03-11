@@ -13,22 +13,22 @@
       <div class="brand-bubble">🌊</div>
       <div class="brand-name">Oceanica Travel</div>
     </div>
-<nav class="nav">
-  <a class="nav-link" href="index.html">Головна</a>
-  <div class="dropdown">
-    <a class="nav-link dropdown-toggle" href="#">Відпочинки ▾</a>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="cruise.html">🚢 Круїзи</a>
-      <a class="dropdown-item" href="tours.html">✈️ Тури</a>
-      <a class="dropdown-item" href="island.html">🏝️ Острови</a>
-    </div>
-  </div>
-  <div id="userSection" class="user-section"></div>
-</nav>
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Головна</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle" href="#">Відпочинки ▾</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="cruise.html">🚢 Круїзи</a>
+          <a class="dropdown-item" href="tours.html">✈️ Тури</a>
+          <a class="dropdown-item" href="island.html">🏝️ Острови</a>
+        </div>
+      </div>
+      <div id="userSection" class="user-section"></div>
+    </nav>
   </header>
 
   <div id="mainView">
-    <!-- Слайдер акційних пропозицій (плавний) -->
+    <!-- Слайдер акційних пропозицій -->
     <section class="offers-slider" id="dealsSection">
       <div class="slides" id="sliderSlides">
         <div class="offer-slide" style="background-image:url('indeximg/bar1.jpg');" data-tour="egypt">
@@ -121,7 +121,7 @@
             <div class="offer-caption-inner">
               <div class="cap-left">
                 <div class="cap-pill">-20%</div>
-                <h2 class="cap-title">Вулканічний трек</h2>
+                <h2 class="cap-title">Ісландія • трек</h2>
                 <p class="cap-sub">5 днів • пригоди</p>
                 <div class="price-block">
                   <span class="old-price">14 500 грн</span>
@@ -138,7 +138,7 @@
             <div class="offer-caption-inner">
               <div class="cap-left">
                 <div class="cap-pill">-25%</div>
-                <h2 class="cap-title">Альпійські лижі</h2>
+                <h2 class="cap-title">Альпи • лижі</h2>
                 <p class="cap-sub">8 днів • відпочинок</p>
                 <div class="price-block">
                   <span class="old-price">37 200 грн</span>
@@ -155,7 +155,7 @@
       <button class="slider-arrow next" aria-label="Наступний">›</button>
     </section>
 
-    <!-- Пошук за датою + кнопка Очистити -->
+    <!-- Пошук за датою -->
     <div style="text-align:center;">
       <div class="date-search">
         <label for="datePicker">Оберіть дату:</label>
@@ -166,7 +166,7 @@
       <div class="available-dates-note" id="availableDatesNote"></div>
     </div>
 
-    <!-- Результати пошуку за датою (тепер всередині .container) -->
+    <!-- Результати пошуку за датою -->
     <div class="container">
       <h3 class="section-title" style="margin-top: 2rem;" id="searchResultsTitle">Знайдені тури</h3>
       <div id="searchResults" class="cards-grid"></div>
@@ -199,189 +199,21 @@
       </div>
     </section>
 
-    <!-- Гарячі путівки (карусель) -->
+    <!-- Гарячі путівки -->
     <section class="container" id="homeCardsSection">
       <h2 class="section-title">Гарячі путівки</h2>
       <div class="carousel-wrapper">
         <button class="carousel-arrow left" id="carouselLeft">‹</button>
         <div class="carousel-container" id="carouselContainer">
           <div class="carousel-track" id="carouselTrack">
-            <!-- Картка 1: Балі -->
-            <article class="card" data-category="екзотика">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card1.jpg" alt="Балі" />
-                <span class="badge">Екзотика</span>
-                <button class="fav" title="В обране"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Балі, Індонезія</h3>
-                <span class="card-meta">All Inclusive • 7 ночей</span>
-                <span class="card-price">35 960 грн</span>
-                <div class="chips"><span class="chip">Серфінг</span><span class="chip">SPA</span><span class="chip">Вулкани</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="пляж">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card2.jpg" alt="Крит" />
-                <span class="badge">Пляж</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Крит, Греція</h3>
-                <span class="card-meta">Сніданки • 5 ночей</span>
-                <span class="card-price">19 960 грн</span>
-                <div class="chips"><span class="chip">Пляжі</span><span class="chip">Античність</span><span class="chip">Таверни</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="люкс">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card3.jpg" alt="Мальдіви" />
-                <span class="badge">Люкс</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Мальдіви</h3>
-                <span class="card-meta">Вілли • 6 ночей</span>
-                <span class="card-price">51 960 грн</span>
-                <div class="chips"><span class="chip">Океан</span><span class="chip">Рифи</span><span class="chip">Релакс</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="екзотика">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card4.jpg" alt="Бора-Бора" />
-                <span class="badge">Екзотика</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Бора-Бора</h3>
-                <span class="card-meta">Лагуни • 7 ночей</span>
-                <span class="card-price">59 960 грн</span>
-                <div class="chips"><span class="chip">Бунгало</span><span class="chip">Каяки</span><span class="chip">Снорклінг</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="природа">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card5.jpg" alt="Палаван" />
-                <span class="badge">Природа</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Палаван, Філіппіни</h3>
-                <span class="card-meta">Еко-тур • 6 ночей</span>
-                <span class="card-price">31 960 грн</span>
-                <div class="chips"><span class="chip">Лагуни</span><span class="chip">Печери</span><span class="chip">Острівці</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="пляж">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card6.jpg" alt="Самуї" />
-                <span class="badge">Пляж</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Самуї, Таїланд</h3>
-                <span class="card-meta">Сніданки • 7 ночей</span>
-                <span class="card-price">27 960 грн</span>
-                <div class="chips"><span class="chip">Пальми</span><span class="chip">Фрукти</span><span class="chip">Храми</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="історія">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card7.jpg" alt="Санторіні" />
-                <span class="badge">Історія</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Санторіні, Греція</h3>
-                <span class="card-meta">Романтика • 5 ночей</span>
-                <span class="card-price">23 160 грн</span>
-                <div class="chips"><span class="chip">Закати</span><span class="chip">Круїзи</span><span class="chip">Вина</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="історія">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card8.jpg" alt="Марокко" />
-                <span class="badge">Історія</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Марокко</h3>
-                <span class="card-meta">Гіди • 6 ночей</span>
-                <span class="card-price">15 960 грн</span>
-                <div class="chips"><span class="chip">Медина</span><span class="chip">Сахара</span><span class="chip">Базар</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="пляж">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card9.jpg" alt="Хайнань" />
-                <span class="badge">Пляж</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Хайнань, Китай</h3>
-                <span class="card-meta">Пляжі • 7 ночей</span>
-                <span class="card-price">39 960 грн</span>
-                <div class="chips"><span class="chip">Парк</span><span class="chip">Спа</span><span class="chip">Марина</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="екзотика">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card10.jpg" alt="Таїті" />
-                <span class="badge">Екзотика</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Таїті</h3>
-                <span class="card-meta">Екзотика • 6 ночей</span>
-                <span class="card-price">55 960 грн</span>
-                <div class="chips"><span class="chip">Дайвінг</span><span class="chip">Тікі</span><span class="chip">Круїзи</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="пляж">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card11.jpg" alt="Сейшели" />
-                <span class="badge">Пляж</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Сейшели</h3>
-                <span class="card-meta">Вілли • 7 ночей</span>
-                <span class="card-price">43 960 грн</span>
-                <div class="chips"><span class="chip">Гранітні пляжі</span><span class="chip">Снорклінг</span><span class="chip">Праслін</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
-            <article class="card" data-category="пляж">
-              <div class="card-img-wrap">
-                <img class="card-img" src="indeximg/card12.jpg" alt="Афінська Рив'єра" />
-                <span class="badge">Пляж</span>
-                <button class="fav"></button>
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">Афінська Рив'єра</h3>
-                <span class="card-meta">Середземне море • 5 ночей</span>
-                <span class="card-price">27 960 грн</span>
-                <div class="chips"><span class="chip">Марина</span><span class="chip">Античність</span><span class="chip">Кафе</span></div>
-                <div class="card-actions"><div class="left-actions"><button class="btn-primary">Забронювати</button></div><div class="right-actions"><button class="btn-outline">Детальніше</button></div></div>
-              </div>
-            </article>
+            <!-- Картки будуть завантажені через JS -->
           </div>
         </div>
         <button class="carousel-arrow right" id="carouselRight">›</button>
       </div>
     </section>
 
-    <!-- Відгуки клієнтів (горизонтальна карусель) -->
+    <!-- Відгуки клієнтів -->
     <section class="container">
       <h2 class="section-title">Відгуки клієнтів</h2>
       <div class="reviews-carousel">
@@ -392,17 +224,11 @@
           <article class="review"><div class="avatar">В</div><div><div class="review-header"><span class="name">Віталій</span><span class="stars">★★★★★</span></div><p class="review-text">Рекомендую! Допомогли з візами і готелями на Балі.</p></div></article>
           <article class="review"><div class="avatar">Н</div><div><div class="review-header"><span class="name">Наталія</span><span class="stars">★★★★★</span></div><p class="review-text">Санторіні — казка. Все організовано до дрібниць.</p></div></article>
           <article class="review"><div class="avatar">Д</div><div><div class="review-header"><span class="name">Дмитро</span><span class="stars">★★★★★</span></div><p class="review-text">Мальдіви з дітьми — найкращий релакс. Готель і харчування топ.</p></div></article>
-          <article class="review"><div class="avatar">М</div><div><div class="review-header"><span class="name">Марія</span><span class="stars">★★★★★</span></div><p class="review-text">Все чітко і без стресу. Підібрали чудовий готель і трансфер!</p></div></article>
-          <article class="review"><div class="avatar">О</div><div><div class="review-header"><span class="name">Олег</span><span class="stars">★★★★★</span></div><p class="review-text">Підтримка 24/7. Оперативно відповідають і допомагають з квитками.</p></div></article>
-          <article class="review"><div class="avatar">І</div><div><div class="review-header"><span class="name">Ірина</span><span class="stars">★★★★★</span></div><p class="review-text">Гарячий тур — супер ціна і жодних прихованих платежів.</p></div></article>
-          <article class="review"><div class="avatar">В</div><div><div class="review-header"><span class="name">Віталій</span><span class="stars">★★★★★</span></div><p class="review-text">Рекомендую! Допомогли з візами і готелями на Балі.</p></div></article>
-          <article class="review"><div class="avatar">Н</div><div><div class="review-header"><span class="name">Наталія</span><span class="stars">★★★★★</span></div><p class="review-text">Санторіні — казка. Все організовано до дрібниць.</p></div></article>
-          <article class="review"><div class="avatar">Д</div><div><div class="review-header"><span class="name">Дмитро</span><span class="stars">★★★★★</span></div><p class="review-text">Мальдіви з дітьми — найкращий релакс. Готель і харчування топ.</p></div></article>
         </div>
       </div>
     </section>
 
-    <!-- Підписка (центрування через CSS) -->
+    <!-- Підписка -->
     <section class="container newsletter">
       <h3>Будьте в курсі акцій</h3>
       <p>Підпишіться на розсилку та отримуйте найкращі пропозиції першими</p>
@@ -435,7 +261,7 @@
           <div id="modalDetailsInfo" class="modal-info-grid"></div>
           <div class="modal-actions">
             <button id="modalDetailsBook" class="btn-primary">Забронювати</button>
-            <button id="modalDetailsClose2" class="btn-outline modal-close">Закрити</button>
+            <button id="modalDetailsClose2" class="btn-outline modal-close">✕</button>
           </div>
         </div>
         <div class="modal-panel" data-panel="reviews">
@@ -531,7 +357,7 @@
         <p><a href="tours.html">Тури</a></p>
         <p><a href="island.html">Острови</a></p>
         <p><a href="cruise.html">Круїзи</a></p>
-<p><a href="account.html">Мій кабінет</a></p>
+        <p><a href="account.html">Мій кабінет</a></p>
       </div>
       <div class="f-col">
         <h4>Соцмережі</h4>
@@ -544,10 +370,10 @@
     </div>
   </footer>
 
-  <!-- Підключення зовнішнього JavaScript -->
-   <script src="auth.js"></script>
-   <script src="utils.js"></script>
-   <script src="header.js"></script>
+  <!-- Підключення скриптів -->
+  <script src="auth.js"></script>
+  <script src="utils.js"></script>
+  <script src="header.js"></script>
   <script src="index.js"></script>
 </body>
 </html>

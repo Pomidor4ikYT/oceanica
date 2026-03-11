@@ -173,12 +173,23 @@
         <button id="filterBtn" class="filter-btn">Категорії</button>
       </div>
 
-      <!-- Панель фільтрації -->
+      <!-- Панель фільтрації (оновлена) -->
       <div id="filterPanel" class="filter-panel">
+        <!-- Нові вкладки -->
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter-type="category">🌊 За водою</button>
+          <button class="filter-tab" data-filter-type="name">🔤 За назвою</button>
+          <button class="filter-tab" data-filter-type="price">💰 За ціною</button>
+          <button class="filter-tab" data-filter-type="popular">⭐ За популярністю</button>
+        </div>
+        <!-- Контейнер для чіпсів -->
         <div class="category-chips" id="categoryChips"></div>
       </div>
 
-      <!-- Сітка карток (12 штук) -->
+      <!-- Індикатор активного фільтра (новий) -->
+      <div id="activeFilterIndicator" class="active-filter-indicator"></div>
+
+      <!-- Сітка карток -->
       <div class="cards-grid" id="cruisesGrid">
         <!-- Картки будуть вставлені з JS -->
       </div>
@@ -217,7 +228,7 @@
           <div id="modalDetailsInfo" class="modal-info-grid"></div>
           <div class="modal-actions">
             <button id="modalDetailsBook" class="btn-primary">Забронювати</button>
-            <button id="modalDetailsClose2" class="btn-outline">Закрити</button>
+            <button id="modalDetailsClose2" class="btn-outline modal-close">✕</button>
           </div>
         </div>
         <div class="modal-panel" data-panel="reviews">

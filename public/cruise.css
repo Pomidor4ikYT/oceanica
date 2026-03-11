@@ -270,3 +270,48 @@
     gap: 1rem;
   }
 }
+/* Стилі для вкладок фільтра */
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.filter-tab {
+  padding: 0.6rem 1.2rem;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 40px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #334155;
+  border: 1px solid transparent;
+  font-family: 'Inter', sans-serif;
+}
+
+.filter-tab:hover {
+  background: #e2e8f0;
+}
+
+.filter-tab.active {
+  background: #0f4c81;
+  color: white;
+  border-color: #0f4c81;
+}
+
+/* Індикатор активного фільтра */
+.active-filter-indicator {
+  padding: 0.5rem 1rem;
+  background: #e6f2ff;
+  border-radius: 40px;
+  display: inline-block;
+  border-left: 4px solid #0f4c81;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #0f4c81;
+  font-weight: 500;
+}

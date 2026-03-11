@@ -271,12 +271,16 @@
     loadFavorites();
   }
 
-  // ========== Фільтр категорій ==========
+  // ========== НОВИЙ РОЗШИРЕНИЙ ФІЛЬТР ==========
   const filterBtn = qs('#filterBtn');
   const filterPanel = qs('#filterPanel');
   const categoryChips = qs('#categoryChips');
   let cards = qsa('.card');
+  const filterTabs = qsa('.filter-tab');
+  let currentFilterType = 'category'; // 'category', 'name', 'price', 'popular'
+  const selectedCategories = new Set();
 
+  // Дані для різних типів фільтрів
   const categories = ['tropical', 'volcanic', 'exotic'];
   const categoryNames = {
     tropical: '🏝️ Тропічні',
@@ -284,41 +288,221 @@
     exotic: '✨ Екзотичні'
   };
 
-  function renderChips() {
-    let html = '<div class="category-chip reset" data-category="reset">✖ Скинути</div>';
-    categories.forEach(cat => {
-      html += `<div class="category-chip" data-category="${cat}">${categoryNames[cat]}</div>`;
-    });
-    categoryChips.innerHTML = html;
-  }
-  renderChips();
+  const nameSortOptions = [
+    { value: 'name-asc', label: '🔤 А-Я' },
+    { value: 'name-desc', label: '🔤 Я-А' }
+  ];
 
-  const selectedCategories = new Set();
+  const priceSortOptions = [
+    { value: 'price-asc', label: '💰 Від дешевих' },
+    { value: 'price-desc', label: '💰 Від дорогих' }
+  ];
 
-  function filterCards() {
-    cards = qsa('.card');
-    if (selectedCategories.size === 0) {
-      cards.forEach(card => card.style.display = '');
-    } else {
-      cards.forEach(card => {
-        if (selectedCategories.has(card.dataset.category)) {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
-      });
+  const popularOptions = [
+    { value: 'popular-desc', label: '⭐ За рейтингом' }
+  ];
+
+  // Функція для отримання популярності острова (на основі відгуків)
+  function getIslandPopularity(title) {
+    const LS_KEY = 'oceanica_card_reviews_v1';
+    try {
+      const all = JSON.parse(localStorage.getItem(LS_KEY) || '{}') || {};
+      const reviews = all[title] || [];
+      if (reviews.length === 0) return { count: 0, avg: 5 };
+      
+      const avg = reviews.reduce((sum, r) => sum + (r.stars || 5), 0) / reviews.length;
+      return { count: reviews.length, avg: avg };
+    } catch {
+      return { count: 0, avg: 5 };
     }
   }
 
+  // Функція для парсингу ціни з рядка
+  function extractPrice(priceStr) {
+    const match = priceStr.replace(/\s/g, '').match(/(\d+)/);
+    return match ? parseInt(match[0], 10) : 0;
+  }
+
+  // Рендер чіпсів залежно від типу фільтра
+  function renderChipsByType(type) {
+    let html = '<div class="category-chip reset" data-category="reset" data-sort="reset">✖ Скинути</div>';
+    
+    if (type === 'category') {
+      categories.forEach(cat => {
+        html += `<div class="category-chip" data-category="${cat}">${categoryNames[cat]}</div>`;
+      });
+    } else if (type === 'name') {
+      nameSortOptions.forEach(opt => {
+        html += `<div class="category-chip" data-sort="${opt.value}">${opt.label}</div>`;
+      });
+    } else if (type === 'price') {
+      priceSortOptions.forEach(opt => {
+        html += `<div class="category-chip" data-sort="${opt.value}">${opt.label}</div>`;
+      });
+    } else if (type === 'popular') {
+      popularOptions.forEach(opt => {
+        html += `<div class="category-chip" data-sort="${opt.value}">${opt.label}</div>`;
+      });
+    }
+    
+    categoryChips.innerHTML = html;
+  }
+
+  // Ініціалізація вкладок
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Видаляємо active з усіх вкладок
+      filterTabs.forEach(t => t.classList.remove('active'));
+      // Додаємо active поточній вкладці
+      tab.classList.add('active');
+      
+      // Оновлюємо тип фільтра
+      currentFilterType = tab.dataset.filterType;
+      
+      // Очищаємо вибрані категорії
+      selectedCategories.clear();
+      
+      // Рендеримо відповідні чіпси
+      renderChipsByType(currentFilterType);
+      
+      // Скидаємо відображення карток
+      cards = qsa('.card');
+      cards.forEach(card => card.style.display = '');
+      
+      // Оновлюємо індикатор
+      updateFilterIndicator();
+    });
+  });
+
+  // Функція оновлення індикатора
+  function updateFilterIndicator() {
+    const indicator = qs('#activeFilterIndicator');
+    if (!indicator) return;
+    
+    const activeTab = qs('.filter-tab.active');
+    if (!activeTab) return;
+    
+    let text = 'Активний фільтр: ';
+    switch(activeTab.dataset.filterType) {
+      case 'category': text += '🏝️ за типом острова'; break;
+      case 'name': text += '🔤 за назвою'; break;
+      case 'price': text += '💰 за ціною'; break;
+      case 'popular': text += '⭐ за популярністю'; break;
+      default: text += 'всі острови';
+    }
+    
+    indicator.textContent = text;
+  }
+
+  // Оновлена функція фільтрації/сортування
+  function filterAndSortCards() {
+    cards = qsa('.card');
+    const cardsArray = Array.from(cards);
+    
+    if (currentFilterType === 'category') {
+      // Фільтрація за категорією
+      if (selectedCategories.size === 0) {
+        cardsArray.forEach(card => card.style.display = '');
+      } else {
+        cardsArray.forEach(card => {
+          if (selectedCategories.has(card.dataset.category)) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+    } else {
+      // Сортування для інших типів
+      const sortValue = Array.from(selectedCategories)[0]; // Беремо перше вибране значення
+      
+      if (!sortValue) {
+        // Якщо нічого не вибрано, показуємо всі в оригінальному порядку
+        cardsArray.forEach(card => card.style.display = '');
+        return;
+      }
+      
+      // Сортуємо масив карток
+      const sortedCards = [...cardsArray].sort((a, b) => {
+        const titleA = qs('.card-title', a)?.textContent?.trim() || '';
+        const titleB = qs('.card-title', b)?.textContent?.trim() || '';
+        const priceA = extractPrice(qs('.card-price', a)?.textContent?.trim() || '0');
+        const priceB = extractPrice(qs('.card-price', b)?.textContent?.trim() || '0');
+        const popA = getIslandPopularity(titleA);
+        const popB = getIslandPopularity(titleB);
+        
+        switch(sortValue) {
+          case 'name-asc':
+            return titleA.localeCompare(titleB, 'uk');
+          case 'name-desc':
+            return titleB.localeCompare(titleA, 'uk');
+          case 'price-asc':
+            return priceA - priceB;
+          case 'price-desc':
+            return priceB - priceA;
+          case 'popular-desc':
+            // Сортуємо за середнім рейтингом, потім за кількістю відгуків
+            if (popB.avg !== popA.avg) return popB.avg - popA.avg;
+            return popB.count - popA.count;
+          default:
+            return 0;
+        }
+      });
+      
+      // Переставляємо картки в DOM згідно з сортуванням
+      const parent = cards[0]?.parentNode;
+      if (parent) {
+        sortedCards.forEach(card => parent.appendChild(card));
+      }
+      
+      // Показуємо всі картки
+      cardsArray.forEach(card => card.style.display = '');
+    }
+  }
+
+  // ВИПРАВЛЕНИЙ обробник кліку по чіпсах
   categoryChips.addEventListener('click', (e) => {
     const chip = e.target.closest('.category-chip');
     if (!chip) return;
+    
     const cat = chip.dataset.category;
+    const sortVal = chip.dataset.sort;
 
-    if (cat === 'reset') {
+    // Перевіряємо, чи це кнопка "Скинути" (має або data-category="reset" або data-sort="reset")
+    if (cat === 'reset' || sortVal === 'reset') {
+      // Скидання всіх фільтрів
       selectedCategories.clear();
-      qsa('.category-chip').forEach(ch => ch.classList.remove('active'));
-    } else {
+      
+      // Видаляємо активний клас з усіх чіпсів
+      qsa('.category-chip').forEach(ch => {
+        ch.classList.remove('active');
+      });
+      
+      // Показуємо всі картки
+      cards = qsa('.card');
+      cards.forEach(card => card.style.display = '');
+      
+      // Якщо це режим сортування (не категорія), скидаємо порядок до оригінального
+      if (currentFilterType !== 'category') {
+        // Відновлюємо оригінальний порядок карток (за індексом)
+        const parent = cards[0]?.parentNode;
+        if (parent) {
+          // Сортуємо за оригінальним порядком (за атрибутом data-original-index)
+          cards.sort((a, b) => {
+            const indexA = parseInt(a.dataset.originalIndex || '0');
+            const indexB = parseInt(b.dataset.originalIndex || '0');
+            return indexA - indexB;
+          });
+          cards.forEach(card => parent.appendChild(card));
+        }
+      }
+      
+      return;
+    }
+
+    // Якщо це не кнопка "Скинути", обробляємо вибір
+    if (currentFilterType === 'category') {
+      // Для категорій - мультивибір
       if (selectedCategories.has(cat)) {
         selectedCategories.delete(cat);
         chip.classList.remove('active');
@@ -326,13 +510,31 @@
         selectedCategories.add(cat);
         chip.classList.add('active');
       }
+    } else {
+      // Для сортування - одиночний вибір
+      selectedCategories.clear();
+      qsa('.category-chip').forEach(ch => ch.classList.remove('active'));
+      
+      selectedCategories.add(sortVal);
+      chip.classList.add('active');
     }
-    filterCards();
+    
+    filterAndSortCards();
   });
 
   filterBtn.addEventListener('click', () => {
     filterPanel.classList.toggle('active');
   });
+
+  // Зберігаємо оригінальний порядок карток при завантаженні
+  cards = qsa('.card');
+  cards.forEach((card, index) => {
+    card.dataset.originalIndex = index;
+  });
+
+  // Ініціалізація
+  renderChipsByType('category');
+  updateFilterIndicator();
 
   // ========== Пошук за датою ==========
   const searchBtn = qs('#searchByDate');
