@@ -20,19 +20,27 @@ function safeJsonParse(value, defaultValue = []) {
   }
 }
 
-// Підключення до PostgreSQL з перевіркою
-const databaseUrl = process.env.DATABASE_URL || 'postgresql://localhost:5432/oceanica';
-console.log(`Спроба підключення до БД: ${databaseUrl.replace(/:[^:]*@/, ':***@')}`);
+// Підключення до PostgreSQL
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  console.error('❌ DATABASE_URL не встановлено!');
+  process.exit(1);
+}
+
+console.log('📦 Підключення до бази даних...');
 
 const pool = new Pool({
   connectionString: databaseUrl,
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // Перевірка з'єднання
 pool.connect((err, client, release) => {
   if (err) {
     console.error('❌ Помилка підключення до БД:', err.message);
+    process.exit(1);
   } else {
     console.log('✅ Підключено до PostgreSQL');
     release();
@@ -153,6 +161,7 @@ async function initDb() {
     await seedInitialData();
   } catch (err) {
     console.error('❌ Помилка створення таблиць:', err);
+    process.exit(1);
   }
 }
 
@@ -179,68 +188,147 @@ async function createAdminUser() {
   }
 }
 
-// Початкові дані - ВИПРАВЛЕНО екранування лапок
+// Початкові дані - ВИПРАВЛЕНО синтаксис
 async function seedInitialData() {
   try {
     // Перевіряємо чи є вже тури
     const toursCount = await pool.query("SELECT COUNT(*) FROM tours WHERE type = 'tour'");
     if (parseInt(toursCount.rows[0].count) === 0) {
-      // Тури - ВИПРАВЛЕНО екранування лапок
-      await pool.query(`
-        INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) VALUES
-        ('tour', 'Таїланд: Пхукет & Пхі-Пхі', 'Райські пляжі Таїланду', '39900 грн', '10 ночей', '25 осіб', 'Готель 4*', '🏖️Пляжний', 'beach', 'toursimg/tour1.jpg', '[\"15.03.2026\",\"22.03.2026\",\"05.04.2026\"]', '[\"Пальми\",\"Вапнякові скелі\",\"Дайвінг\"]', '10 днів • All Inclusive'),
-        ('tour', 'Італія: Рим, Флоренція, Венеція', 'Класичний тур по Італії', '31200 грн', '8 днів', '30 осіб', 'Готель 3-4*', '🏛️Екскурсійний', 'excursion', 'toursimg/tour2.jpg', '[\"10.04.2026\",\"24.04.2026\",\"08.05.2026\"]', '[\"Колізей\",\"Да Вінчі\",\"Гондоли\"]', '8 днів • сніданки'),
-        ('tour', 'Непал: Еверест та храми', 'Треккінг до Евересту', '47500 грн', '12 днів', '15 осіб', 'Кемп', '⛰️Гірський', 'mountain', 'toursimg/tour3.jpg', '[\"20.03.2026\",\"03.04.2026\",\"17.04.2026\"]', '[\"Гімалаї\",\"Буддизм\",\"Базовий табір\"]', '12 днів • Trekking'),
-        ('tour', 'Мальдіви: райські атоли', 'Екзотичні Мальдіви', '67800 грн', '7 ночей', '20 осіб', 'Готель 5*', '🏖️Пляжний', 'beach', 'toursimg/tour4.jpg', '[\"05.05.2026\",\"19.05.2026\",\"02.06.2026\"]', '[\"Лагуна\",\"Снорклінг\",\"SPA\"]', '7 днів • вілли над водою')
-      `);
+      // Тури - використовуємо окремі INSERT запити
+      console.log('📝 Додаємо початкові тури...');
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['tour', 'Таїланд: Пхукет & Пхі-Пхі', 'Райські пляжі Таїланду', '39900 грн', '10 ночей', '25 осіб', 'Готель 4*', '🏖️Пляжний', 'beach', 'toursimg/tour1.jpg', JSON.stringify(['15.03.2026', '22.03.2026', '05.04.2026']), JSON.stringify(['Пальми', 'Вапнякові скелі', 'Дайвінг']), '10 днів • All Inclusive']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['tour', 'Італія: Рим, Флоренція, Венеція', 'Класичний тур по Італії', '31200 грн', '8 днів', '30 осіб', 'Готель 3-4*', '🏛️Екскурсійний', 'excursion', 'toursimg/tour2.jpg', JSON.stringify(['10.04.2026', '24.04.2026', '08.05.2026']), JSON.stringify(['Колізей', 'Да Вінчі', 'Гондоли']), '8 днів • сніданки']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['tour', 'Непал: Еверест та храми', 'Треккінг до Евересту', '47500 грн', '12 днів', '15 осіб', 'Кемп', '⛰️Гірський', 'mountain', 'toursimg/tour3.jpg', JSON.stringify(['20.03.2026', '03.04.2026', '17.04.2026']), JSON.stringify(['Гімалаї', 'Буддизм', 'Базовий табір']), '12 днів • Trekking']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['tour', 'Мальдіви: райські атоли', 'Екзотичні Мальдіви', '67800 грн', '7 ночей', '20 осіб', 'Готель 5*', '🏖️Пляжний', 'beach', 'toursimg/tour4.jpg', JSON.stringify(['05.05.2026', '19.05.2026', '02.06.2026']), JSON.stringify(['Лагуна', 'Снорклінг', 'SPA']), '7 днів • вілли над водою']
+      );
+      
       console.log('✅ Початкові тури додано');
     }
 
-    // Круїзи - ВИПРАВЛЕНО екранування лапок
+    // Круїзи
     const cruisesCount = await pool.query("SELECT COUNT(*) FROM tours WHERE type = 'cruise'");
     if (parseInt(cruisesCount.rows[0].count) === 0) {
-      await pool.query(`
-        INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) VALUES
-        ('cruise', 'Середземне море', 'Круїз Середземним морем', '42500 грн', '7 ночей', '200 осіб', 'Лайнер', '☀️ Теплі води', 'warm', 'cruiseimg/cruise1.jpg', '[\"15.03.2026\",\"22.03.2026\",\"05.04.2026\"]', '[\"Італія\",\"Греція\",\"Іспанія\"]', '7 ночей'),
-        ('cruise', 'Карибські острови', 'Круїз Карибами', '67800 грн', '10 ночей', '250 осіб', 'Лайнер', '☀️ Теплі води', 'warm', 'cruiseimg/cruise2.jpg', '[\"10.04.2026\",\"24.04.2026\",\"08.05.2026\"]', '[\"Багами\",\"Ямайка\",\"Каймани\"]', '10 ночей'),
-        ('cruise', 'Норвезькі фіорди', 'Круїз фіордами', '53200 грн', '8 ночей', '180 осіб', 'Експедиційний', '❄️ Холодні води', 'cold', 'cruiseimg/cruise3.jpg', '[\"20.03.2026\",\"03.04.2026\",\"17.04.2026\"]', '[\"Берген\",\"Гейрангер\",\"Льодовики\"]', '8 ночей'),
-        ('cruise', 'Аляска', 'Круїз до Аляски', '61500 грн', '9 ночей', '220 осіб', 'Преміум', '❄️ Холодні води', 'cold', 'cruiseimg/cruise4.jpg', '[\"05.05.2026\",\"19.05.2026\",\"02.06.2026\"]', '[\"Джуно\",\"Сьюард\",\"Кити\"]', '9 ночей')
-      `;
+      console.log('📝 Додаємо початкові круїзи...');
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['cruise', 'Середземне море', 'Круїз Середземним морем', '42500 грн', '7 ночей', '200 осіб', 'Лайнер', '☀️ Теплі води', 'warm', 'cruiseimg/cruise1.jpg', JSON.stringify(['15.03.2026', '22.03.2026', '05.04.2026']), JSON.stringify(['Італія', 'Греція', 'Іспанія']), '7 ночей']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['cruise', 'Карибські острови', 'Круїз Карибами', '67800 грн', '10 ночей', '250 осіб', 'Лайнер', '☀️ Теплі води', 'warm', 'cruiseimg/cruise2.jpg', JSON.stringify(['10.04.2026', '24.04.2026', '08.05.2026']), JSON.stringify(['Багами', 'Ямайка', 'Каймани']), '10 ночей']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['cruise', 'Норвезькі фіорди', 'Круїз фіордами', '53200 грн', '8 ночей', '180 осіб', 'Експедиційний', '❄️ Холодні води', 'cold', 'cruiseimg/cruise3.jpg', JSON.stringify(['20.03.2026', '03.04.2026', '17.04.2026']), JSON.stringify(['Берген', 'Гейрангер', 'Льодовики']), '8 ночей']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['cruise', 'Аляска', 'Круїз до Аляски', '61500 грн', '9 ночей', '220 осіб', 'Преміум', '❄️ Холодні води', 'cold', 'cruiseimg/cruise4.jpg', JSON.stringify(['05.05.2026', '19.05.2026', '02.06.2026']), JSON.stringify(['Джуно', 'Сьюард', 'Кити']), '9 ночей']
+      );
+      
       console.log('✅ Початкові круїзи додано');
     }
 
-    // Острови - ВИПРАВЛЕНО екранування лапок
+    // Острови
     const islandsCount = await pool.query("SELECT COUNT(*) FROM tours WHERE type = 'island'");
     if (parseInt(islandsCount.rows[0].count) === 0) {
-      await pool.query(`
-        INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) VALUES
-        ('island', 'Мальдіви', 'Райські острови', '67800 грн', '7 ночей', '10 осіб', 'Готель 5*', '🏝️ Тропічний', 'tropical', 'islandimg/island1.jpg', '[\"05.03.2026\",\"12.03.2026\",\"19.03.2026\"]', '[\"Вілли\",\"Дайвінг\",\"SPA\"]', '7 ночей'),
-        ('island', 'Ісландія', 'Країна льодовиків', '62300 грн', '8 днів', '15 осіб', 'Готель', '🌋 Вулканічний', 'volcanic', 'islandimg/island2.jpg', '[\"10.03.2026\",\"17.03.2026\",\"24.03.2026\"]', '[\"Гейзери\",\"Водоспади\",\"Північне сяйво\"]', '8 днів'),
-        ('island', 'Бора-Бора', 'Найкрасивіша лагуна', '59960 грн', '7 ночей', '8 осіб', 'Готель 5*', '✨ Екзотичний', 'exotic', 'islandimg/island3.jpg', '[\"15.03.2026\",\"22.03.2026\",\"29.03.2026\"]', '[\"Бунгало\",\"Рифи\",\"Акули\"]', '7 ночей'),
-        ('island', 'Сейшели', 'Гранітні острови', '43960 грн', '7 ночей', '12 осіб', 'Готель 4*', '🏝️ Тропічний', 'tropical', 'islandimg/island4.jpg', '[\"20.03.2026\",\"27.03.2026\",\"03.04.2026\"]', '[\"Черепахи\",\"Пляжі\",\"Снорклінг\"]', '7 ночей')
-      `;
+      console.log('📝 Додаємо початкові острови...');
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['island', 'Мальдіви', 'Райські острови', '67800 грн', '7 ночей', '10 осіб', 'Готель 5*', '🏝️ Тропічний', 'tropical', 'islandimg/island1.jpg', JSON.stringify(['05.03.2026', '12.03.2026', '19.03.2026']), JSON.stringify(['Вілли', 'Дайвінг', 'SPA']), '7 ночей']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['island', 'Ісландія', 'Країна льодовиків', '62300 грн', '8 днів', '15 осіб', 'Готель', '🌋 Вулканічний', 'volcanic', 'islandimg/island2.jpg', JSON.stringify(['10.03.2026', '17.03.2026', '24.03.2026']), JSON.stringify(['Гейзери', 'Водоспади', 'Північне сяйво']), '8 днів']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['island', 'Бора-Бора', 'Найкрасивіша лагуна', '59960 грн', '7 ночей', '8 осіб', 'Готель 5*', '✨ Екзотичний', 'exotic', 'islandimg/island3.jpg', JSON.stringify(['15.03.2026', '22.03.2026', '29.03.2026']), JSON.stringify(['Бунгало', 'Рифи', 'Акули']), '7 ночей']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['island', 'Сейшели', 'Гранітні острови', '43960 грн', '7 ночей', '12 осіб', 'Готель 4*', '🏝️ Тропічний', 'tropical', 'islandimg/island4.jpg', JSON.stringify(['20.03.2026', '27.03.2026', '03.04.2026']), JSON.stringify(['Черепахи', 'Пляжі', 'Снорклінг']), '7 ночей']
+      );
+      
       console.log('✅ Початкові острови додано');
     }
 
-    // Гарячі путівки - ВИПРАВЛЕНО екранування лапок
+    // Гарячі путівки
     const hotCount = await pool.query("SELECT COUNT(*) FROM tours WHERE type = 'hot'");
     if (parseInt(hotCount.rows[0].count) === 0) {
-      await pool.query(`
-        INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) VALUES
-        ('hot', 'Єгипет All Inclusive', 'Гаряча пропозиція', '23960 грн', '7 ночей', '40 осіб', 'Готель 5*', '-20%', 'beach', 'indeximg/bar1.jpg', '[\"01.11.2026\",\"08.11.2026\",\"15.11.2026\"]', '[\"Піраміди\",\"Червоне море\",\"All Inclusive\"]', '7 ночей'),
-        ('hot', 'Санторіні', 'Романтичний відпочинок', '19160 грн', '5 ночей', '25 осіб', 'Готель 4*', '-15%', 'excursion', 'indeximg/bar2.jpg', '[\"15.05.2026\",\"22.05.2026\",\"29.05.2026\"]', '[\"Закати\",\"Білі будинки\",\"Романтика\"]', '5 ночей'),
-        ('hot', 'Марокко', 'Подорож до Сахари', '15960 грн', '6 ночей', '20 осіб', 'Готель 3-4*', '-18%', 'excursion', 'indeximg/bar3.jpg', '[\"10.09.2026\",\"17.09.2026\",\"24.09.2026\"]', '[\"Сахара\",\"Марракеш\",\"Базари\"]', '6 ночей'),
-        ('hot', 'Мальдіви', 'Рай на землі', '51960 грн', '7 ночей', '15 осіб', 'Готель 5*', '-12%', 'beach', 'indeximg/bar4.jpg', '[\"05.12.2026\",\"12.12.2026\",\"19.12.2026\"]', '[\"Вілли\",\"Дайвінг\",\"SPA\"]', '7 ночей')
-      `;
+      console.log('📝 Додаємо початкові гарячі путівки...');
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['hot', 'Єгипет All Inclusive', 'Гаряча пропозиція', '23960 грн', '7 ночей', '40 осіб', 'Готель 5*', '-20%', 'beach', 'indeximg/bar1.jpg', JSON.stringify(['01.11.2026', '08.11.2026', '15.11.2026']), JSON.stringify(['Піраміди', 'Червоне море', 'All Inclusive']), '7 ночей']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['hot', 'Санторіні', 'Романтичний відпочинок', '19160 грн', '5 ночей', '25 осіб', 'Готель 4*', '-15%', 'excursion', 'indeximg/bar2.jpg', JSON.stringify(['15.05.2026', '22.05.2026', '29.05.2026']), JSON.stringify(['Закати', 'Білі будинки', 'Романтика']), '5 ночей']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['hot', 'Марокко', 'Подорож до Сахари', '15960 грн', '6 ночей', '20 осіб', 'Готель 3-4*', '-18%', 'excursion', 'indeximg/bar3.jpg', JSON.stringify(['10.09.2026', '17.09.2026', '24.09.2026']), JSON.stringify(['Сахара', 'Марракеш', 'Базари']), '6 ночей']
+      );
+      
+      await pool.query(
+        `INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        ['hot', 'Мальдіви', 'Рай на землі', '51960 грн', '7 ночей', '15 осіб', 'Готель 5*', '-12%', 'beach', 'indeximg/bar4.jpg', JSON.stringify(['05.12.2026', '12.12.2026', '19.12.2026']), JSON.stringify(['Вілли', 'Дайвінг', 'SPA']), '7 ночей']
+      );
+      
       console.log('✅ Початкові гарячі путівки додано');
     }
   } catch (error) {
-    console.error('Помилка додавання початкових даних:', error);
+    console.error('❌ Помилка додавання початкових даних:', error);
   }
 }
 
 // Запускаємо ініціалізацію
-initDb();
+initDb().catch(err => {
+  console.error('❌ Критична помилка ініціалізації:', err);
+  process.exit(1);
+});
 
 // ========== Допоміжна функція для перевірки токена ==========
 function authenticateToken(req, res, next) {
@@ -550,7 +638,6 @@ app.get('/admin/:type', authenticateAdmin, async (req, res) => {
       [type]
     );
     
-    // Парсимо JSON поля
     const items = result.rows.map(row => ({
       ...row,
       departureDates: safeJsonParse(row.departuredates, []),
@@ -582,10 +669,8 @@ app.post('/admin/:type', authenticateAdmin, async (req, res) => {
   }
 
   try {
-    // Форматуємо дані
     const priceWithCurrency = price.toString().includes('грн') ? price : price + ' грн';
     
-    // Якщо це число, додаємо текст
     const formattedDuration = duration && !isNaN(duration) ? duration + (type === 'tour' || type === 'island' ? ' ночей' : ' днів') : duration;
     const formattedGroup = groupSize && !isNaN(groupSize) ? groupSize + ' осіб' : groupSize;
     const formattedAccom = accommodation && !isNaN(accommodation) ? 'Готель ' + accommodation + '*' : accommodation;
@@ -605,7 +690,7 @@ app.post('/admin/:type', authenticateAdmin, async (req, res) => {
     
     res.json({ success: true, item: result.rows[0] });
   } catch (error) {
-    console.error('Помилка додавання:', error);
+    console.error('❌ Помилка додавання:', error);
     res.status(500).json({ success: false, message: 'Помилка сервера: ' + error.message });
   }
 });
@@ -815,5 +900,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Сервер запущено на порту ${PORT}`);
+  console.log(`🚀 Сервер запущено на порту ${PORT}`);
 });
