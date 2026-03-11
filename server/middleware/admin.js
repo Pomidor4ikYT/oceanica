@@ -15,16 +15,18 @@ async function authenticateAdmin(req, res, next) {
     const user = jwt.verify(token, SECRET_KEY);
     console.log('🔍 Перевірка адміністратора для:', user.email);
     
-    // Використовуємо $1 для PostgreSQL (або ? для SQLite - адаптуємо нижче)
     let userRole;
+    
     if (process.env.NODE_ENV === 'production') {
-      // PostgreSQL
+      // PostgreSQL - використовуємо $1
       const result = await query('SELECT role FROM users WHERE email = $1', [user.email]);
-      userRole = result.rows[0]?.role;
+      userRole = result.rows?.[0]?.role;
+      console.log('📦 PostgreSQL результат:', result.rows);
     } else {
-      // SQLite
+      // SQLite - використовуємо ?
       const result = await query('SELECT role FROM users WHERE email = ?', [user.email]);
-      userRole = result[0]?.role;
+      userRole = result?.[0]?.role;
+      console.log('📦 SQLite результат:', result);
     }
     
     console.log('👤 Роль в базі:', userRole);
