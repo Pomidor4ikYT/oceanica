@@ -5,8 +5,6 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-
-// Визначаємо PORT - Render передає сюди значення автоматично
 const PORT = process.env.PORT || 5000;
 
 // Middleware
@@ -14,25 +12,25 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Логування запитів (тільки для розробки)
-if (process.env.NODE_ENV === 'development') {
-  app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
-  });
-}
-
-// Базовий маршрут для перевірки
+// Базовий маршрут для перевірки - ДОДАЙТЕ ЦЕ
 app.get('/', (req, res) => {
   res.json({
     message: 'Oceanica API Server',
     status: 'running',
     environment: process.env.NODE_ENV || 'development',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      admin: '/api/admin',
+      bookings: '/api/bookings',
+      favorites: '/api/favorites'
+    },
     timestamp: new Date().toISOString()
   });
 });
 
-// Health check для Render
+// Health check
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
@@ -56,7 +54,7 @@ try {
   console.error('❌ Помилка підключення маршрутів:', error.message);
 }
 
-// Обробка 404 - маршрут не знайдено
+// Обробка 404 - ЦЕ МАЄ БУТИ В КІНЦІ
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
@@ -78,7 +76,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Запускаємо сервер - ВАЖЛИВО: використовуємо '0.0.0.0' для Render
+// Запускаємо сервер
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n🚀 Сервер успішно запущено!');
   console.log(`📡 Порт: ${PORT}`);
