@@ -1,7 +1,7 @@
 // server/middleware/admin.js
 const jwt = require('jsonwebtoken');
 const { SECRET_KEY } = require('../config/constants');
-const { get } = require('../database/db');
+const { query } = require('../database/db');
 
 async function authenticateAdmin(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -15,10 +15,25 @@ async function authenticateAdmin(req, res, next) {
     const user = jwt.verify(token, SECRET_KEY);
     console.log('🔍 Перевірка адміністратора для:', user.email);
     
-    const result = await get('SELECT role FROM users WHERE email = ?', [user.email]);
-    const userRole = result?.role;
+    // Використовуємо $1 для PostgreSQL (або ? для SQLite - адаптуємо нижче)
+    let userRole;
+    if (process.env.NODE_ENV === 'production') {
+      // PostgreSQL
+      const result = await query('SELECT role FROM users WHERE email = $1', [user.email]);
+      userRole = result.rows[0]?.role;
+    } else {
+      // SQLite
+      const result = await query('SELECT role FROM users WHERE email = ?', [user.email]);
+      userRole = result[0]?.role;
+    }
     
     console.log('👤 Роль в базі:', userRole);
+    
+    // Перевіряємо чи користувач є адміністратором
+    if (userRole !== 'admin') {
+      console.log('⛔ Доступ заборонено: не адміністратор');
+      return res.status(403).json({ success: false, message: 'Доступ заборонено. Потрібні права адміністратора' });
+    }
     
     req.user = user;
     next();
