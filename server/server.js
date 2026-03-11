@@ -1,69 +1,56 @@
-// server/server.js
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { initTables } = require('./database/init');
-const { createAdminUser, seedInitialData } = require('./database/seed');
-const logger = require('./utils/logger');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
-// ========== СТАТИЧНІ ФАЙЛИ ==========
-app.use(express.static(path.join(__dirname, '..')));
-app.use(express.static(path.join(__dirname, '../public')));
-
-// ========== MIDDLEWARE ==========
+// Middleware
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Логування запитів
-app.use((req, res, next) => {
-  logger.api(`${req.method} ${req.url}`);
-  next();
-});
+// Логування запитів (опціонально)
+if (process.env.NODE_ENV === 'development') {
+  const logger = require('./utils/logger');
+  app.use(logger);
+}
 
-// ========== ІНІЦІАЛІЗАЦІЯ БАЗИ ДАНИХ ==========
-(async () => {
-  try {
-    await initTables();
-    await createAdminUser();
-    await seedInitialData();
-    logger.success('База даних ініціалізована');
-  } catch (error) {
-    logger.error('Помилка ініціалізації бази даних:', error);
-  }
-})();
+// Підключення до бази даних
+const db = require('./database/db');
 
-// ========== ПІДКЛЮЧЕННЯ МАРШРУТІВ ==========
-app.use('/', require('./routes/auth'));
-app.use('/', require('./routes/favorites'));
-app.use('/', require('./routes/bookings'));
-app.use('/', require('./routes/user'));      // новий маршрут
-app.use('/admin', require('./routes/admin'));
-app.use('/api', require('./routes/api'));
+// Маршрути
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/users', require('./routes/user'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/bookings', require('./routes/bookings'));
+app.use('/api/favorites', require('./routes/favorites'));
 
-// ========== ОБРОБКА ПОМИЛОК 404 ==========
-app.use((req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    message: 'Маршрут не знайдено' 
+// Базовий маршрут для перевірки
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
   });
 });
 
-// ========== ОБРОБКА ПОМИЛОК СЕРВЕРА ==========
+// Обробка 404
+app.use('*', (req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Обробка помилок
 app.use((err, req, res, next) => {
-  logger.error('Помилка сервера:', err);
+  console.error(err.stack);
   res.status(500).json({ 
-    success: false, 
-    message: 'Внутрішня помилка сервера' 
+    message: 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err.message : {}
   });
 });
 
-// ========== ЗАПУСК СЕРВЕРА ==========
 app.listen(PORT, () => {
-  logger.success(`🚀 Сервер запущено на порту ${PORT}`);
-  const { USE_POSTGRES } = require('./database/db');
-  logger.info(USE_POSTGRES ? '🌐 Режим: PostgreSQL (продакшн)' : '💻 Режим: SQLite (локальний)');
+  console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
 });
