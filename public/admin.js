@@ -5,6 +5,96 @@
 
   // Поточні теги
   let currentTags = [];
+  // Поточні дати
+  let currentDates = [];
+  // Поточний тип
+  let currentType = 'tour';
+
+  // Конфігурація для різних типів
+  const typeConfig = {
+    tour: {
+      name: 'тур',
+      categories: [
+        { value: 'beach', label: '🏖️ Пляжний' },
+        { value: 'excursion', label: '🏛️ Екскурсійний' },
+        { value: 'mountain', label: '⛰️ Гірський' }
+      ],
+      badges: [
+        { value: '🏖️ Пляжний', label: '🏖️ Пляжний' },
+        { value: '🏛️ Екскурсійний', label: '🏛️ Екскурсійний' },
+        { value: '⛰️ Гірський', label: '⛰️ Гірський' },
+        { value: '🔥 Гаряча пропозиція', label: '🔥 Гаряча пропозиція' },
+        { value: '-20%', label: '-20%' },
+        { value: '-15%', label: '-15%' },
+        { value: '-10%', label: '-10%' }
+      ],
+      tags: [
+        '🏖️ Пляжі', '🏛️ Античність', '⛰️ Гори', '🤿 Дайвінг', '💆 SPA',
+        '🚌 Екскурсії', '💕 Романтика', '🧗 Пригоди', '🍹 All Inclusive',
+        '🍳 Сніданки', '🏡 Вілли', '🌊 Лагуна', '🐠 Рифи', '🛕 Храми'
+      ]
+    },
+    cruise: {
+      name: 'круїз',
+      categories: [
+        { value: 'warm', label: '☀️ Теплі води' },
+        { value: 'cold', label: '❄️ Холодні води' },
+        { value: 'temperate', label: '🌊 Помірні води' }
+      ],
+      badges: [
+        { value: '☀️ Теплі води', label: '☀️ Теплі води' },
+        { value: '❄️ Холодні води', label: '❄️ Холодні води' },
+        { value: '🌊 Помірні води', label: '🌊 Помірні води' },
+        { value: '🔥 Гаряча пропозиція', label: '🔥 Гаряча пропозиція' },
+        { value: '-20%', label: '-20%' },
+        { value: '-15%', label: '-15%' }
+      ],
+      tags: [
+        '🌊 Океан', '🚢 Лайнер', '🏝️ Острови', '🍽️ Ресторани',
+        '🎭 Шоу', '🏊 Бассейн', '🍹 Коктейлі', '🤿 Снорклінг'
+      ]
+    },
+    island: {
+      name: 'острів',
+      categories: [
+        { value: 'tropical', label: '🏝️ Тропічний' },
+        { value: 'volcanic', label: '🌋 Вулканічний' },
+        { value: 'exotic', label: '✨ Екзотичний' }
+      ],
+      badges: [
+        { value: '🏝️ Тропічний', label: '🏝️ Тропічний' },
+        { value: '🌋 Вулканічний', label: '🌋 Вулканічний' },
+        { value: '✨ Екзотичний', label: '✨ Екзотичний' },
+        { value: '🔥 Гаряча пропозиція', label: '🔥 Гаряча пропозиція' },
+        { value: '-20%', label: '-20%' }
+      ],
+      tags: [
+        '🏝️ Пляж', '🌴 Пальми', '🐠 Рифи', '🤿 Снорклінг',
+        '🌋 Вулкан', '💆 SPA', '🏡 Бунгало', '🌅 Захід сонця'
+      ]
+    },
+    hot: {
+      name: 'гаряча путівка',
+      categories: [
+        { value: 'beach', label: '🏖️ Пляжний' },
+        { value: 'excursion', label: '🏛️ Екскурсійний' },
+        { value: 'mountain', label: '⛰️ Гірський' },
+        { value: 'tropical', label: '🏝️ Тропічний' }
+      ],
+      badges: [
+        { value: '-20%', label: '-20%' },
+        { value: '-15%', label: '-15%' },
+        { value: '-10%', label: '-10%' },
+        { value: '-25%', label: '-25%' },
+        { value: '-30%', label: '-30%' },
+        { value: '🔥 Гаряча пропозиція', label: '🔥 Гаряча пропозиція' }
+      ],
+      tags: [
+        '🔥 Гаряче', '💯 Знижка', '🎁 Спецпропозиція',
+        '✈️ Швидко', '🏨 Готель', '🍹 All Inclusive'
+      ]
+    }
+  };
 
   // Перевірка авторизації та прав адміністратора
   async function checkAdminAccess() {
@@ -48,6 +138,33 @@
     }, 3000);
   }
 
+  // Оновлення селектів відповідно до типу
+  function updateSelectsForType(type) {
+    const config = typeConfig[type] || typeConfig.tour;
+    currentType = type;
+
+    // Оновлюємо селект категорій
+    const categorySelect = qs('#category');
+    if (categorySelect) {
+      categorySelect.innerHTML = '<option value="">Оберіть категорію</option>' +
+        config.categories.map(c => `<option value="${c.value}">${c.label}</option>`).join('');
+    }
+
+    // Оновлюємо селект бейджів
+    const badgeSelect = qs('#badge');
+    if (badgeSelect) {
+      badgeSelect.innerHTML = '<option value="">Оберіть бейдж</option>' +
+        config.badges.map(b => `<option value="${b.value}">${b.label}</option>`).join('');
+    }
+
+    // Оновлюємо селект тегів
+    const tagsSelect = qs('#tags-select');
+    if (tagsSelect) {
+      tagsSelect.innerHTML = '<option value="">Оберіть тег</option>' +
+        config.tags.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+  }
+
   // Завантаження даних за типом
   async function loadItems(type) {
     try {
@@ -73,49 +190,40 @@
     const grid = qs(`#${type}-grid`);
     if (!grid) return;
 
-    // Зберігаємо картку додавання
-    const addCard = grid.querySelector('.add-card');
-    
-    if (!items || items.length === 0) {
-      grid.innerHTML = addCard ? addCard.outerHTML : '';
-      return;
-    }
+    const typeName = typeConfig[type]?.name || type;
 
-    let html = '';
-    if (addCard) {
-      html = addCard.outerHTML;
-    } else {
-      html = `<div class="add-card" onclick="openAddModal('${type}')">
-        <div class="add-card-content">
-          <span class="add-icon">+</span>
-          <span class="add-text">Додати ${getTypeName(type)}</span>
-        </div>
-      </div>`;
-    }
+    let html = `<div class="add-card" onclick="openAddModal('${type}')">
+      <div class="add-card-content">
+        <span class="add-icon">+</span>
+        <span class="add-text">Додати ${typeName}</span>
+      </div>
+    </div>`;
 
-    html += items.map(item => {
-      const chips = item.chips ? JSON.parse(item.chips) : [];
-      
-      return `
-        <div class="admin-card" data-id="${item.id}">
-          <div class="admin-card-image" style="background-image: url('${item.image || 'images/placeholder.jpg'}')">
-            <span class="admin-card-badge">${item.badge || 'Тур'}</span>
-          </div>
-          <div class="admin-card-body">
-            <h3 class="admin-card-title">${item.title}</h3>
-            <div class="admin-card-price">${item.price}</div>
-            <div class="admin-card-meta">${item.meta || item.duration || ''}</div>
-            <div class="admin-card-chips">
-              ${chips.slice(0, 3).map(chip => `<span class="admin-chip">${chip}</span>`).join('')}
+    if (items && items.length > 0) {
+      html += items.map(item => {
+        const chips = item.chips ? (typeof item.chips === 'string' ? JSON.parse(item.chips) : item.chips) : [];
+        
+        return `
+          <div class="admin-card" data-id="${item.id}">
+            <div class="admin-card-image" style="background-image: url('${item.image || 'images/placeholder.jpg'}')">
+              <span class="admin-card-badge">${item.badge || typeName}</span>
             </div>
-            <div class="admin-card-actions">
-              <button class="btn-outline" onclick="editItem('${type}', ${item.id})">✏️ Редагувати</button>
-              <button class="btn-danger" onclick="deleteItem('${type}', ${item.id})">🗑️ Видалити</button>
+            <div class="admin-card-body">
+              <h3 class="admin-card-title">${item.title}</h3>
+              <div class="admin-card-price">${item.price}</div>
+              <div class="admin-card-meta">${item.meta || item.duration || ''}</div>
+              <div class="admin-card-chips">
+                ${chips.slice(0, 3).map(chip => `<span class="admin-chip">${chip}</span>`).join('')}
+              </div>
+              <div class="admin-card-actions">
+                <button class="btn-outline" onclick="editItem('${type}', ${item.id})">✏️ Редагувати</button>
+                <button class="btn-danger" onclick="deleteItem('${type}', ${item.id})">🗑️ Видалити</button>
+              </div>
             </div>
           </div>
-        </div>
-      `;
-    }).join('');
+        `;
+      }).join('');
+    }
 
     grid.innerHTML = html;
   }
@@ -125,12 +233,19 @@
     const modal = qs('#itemModal');
     const form = qs('#itemForm');
     
-    qs('#modalTitle').textContent = `Додати ${getTypeName(type)}`;
+    qs('#modalTitle').textContent = `Додати ${typeConfig[type]?.name || type}`;
     qs('#itemType').value = type;
     qs('#itemId').value = '';
+    
+    // Оновлюємо селекти
+    updateSelectsForType(type);
+    
+    // Очищаємо форму
     form.reset();
     currentTags = [];
+    currentDates = [];
     updateSelectedTagsDisplay();
+    updateDatesDisplay();
     
     modal.classList.add('active');
   };
@@ -160,28 +275,94 @@
   function fillEditForm(type, item) {
     const modal = qs('#itemModal');
     
-    qs('#modalTitle').textContent = `Редагувати ${getTypeName(type)}`;
+    qs('#modalTitle').textContent = `Редагувати ${typeConfig[type]?.name || type}`;
     qs('#itemType').value = type;
     qs('#itemId').value = item.id;
+    
+    // Оновлюємо селекти
+    updateSelectsForType(type);
+    
+    // Заповнюємо поля
     qs('#title').value = item.title || '';
-    qs('#price').value = item.price || '';
-    qs('#duration').value = item.duration || '';
-    qs('#groupSize').value = item.groupSize || '';
-    qs('#accommodation').value = item.accommodation || '';
+    
+    // Видаляємо "грн" з ціни для редагування
+    const priceValue = item.price ? item.price.replace(' грн', '') : '';
+    qs('#price').value = priceValue;
+    
+    // Видаляємо "ночей" з тривалості
+    const durationValue = item.duration ? item.duration.replace(' ночей', '').replace(' днів', '') : '';
+    qs('#duration').value = durationValue;
+    
+    // Видаляємо "осіб" з розміру групи
+    const groupValue = item.groupSize ? item.groupSize.replace(' осіб', '') : '';
+    qs('#groupSize').value = groupValue;
+    
+    // Видаляємо "Готель" з проживання, якщо це число
+    const accomValue = item.accommodation ? item.accommodation.replace('Готель ', '').replace('*', '') : '';
+    qs('#accommodation').value = accomValue;
+    
     qs('#badge').value = item.badge || '';
     qs('#category').value = item.category || '';
     qs('#meta').value = item.meta || '';
     qs('#image').value = item.image || '';
     qs('#description').value = item.description || '';
     
-    const departureDates = item.departuredates ? JSON.parse(item.departuredates) : [];
-    qs('#departureDates').value = departureDates.join(', ');
+    // Дати
+    currentDates = item.departuredates ? (typeof item.departuredates === 'string' ? JSON.parse(item.departuredates) : item.departuredates) : [];
+    updateDatesDisplay();
     
-    currentTags = item.chips ? JSON.parse(item.chips) : [];
-    qs('#chips').value = '';
+    // Теги
+    currentTags = item.chips ? (typeof item.chips === 'string' ? JSON.parse(item.chips) : item.chips) : [];
     updateSelectedTagsDisplay();
     
     modal.classList.add('active');
+  }
+
+  // Оновлення відображення дат
+  function updateDatesDisplay() {
+    const container = qs('#datesContainer');
+    if (!container) return;
+
+    let html = '';
+    currentDates.forEach((date, index) => {
+      html += `
+        <div class="date-input-row" style="display: flex; gap: 10px; margin-bottom: 10px;">
+          <input type="text" class="form-input date-input" value="${date}" placeholder="ДД.ММ.РРРР">
+          <button type="button" class="btn-outline remove-date" data-index="${index}" style="padding: 0.5rem 1rem;">✕</button>
+        </div>
+      `;
+    });
+
+    html += `
+      <div class="date-input-row" style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" class="form-input date-input" placeholder="ДД.ММ.РРРР">
+        <button type="button" class="btn-outline add-date" style="padding: 0.5rem 1rem;">+</button>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    // Додаємо обробники
+    container.querySelectorAll('.add-date').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('.date-input-row');
+        const input = row.querySelector('.date-input');
+        if (input.value.trim()) {
+          currentDates.push(input.value.trim());
+          updateDatesDisplay();
+        }
+      });
+    });
+
+    container.querySelectorAll('.remove-date').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const index = btn.dataset.index;
+        if (index !== undefined) {
+          currentDates.splice(index, 1);
+          updateDatesDisplay();
+        }
+      });
+    });
   }
 
   // Оновлення відображення вибраних тегів
@@ -208,25 +389,13 @@
     updateSelectedTagsDisplay();
   };
 
-  // Додавання тегу з випадаючого списку
-  window.addTagFromSelect = function() {
-    const select = qs('#tags-select');
-    const tag = select.value;
+  // Додавання тегу
+  function addTag(tag) {
     if (tag && !currentTags.includes(tag)) {
       currentTags.push(tag);
       updateSelectedTagsDisplay();
     }
-    select.value = '';
-  };
-
-  // Оновлення поля зображення з випадаючого списку
-  window.updateImageInput = function() {
-    const select = qs('#image-select');
-    const imageInput = qs('#image');
-    if (select.value) {
-      imageInput.value = select.value;
-    }
-  };
+  }
 
   // Закриття модального вікна
   window.closeModal = function() {
@@ -264,30 +433,62 @@
     const type = qs('#itemType').value;
     const id = qs('#itemId').value;
     const isEdit = !!id;
-    
-    // Додаємо теги з текстового поля, якщо вони є
-    const chipsInput = qs('#chips').value;
-    if (chipsInput.trim()) {
-      const newTags = chipsInput.split(',').map(s => s.trim()).filter(Boolean);
-      currentTags = [...currentTags, ...newTags];
+
+    // Додаємо тег з поля вводу, якщо є
+    const chipsInput = qs('#chipsInput');
+    if (chipsInput.value.trim()) {
+      addTag(chipsInput.value.trim());
+      chipsInput.value = '';
     }
-    
-    // Збираємо дані з форми
+
+    // Форматуємо дані
+    const price = qs('#price').value;
+    const duration = qs('#duration').value;
+    const groupSize = qs('#groupSize').value;
+    const accommodation = qs('#accommodation').value;
+
+    // Форматуємо тривалість
+    let formattedDuration = duration;
+    if (duration && !isNaN(duration)) {
+      formattedDuration = duration + (type === 'tour' || type === 'island' ? ' ночей' : ' днів');
+    }
+
+    // Форматуємо розмір групи
+    let formattedGroup = groupSize;
+    if (groupSize && !isNaN(groupSize)) {
+      formattedGroup = groupSize + ' осіб';
+    }
+
+    // Форматуємо проживання
+    let formattedAccom = accommodation;
+    if (accommodation && !isNaN(accommodation)) {
+      formattedAccom = 'Готель ' + accommodation + '*';
+    }
+
+    // Збираємо дані
     const formData = {
       title: qs('#title').value,
-      price: qs('#price').value,
-      duration: qs('#duration').value,
-      groupSize: qs('#groupSize').value,
-      accommodation: qs('#accommodation').value,
+      price: price,
+      duration: formattedDuration,
+      groupSize: formattedGroup,
+      accommodation: formattedAccom,
       badge: qs('#badge').value,
       category: qs('#category').value,
       meta: qs('#meta').value,
       image: qs('#image').value,
       description: qs('#description').value,
-      departureDates: qs('#departureDates').value.split(',').map(s => s.trim()).filter(Boolean),
+      departureDates: currentDates,
       chips: currentTags
     };
-    
+
+    // Перевірка обов'язкових полів
+    if (!formData.title || !formData.price) {
+      showToast('Назва та ціна обов\'язкові', 'error');
+      return;
+    }
+
+    console.log('Відправляємо дані:', formData);
+
     try {
       const token = window.auth.getToken();
       const url = isEdit ? `/admin/${type}/${id}` : `/admin/${type}`;
@@ -303,6 +504,7 @@
       });
       
       const data = await response.json();
+      console.log('Відповідь сервера:', data);
       
       if (data.success) {
         showToast(isEdit ? 'Запис оновлено' : 'Запис додано', 'success');
@@ -313,7 +515,7 @@
       }
     } catch (error) {
       console.error('Помилка:', error);
-      showToast('Помилка з\'єднання', 'error');
+      showToast('Помилка з\'єднання: ' + error.message, 'error');
     }
   });
 
@@ -463,17 +665,6 @@
     `;
   }
 
-  // Отримання назви типу
-  function getTypeName(type) {
-    const names = {
-      'tour': 'тур',
-      'cruise': 'круїз',
-      'island': 'острів',
-      'hot': 'гарячу путівку'
-    };
-    return names[type] || type;
-  }
-
   // Ініціалізація вкладок
   function initTabs() {
     const tabs = qsa('.admin-tab');
@@ -504,19 +695,63 @@
     });
   }
 
-  // Додаємо обробник для вибору тегів через Enter
-  qs('#chips')?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const input = e.target;
-      if (input.value.trim()) {
-        const newTags = input.value.split(',').map(s => s.trim()).filter(Boolean);
-        currentTags = [...currentTags, ...newTags];
-        updateSelectedTagsDisplay();
-        input.value = '';
-      }
+  // Додаємо обробники
+  function setupEventListeners() {
+    // Додавання тегу з випадаючого списку
+    const tagsSelect = qs('#tags-select');
+    if (tagsSelect) {
+      tagsSelect.addEventListener('change', () => {
+        if (tagsSelect.value) {
+          addTag(tagsSelect.value);
+          tagsSelect.value = '';
+        }
+      });
     }
-  });
+
+    // Додавання тегу з поля вводу
+    const addTagBtn = qs('#addTagBtn');
+    if (addTagBtn) {
+      addTagBtn.addEventListener('click', () => {
+        const input = qs('#chipsInput');
+        if (input.value.trim()) {
+          addTag(input.value.trim());
+          input.value = '';
+        }
+      });
+    }
+
+    // Додавання тегу через Enter
+    const chipsInput = qs('#chipsInput');
+    if (chipsInput) {
+      chipsInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (chipsInput.value.trim()) {
+            addTag(chipsInput.value.trim());
+            chipsInput.value = '';
+          }
+        }
+      });
+    }
+
+    // Попередній перегляд зображення
+    const imageFile = qs('#imageFile');
+    if (imageFile) {
+      imageFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            qs('#image').value = event.target.result;
+            const preview = qs('#imagePreview');
+            preview.style.display = 'block';
+            preview.querySelector('img').src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+  }
 
   // Ініціалізація
   window.addEventListener('DOMContentLoaded', async () => {
@@ -527,6 +762,8 @@
     qs('#app-content').style.display = 'block';
 
     initTabs();
+    setupEventListeners();
+    
     // Завантажуємо тури за замовчуванням
     loadItems('tour');
   });

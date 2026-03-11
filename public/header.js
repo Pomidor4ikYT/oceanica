@@ -9,31 +9,28 @@
     const token = window.auth?.getToken();
     
     if (!token) {
-      userSection.innerHTML = `<a href="login.html" class="nav-link login-btn">Увійти</a>`;
+      userSection.innerHTML = `<a href="login.html" class="login-btn">🔑 Увійти</a>`;
       return;
     }
 
     try {
-      // Отримуємо дані користувача (з кешу або з сервера)
       let userData = null;
       
-      // Спочатку пробуємо отримати з localStorage
       const cached = localStorage.getItem('oceanica_user_data');
       if (cached) {
         try {
           userData = JSON.parse(cached);
         } catch (e) {
-          // Ігноруємо помилку парсингу
+          // Ігноруємо
         }
       }
       
-      // Якщо немає в кеші, пробуємо отримати з сервера
       if (!userData) {
         userData = await window.auth.getUserData();
       }
 
       if (!userData) {
-        userSection.innerHTML = `<a href="login.html" class="nav-link login-btn">Увійти</a>`;
+        userSection.innerHTML = `<a href="login.html" class="login-btn">🔑 Увійти</a>`;
         return;
       }
 
@@ -41,28 +38,26 @@
       const userName = userData.name || 'Користувач';
       const userInitial = userName.charAt(0).toUpperCase();
 
-      // Формуємо HTML для випадаючого меню
       let dropdownItems = `
         <a href="account.html" class="dropdown-item">
-          <span style="margin-right: 8px;">👤</span> Мій профіль
+          <span>👤</span> Мій профіль
         </a>
         <a href="account.html?tab=favorites" class="dropdown-item">
-          <span style="margin-right: 8px;">❤️</span> Улюблене
+          <span>❤️</span> Улюблене
         </a>
         <a href="account.html?tab=booked" class="dropdown-item">
-          <span style="margin-right: 8px;">✅</span> Бронювання
+          <span>✅</span> Бронювання
         </a>
         <a href="settings.html" class="dropdown-item">
-          <span style="margin-right: 8px;">⚙️</span> Налаштування
+          <span>⚙️</span> Налаштування
         </a>
       `;
 
-      // Додаємо пункт адмін-панелі для адміністраторів
       if (isAdmin) {
         dropdownItems += `
           <div class="dropdown-divider"></div>
           <a href="admin.html" class="dropdown-item" style="color: #0f4c81; font-weight: 700;">
-            <span style="margin-right: 8px;">🔧</span> Адмін-панель
+            <span>🔧</span> Адмін-панель
           </a>
         `;
       }
@@ -70,7 +65,7 @@
       dropdownItems += `
         <div class="dropdown-divider"></div>
         <button class="dropdown-item" id="logoutBtn" style="color: #dc2626;">
-          <span style="margin-right: 8px;">🚪</span> Вийти
+          <span>🚪</span> Вийти
         </button>
       `;
 
@@ -85,7 +80,6 @@
         </div>
       `;
 
-      // Додаємо обробники подій
       const avatar = qs('#avatarTrigger');
       const menu = qs('#userDropdown');
       
@@ -117,11 +111,10 @@
 
     } catch (error) {
       console.error('Помилка в header.js:', error);
-      userSection.innerHTML = `<a href="login.html" class="nav-link login-btn">Увійти</a>`;
+      userSection.innerHTML = `<a href="login.html" class="login-btn">🔑 Увійти</a>`;
     }
   }
 
-  // Ініціалізація
   function init() {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', updateHeader);

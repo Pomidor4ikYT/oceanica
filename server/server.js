@@ -10,17 +10,39 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key-change-this';
 
-// Підключення до PostgreSQL
+// Безпечний парсинг JSON
+function safeJsonParse(value, defaultValue = []) {
+  if (!value) return defaultValue;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return defaultValue;
+  }
+}
+
+// Підключення до PostgreSQL з перевіркою
+const databaseUrl = process.env.DATABASE_URL || 'postgresql://localhost:5432/oceanica';
+console.log(`Спроба підключення до БД: ${databaseUrl.replace(/:[^:]*@/, ':***@')}`);
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
+  connectionString: databaseUrl,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+});
+
+// Перевірка з'єднання
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('❌ Помилка підключення до БД:', err.message);
+  } else {
+    console.log('✅ Підключено до PostgreSQL');
+    release();
   }
 });
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 // ========== Ініціалізація таблиць ==========
@@ -62,7 +84,6 @@ async function initDb() {
       `);
 
       if (!columnExists.rows[0].exists) {
-        // Додаємо колонку role
         await pool.query(`
           ALTER TABLE users 
           ADD COLUMN role TEXT DEFAULT 'user'
@@ -127,6 +148,9 @@ async function initDb() {
     
     // Створюємо тестового адміністратора
     await createAdminUser();
+    
+    // Додаємо початкові дані
+    await seedInitialData();
   } catch (err) {
     console.error('❌ Помилка створення таблиць:', err);
   }
@@ -135,7 +159,6 @@ async function initDb() {
 // Створення тестового адміністратора
 async function createAdminUser() {
   try {
-    // Перевіряємо, чи існує адміністратор
     const result = await pool.query("SELECT email FROM users WHERE email = 'admintest1@gmail.com'");
     
     if (result.rows.length === 0) {
@@ -148,7 +171,6 @@ async function createAdminUser() {
       );
       console.log('✅ Адміністратора створено');
     } else {
-      // Оновлюємо роль до адміністратора
       await pool.query("UPDATE users SET role = 'admin' WHERE email = 'admintest1@gmail.com'");
       console.log('✅ Роль оновлено до адміністратора');
     }
@@ -157,7 +179,67 @@ async function createAdminUser() {
   }
 }
 
-// Викликаємо ініціалізацію при запуску
+// Початкові дані - ВИПРАВЛЕНО екранування лапок
+async function seedInitialData() {
+  try {
+    // Перевіряємо чи є вже тури
+    const toursCount = await pool.query("SELECT COUNT(*) FROM tours WHERE type = 'tour'");
+    if (parseInt(toursCount.rows[0].count) === 0) {
+      // Тури - ВИПРАВЛЕНО екранування лапок
+      await pool.query(`
+        INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) VALUES
+        ('tour', 'Таїланд: Пхукет & Пхі-Пхі', 'Райські пляжі Таїланду', '39900 грн', '10 ночей', '25 осіб', 'Готель 4*', '🏖️Пляжний', 'beach', 'toursimg/tour1.jpg', '[\"15.03.2026\",\"22.03.2026\",\"05.04.2026\"]', '[\"Пальми\",\"Вапнякові скелі\",\"Дайвінг\"]', '10 днів • All Inclusive'),
+        ('tour', 'Італія: Рим, Флоренція, Венеція', 'Класичний тур по Італії', '31200 грн', '8 днів', '30 осіб', 'Готель 3-4*', '🏛️Екскурсійний', 'excursion', 'toursimg/tour2.jpg', '[\"10.04.2026\",\"24.04.2026\",\"08.05.2026\"]', '[\"Колізей\",\"Да Вінчі\",\"Гондоли\"]', '8 днів • сніданки'),
+        ('tour', 'Непал: Еверест та храми', 'Треккінг до Евересту', '47500 грн', '12 днів', '15 осіб', 'Кемп', '⛰️Гірський', 'mountain', 'toursimg/tour3.jpg', '[\"20.03.2026\",\"03.04.2026\",\"17.04.2026\"]', '[\"Гімалаї\",\"Буддизм\",\"Базовий табір\"]', '12 днів • Trekking'),
+        ('tour', 'Мальдіви: райські атоли', 'Екзотичні Мальдіви', '67800 грн', '7 ночей', '20 осіб', 'Готель 5*', '🏖️Пляжний', 'beach', 'toursimg/tour4.jpg', '[\"05.05.2026\",\"19.05.2026\",\"02.06.2026\"]', '[\"Лагуна\",\"Снорклінг\",\"SPA\"]', '7 днів • вілли над водою')
+      `);
+      console.log('✅ Початкові тури додано');
+    }
+
+    // Круїзи - ВИПРАВЛЕНО екранування лапок
+    const cruisesCount = await pool.query("SELECT COUNT(*) FROM tours WHERE type = 'cruise'");
+    if (parseInt(cruisesCount.rows[0].count) === 0) {
+      await pool.query(`
+        INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) VALUES
+        ('cruise', 'Середземне море', 'Круїз Середземним морем', '42500 грн', '7 ночей', '200 осіб', 'Лайнер', '☀️ Теплі води', 'warm', 'cruiseimg/cruise1.jpg', '[\"15.03.2026\",\"22.03.2026\",\"05.04.2026\"]', '[\"Італія\",\"Греція\",\"Іспанія\"]', '7 ночей'),
+        ('cruise', 'Карибські острови', 'Круїз Карибами', '67800 грн', '10 ночей', '250 осіб', 'Лайнер', '☀️ Теплі води', 'warm', 'cruiseimg/cruise2.jpg', '[\"10.04.2026\",\"24.04.2026\",\"08.05.2026\"]', '[\"Багами\",\"Ямайка\",\"Каймани\"]', '10 ночей'),
+        ('cruise', 'Норвезькі фіорди', 'Круїз фіордами', '53200 грн', '8 ночей', '180 осіб', 'Експедиційний', '❄️ Холодні води', 'cold', 'cruiseimg/cruise3.jpg', '[\"20.03.2026\",\"03.04.2026\",\"17.04.2026\"]', '[\"Берген\",\"Гейрангер\",\"Льодовики\"]', '8 ночей'),
+        ('cruise', 'Аляска', 'Круїз до Аляски', '61500 грн', '9 ночей', '220 осіб', 'Преміум', '❄️ Холодні води', 'cold', 'cruiseimg/cruise4.jpg', '[\"05.05.2026\",\"19.05.2026\",\"02.06.2026\"]', '[\"Джуно\",\"Сьюард\",\"Кити\"]', '9 ночей')
+      `;
+      console.log('✅ Початкові круїзи додано');
+    }
+
+    // Острови - ВИПРАВЛЕНО екранування лапок
+    const islandsCount = await pool.query("SELECT COUNT(*) FROM tours WHERE type = 'island'");
+    if (parseInt(islandsCount.rows[0].count) === 0) {
+      await pool.query(`
+        INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) VALUES
+        ('island', 'Мальдіви', 'Райські острови', '67800 грн', '7 ночей', '10 осіб', 'Готель 5*', '🏝️ Тропічний', 'tropical', 'islandimg/island1.jpg', '[\"05.03.2026\",\"12.03.2026\",\"19.03.2026\"]', '[\"Вілли\",\"Дайвінг\",\"SPA\"]', '7 ночей'),
+        ('island', 'Ісландія', 'Країна льодовиків', '62300 грн', '8 днів', '15 осіб', 'Готель', '🌋 Вулканічний', 'volcanic', 'islandimg/island2.jpg', '[\"10.03.2026\",\"17.03.2026\",\"24.03.2026\"]', '[\"Гейзери\",\"Водоспади\",\"Північне сяйво\"]', '8 днів'),
+        ('island', 'Бора-Бора', 'Найкрасивіша лагуна', '59960 грн', '7 ночей', '8 осіб', 'Готель 5*', '✨ Екзотичний', 'exotic', 'islandimg/island3.jpg', '[\"15.03.2026\",\"22.03.2026\",\"29.03.2026\"]', '[\"Бунгало\",\"Рифи\",\"Акули\"]', '7 ночей'),
+        ('island', 'Сейшели', 'Гранітні острови', '43960 грн', '7 ночей', '12 осіб', 'Готель 4*', '🏝️ Тропічний', 'tropical', 'islandimg/island4.jpg', '[\"20.03.2026\",\"27.03.2026\",\"03.04.2026\"]', '[\"Черепахи\",\"Пляжі\",\"Снорклінг\"]', '7 ночей')
+      `;
+      console.log('✅ Початкові острови додано');
+    }
+
+    // Гарячі путівки - ВИПРАВЛЕНО екранування лапок
+    const hotCount = await pool.query("SELECT COUNT(*) FROM tours WHERE type = 'hot'");
+    if (parseInt(hotCount.rows[0].count) === 0) {
+      await pool.query(`
+        INSERT INTO tours (type, title, description, price, duration, groupSize, accommodation, badge, category, image, departureDates, chips, meta) VALUES
+        ('hot', 'Єгипет All Inclusive', 'Гаряча пропозиція', '23960 грн', '7 ночей', '40 осіб', 'Готель 5*', '-20%', 'beach', 'indeximg/bar1.jpg', '[\"01.11.2026\",\"08.11.2026\",\"15.11.2026\"]', '[\"Піраміди\",\"Червоне море\",\"All Inclusive\"]', '7 ночей'),
+        ('hot', 'Санторіні', 'Романтичний відпочинок', '19160 грн', '5 ночей', '25 осіб', 'Готель 4*', '-15%', 'excursion', 'indeximg/bar2.jpg', '[\"15.05.2026\",\"22.05.2026\",\"29.05.2026\"]', '[\"Закати\",\"Білі будинки\",\"Романтика\"]', '5 ночей'),
+        ('hot', 'Марокко', 'Подорож до Сахари', '15960 грн', '6 ночей', '20 осіб', 'Готель 3-4*', '-18%', 'excursion', 'indeximg/bar3.jpg', '[\"10.09.2026\",\"17.09.2026\",\"24.09.2026\"]', '[\"Сахара\",\"Марракеш\",\"Базари\"]', '6 ночей'),
+        ('hot', 'Мальдіви', 'Рай на землі', '51960 грн', '7 ночей', '15 осіб', 'Готель 5*', '-12%', 'beach', 'indeximg/bar4.jpg', '[\"05.12.2026\",\"12.12.2026\",\"19.12.2026\"]', '[\"Вілли\",\"Дайвінг\",\"SPA\"]', '7 ночей')
+      `;
+      console.log('✅ Початкові гарячі путівки додано');
+    }
+  } catch (error) {
+    console.error('Помилка додавання початкових даних:', error);
+  }
+}
+
+// Запускаємо ініціалізацію
 initDb();
 
 // ========== Допоміжна функція для перевірки токена ==========
@@ -342,7 +424,7 @@ app.get('/favorites', authenticateToken, async (req, res) => {
     );
     const favorites = result.rows.map(row => ({
       ...row,
-      chips: row.chips ? JSON.parse(row.chips) : []
+      chips: safeJsonParse(row.chips, [])
     }));
     res.json({ success: true, favorites });
   } catch (error) {
@@ -391,7 +473,7 @@ app.get('/bookings', authenticateToken, async (req, res) => {
     );
     const bookings = result.rows.map(row => ({
       ...row,
-      chips: row.chips ? JSON.parse(row.chips) : []
+      chips: safeJsonParse(row.chips, [])
     }));
     res.json({ success: true, bookings });
   } catch (error) {
@@ -467,7 +549,15 @@ app.get('/admin/:type', authenticateAdmin, async (req, res) => {
       'SELECT * FROM tours WHERE type = $1 ORDER BY id DESC',
       [type]
     );
-    res.json({ success: true, items: result.rows });
+    
+    // Парсимо JSON поля
+    const items = result.rows.map(row => ({
+      ...row,
+      departureDates: safeJsonParse(row.departuredates, []),
+      chips: safeJsonParse(row.chips, [])
+    }));
+    
+    res.json({ success: true, items });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Помилка сервера' });
@@ -492,6 +582,14 @@ app.post('/admin/:type', authenticateAdmin, async (req, res) => {
   }
 
   try {
+    // Форматуємо дані
+    const priceWithCurrency = price.toString().includes('грн') ? price : price + ' грн';
+    
+    // Якщо це число, додаємо текст
+    const formattedDuration = duration && !isNaN(duration) ? duration + (type === 'tour' || type === 'island' ? ' ночей' : ' днів') : duration;
+    const formattedGroup = groupSize && !isNaN(groupSize) ? groupSize + ' осіб' : groupSize;
+    const formattedAccom = accommodation && !isNaN(accommodation) ? 'Готель ' + accommodation + '*' : accommodation;
+    
     const result = await pool.query(
       `INSERT INTO tours (
         type, title, description, price, duration, groupSize, 
@@ -499,15 +597,16 @@ app.post('/admin/:type', authenticateAdmin, async (req, res) => {
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       RETURNING *`,
       [
-        type, title, description || '', price, duration || '', 
-        groupSize || '', accommodation || '', badge || '', category || '',
+        type, title, description || '', priceWithCurrency, formattedDuration || '', 
+        formattedGroup || '', formattedAccom || '', badge || '', category || '',
         image || '', JSON.stringify(departureDates || []), JSON.stringify(chips || []), meta || ''
       ]
     );
+    
     res.json({ success: true, item: result.rows[0] });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Помилка сервера' });
+    console.error('Помилка додавання:', error);
+    res.status(500).json({ success: false, message: 'Помилка сервера: ' + error.message });
   }
 });
 
@@ -530,10 +629,26 @@ app.put('/admin/:type/:id', authenticateAdmin, async (req, res) => {
 
     if (title !== undefined) { updates.push(`title = $${values.length+1}`); values.push(title); }
     if (description !== undefined) { updates.push(`description = $${values.length+1}`); values.push(description); }
-    if (price !== undefined) { updates.push(`price = $${values.length+1}`); values.push(price); }
-    if (duration !== undefined) { updates.push(`duration = $${values.length+1}`); values.push(duration); }
-    if (groupSize !== undefined) { updates.push(`groupSize = $${values.length+1}`); values.push(groupSize); }
-    if (accommodation !== undefined) { updates.push(`accommodation = $${values.length+1}`); values.push(accommodation); }
+    if (price !== undefined) { 
+      const priceWithCurrency = price.toString().includes('грн') ? price : price + ' грн';
+      updates.push(`price = $${values.length+1}`); 
+      values.push(priceWithCurrency); 
+    }
+    if (duration !== undefined) { 
+      const formattedDuration = duration && !isNaN(duration) ? duration + (type === 'tour' || type === 'island' ? ' ночей' : ' днів') : duration;
+      updates.push(`duration = $${values.length+1}`); 
+      values.push(formattedDuration); 
+    }
+    if (groupSize !== undefined) { 
+      const formattedGroup = groupSize && !isNaN(groupSize) ? groupSize + ' осіб' : groupSize;
+      updates.push(`groupSize = $${values.length+1}`); 
+      values.push(formattedGroup); 
+    }
+    if (accommodation !== undefined) { 
+      const formattedAccom = accommodation && !isNaN(accommodation) ? 'Готель ' + accommodation + '*' : accommodation;
+      updates.push(`accommodation = $${values.length+1}`); 
+      values.push(formattedAccom); 
+    }
     if (badge !== undefined) { updates.push(`badge = $${values.length+1}`); values.push(badge); }
     if (category !== undefined) { updates.push(`category = $${values.length+1}`); values.push(category); }
     if (image !== undefined) { updates.push(`image = $${values.length+1}`); values.push(image); }
@@ -624,7 +739,7 @@ app.get('/admin/bookings/all', authenticateAdmin, async (req, res) => {
     );
     const bookings = result.rows.map(row => ({
       ...row,
-      chips: row.chips ? JSON.parse(row.chips) : []
+      chips: safeJsonParse(row.chips, [])
     }));
     res.json({ success: true, bookings });
   } catch (error) {
@@ -639,8 +754,8 @@ app.get('/api/tours', async (req, res) => {
     const result = await pool.query("SELECT * FROM tours WHERE type = 'tour' ORDER BY id DESC");
     const tours = result.rows.map(row => ({
       ...row,
-      departureDates: row.departuredates ? JSON.parse(row.departuredates) : [],
-      chips: row.chips ? JSON.parse(row.chips) : []
+      departureDates: safeJsonParse(row.departuredates, []),
+      chips: safeJsonParse(row.chips, [])
     }));
     res.json(tours);
   } catch (error) {
@@ -654,8 +769,8 @@ app.get('/api/cruises', async (req, res) => {
     const result = await pool.query("SELECT * FROM tours WHERE type = 'cruise' ORDER BY id DESC");
     const cruises = result.rows.map(row => ({
       ...row,
-      departureDates: row.departuredates ? JSON.parse(row.departuredates) : [],
-      chips: row.chips ? JSON.parse(row.chips) : []
+      departureDates: safeJsonParse(row.departuredates, []),
+      chips: safeJsonParse(row.chips, [])
     }));
     res.json(cruises);
   } catch (error) {
@@ -669,8 +784,8 @@ app.get('/api/islands', async (req, res) => {
     const result = await pool.query("SELECT * FROM tours WHERE type = 'island' ORDER BY id DESC");
     const islands = result.rows.map(row => ({
       ...row,
-      departureDates: row.departuredates ? JSON.parse(row.departuredates) : [],
-      chips: row.chips ? JSON.parse(row.chips) : []
+      departureDates: safeJsonParse(row.departuredates, []),
+      chips: safeJsonParse(row.chips, [])
     }));
     res.json(islands);
   } catch (error) {
@@ -684,8 +799,8 @@ app.get('/api/hot', async (req, res) => {
     const result = await pool.query("SELECT * FROM tours WHERE type = 'hot' ORDER BY id DESC");
     const hot = result.rows.map(row => ({
       ...row,
-      departureDates: row.departuredates ? JSON.parse(row.departuredates) : [],
-      chips: row.chips ? JSON.parse(row.chips) : []
+      departureDates: safeJsonParse(row.departuredates, []),
+      chips: safeJsonParse(row.chips, [])
     }));
     res.json(hot);
   } catch (error) {

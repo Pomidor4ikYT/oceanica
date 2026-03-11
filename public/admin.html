@@ -4,8 +4,154 @@
   <meta charset="UTF-8">
   <title>Адмін-панель — Oceanica Travel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css">
+  <style>
+    /* Додаткові стилі для адмін-шапки */
+    .admin-header {
+      background: white;
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      border-bottom: 1px solid #eef2f6;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-bubble {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(145deg, #0f4c81, #1e7fb0);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      box-shadow: 0 4px 10px rgba(15,76,129,0.2);
+    }
+
+    .brand-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #0f4c81;
+    }
+
+    .brand-name span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #64748b;
+      margin-left: 0.5rem;
+    }
+
+    .admin-nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-section {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-dropdown {
+      position: relative;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(145deg, #0f4c81, #1e7fb0);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 10px rgba(15,76,129,0.2);
+    }
+
+    .avatar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(15,76,129,0.3);
+    }
+
+    .user-dropdown .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      min-width: 220px;
+      z-index: 1000;
+      padding: 0.5rem 0;
+      border: 1px solid #eef2f6;
+    }
+
+    .user-dropdown .dropdown-menu.show {
+      display: block;
+    }
+
+    .user-dropdown .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.7rem 1.5rem;
+      text-decoration: none;
+      color: #334155;
+      transition: background 0.2s;
+      font-size: 0.95rem;
+      font-weight: 500;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .user-dropdown .dropdown-item:hover {
+      background: #f1f5f9;
+      color: #0f4c81;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: #eef2f6;
+      margin: 0.5rem 0;
+    }
+
+    .login-btn {
+      background: white;
+      color: #0f4c81;
+      border: 2px solid #0f4c81;
+      padding: 0.5rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .login-btn:hover {
+      background: #0f4c81;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(15,76,129,0.2);
+    }
+  </style>
 </head>
 <body>
   <div id="loading-spinner" class="loading-spinner">🌊 Завантаження...</div>
@@ -13,8 +159,10 @@
   <div id="app-content" style="display: none;">
     <header class="admin-header">
       <div class="brand">
-        <div class="brand-bubble">🌊</div>
-        <div class="brand-name">Oceanica Travel Admin</div>
+        <div class="brand-bubble">⚙️</div>
+        <div class="brand-name">
+          Oceanica Travel <span>Адмін-панель</span>
+        </div>
       </div>
       <nav class="admin-nav">
         <div id="userSection" class="user-section"></div>
@@ -37,14 +185,7 @@
           <div class="admin-toolbar">
             <h2>✈️ Управління турами</h2>
           </div>
-          <div class="items-grid" id="tours-grid">
-            <div class="add-card" onclick="openAddModal('tour')">
-              <div class="add-card-content">
-                <span class="add-icon">+</span>
-                <span class="add-text">Додати тур</span>
-              </div>
-            </div>
-          </div>
+          <div class="items-grid" id="tours-grid"></div>
         </div>
 
         <!-- Круїзи -->
@@ -52,14 +193,7 @@
           <div class="admin-toolbar">
             <h2>🚢 Управління круїзами</h2>
           </div>
-          <div class="items-grid" id="cruises-grid">
-            <div class="add-card" onclick="openAddModal('cruise')">
-              <div class="add-card-content">
-                <span class="add-icon">+</span>
-                <span class="add-text">Додати круїз</span>
-              </div>
-            </div>
-          </div>
+          <div class="items-grid" id="cruises-grid"></div>
         </div>
 
         <!-- Острови -->
@@ -67,14 +201,7 @@
           <div class="admin-toolbar">
             <h2>🏝️ Управління островами</h2>
           </div>
-          <div class="items-grid" id="islands-grid">
-            <div class="add-card" onclick="openAddModal('island')">
-              <div class="add-card-content">
-                <span class="add-icon">+</span>
-                <span class="add-text">Додати острів</span>
-              </div>
-            </div>
-          </div>
+          <div class="items-grid" id="islands-grid"></div>
         </div>
 
         <!-- Гарячі путівки -->
@@ -82,14 +209,7 @@
           <div class="admin-toolbar">
             <h2>🔥 Управління гарячими путівками</h2>
           </div>
-          <div class="items-grid" id="hot-grid">
-            <div class="add-card" onclick="openAddModal('hot')">
-              <div class="add-card-content">
-                <span class="add-icon">+</span>
-                <span class="add-text">Додати путівку</span>
-              </div>
-            </div>
-          </div>
+          <div class="items-grid" id="hot-grid"></div>
         </div>
 
         <!-- Користувачі -->
@@ -126,150 +246,89 @@
           <div class="form-row">
             <div class="form-group">
               <label>Назва *</label>
-              <input type="text" id="title" class="form-input" required placeholder="Наприклад: Таїланд: Пхукет">
+              <input type="text" id="title" class="form-input" required placeholder="Таїланд: Пхукет">
             </div>
             <div class="form-group">
               <label>Ціна *</label>
-              <input type="text" id="price" class="form-input" placeholder="35 960 грн" required>
+              <input type="number" id="price" class="form-input" placeholder="39900" required min="0">
+              <small style="color:#64748b;">Введіть тільки число, "грн" додасться автоматично</small>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label>Тривалість</label>
-              <input type="text" id="duration" class="form-input" placeholder="7 ночей">
+              <input type="text" id="duration" class="form-input" placeholder="7">
+              <small style="color:#64748b;">Введіть число, наприклад "7" → "7 ночей"</small>
             </div>
             <div class="form-group">
               <label>Розмір групи</label>
-              <input type="text" id="groupSize" class="form-input" placeholder="До 30 осіб">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Проживання</label>
-              <input type="text" id="accommodation" class="form-input" placeholder="Готель 4*">
-            </div>
-            <div class="form-group">
-              <label>Бейдж</label>
-              <select id="badge" class="form-select">
-                <option value="">Оберіть бейдж</option>
-                <option value="🔥 Гаряча пропозиція">🔥 Гаряча пропозиція</option>
-                <option value="🏖️ Пляжний">🏖️ Пляжний</option>
-                <option value="🏛️ Екскурсійний">🏛️ Екскурсійний</option>
-                <option value="⛰️ Гірський">⛰️ Гірський</option>
-                <option value="🏝️ Тропічний">🏝️ Тропічний</option>
-                <option value="🌋 Вулканічний">🌋 Вулканічний</option>
-                <option value="✨ Екзотичний">✨ Екзотичний</option>
-                <option value="☀️ Теплі води">☀️ Теплі води</option>
-                <option value="❄️ Холодні води">❄️ Холодні води</option>
-                <option value="🌊 Помірні води">🌊 Помірні води</option>
-                <option value="-20%">-20%</option>
-                <option value="-15%">-15%</option>
-                <option value="-10%">-10%</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Категорія</label>
-              <select id="category" class="form-select">
-                <option value="">Оберіть категорію</option>
-                <option value="beach">🏖️ Пляжний</option>
-                <option value="excursion">🏛️ Екскурсійний</option>
-                <option value="mountain">⛰️ Гірський</option>
-                <option value="tropical">🏝️ Тропічний</option>
-                <option value="volcanic">🌋 Вулканічний</option>
-                <option value="exotic">✨ Екзотичний</option>
-                <option value="warm">☀️ Теплі води</option>
-                <option value="cold">❄️ Холодні води</option>
-                <option value="temperate">🌊 Помірні води</option>
-                <option value="lux">💎 Люкс</option>
-                <option value="history">📜 Історія</option>
-                <option value="nature">🌿 Природа</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Мета (короткий опис)</label>
-              <input type="text" id="meta" class="form-input" placeholder="All Inclusive • 7 ночей">
+              <input type="text" id="groupSize" class="form-input" placeholder="25">
+              <small style="color:#64748b;">Введіть число, наприклад "25" → "25 осіб"</small>
             </div>
           </div>
 
           <div class="form-group">
-            <label>Посилання на зображення</label>
-            <div class="image-selector">
-              <select id="image-select" class="form-select" onchange="updateImageInput()">
-                <option value="">Оберіть існуюче зображення</option>
-                <option value="toursimg/tour1.jpg">Таїланд</option>
-                <option value="toursimg/tour2.jpg">Італія</option>
-                <option value="toursimg/tour3.jpg">Непал</option>
-                <option value="toursimg/tour4.jpg">Мальдіви</option>
-                <option value="toursimg/tour5.jpg">Франція</option>
-                <option value="toursimg/tour6.jpg">Швейцарія</option>
-                <option value="toursimg/tour7.jpg">Єгипет</option>
-                <option value="toursimg/tour8.jpg">Греція</option>
-                <option value="toursimg/tour9.jpg">Перу</option>
-                <option value="toursimg/tour10.jpg">Балі</option>
-                <option value="toursimg/tour11.jpg">Ісландія</option>
-                <option value="toursimg/tour12.jpg">Японія</option>
-                <option value="cruiseimg/cruise1.jpg">Круїз 1</option>
-                <option value="cruiseimg/cruise2.jpg">Круїз 2</option>
-                <option value="cruiseimg/cruise3.jpg">Круїз 3</option>
-                <option value="cruiseimg/cruise4.jpg">Круїз 4</option>
-                <option value="islandimg/island1.jpg">Мальдіви (острів)</option>
-                <option value="islandimg/island2.jpg">Ісландія (острів)</option>
-                <option value="islandimg/island3.jpg">Бора-Бора</option>
-                <option value="islandimg/island4.jpg">Сейшели</option>
-                <option value="indeximg/bar1.jpg">Бар 1</option>
-                <option value="indeximg/bar2.jpg">Бар 2</option>
-                <option value="indeximg/bar3.jpg">Бар 3</option>
-                <option value="indeximg/bar4.jpg">Бар 4</option>
-              </select>
-              <span style="margin: 0 10px;">або</span>
-              <input type="text" id="image" class="form-input" placeholder="Введіть свій шлях до зображення">
+            <label>Проживання</label>
+            <input type="text" id="accommodation" class="form-input" placeholder="4">
+            <small style="color:#64748b;">Введіть число або текст, наприклад "4" → "Готель 4*"</small>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Бейдж</label>
+              <select id="badge" class="form-select" id="badgeSelect"></select>
+            </div>
+            <div class="form-group">
+              <label>Категорія</label>
+              <select id="category" class="form-select" id="categorySelect"></select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Мета (короткий опис)</label>
+            <input type="text" id="meta" class="form-input" placeholder="10 днів • All Inclusive">
+          </div>
+
+          <div class="form-group">
+            <label>Зображення</label>
+            <input type="file" id="imageFile" class="form-input" accept="image/*">
+            <div style="display: flex; align-items: center; gap: 10px; margin: 10px 0;">
+              <span style="color:#64748b;">або</span>
+              <input type="text" id="image" class="form-input" placeholder="Введіть URL зображення">
+            </div>
+            <div id="imagePreview" style="margin-top: 10px; max-width: 200px; display: none;">
+              <img src="" alt="Preview" style="width: 100%; border-radius: 8px;">
             </div>
           </div>
 
           <div class="form-group">
             <label>Опис</label>
-            <textarea id="description" class="form-textarea" rows="3" placeholder="Детальний опис туру..."></textarea>
+            <textarea id="description" class="form-textarea" rows="3" placeholder="Детальний опис..."></textarea>
           </div>
 
           <div class="form-group">
-            <label>Дати вильотів (через кому, формат ДД.ММ.РРРР)</label>
-            <input type="text" id="departureDates" class="form-input" placeholder="15.03.2026, 22.03.2026, 29.03.2026">
+            <label>Дати вильотів</label>
+            <div id="datesContainer">
+              <div class="date-input-row" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" class="form-input date-input" placeholder="ДД.ММ.РРРР">
+                <button type="button" class="btn-outline add-date" style="padding: 0.5rem 1rem;">+</button>
+              </div>
+            </div>
+            <input type="hidden" id="departureDates">
           </div>
 
           <div class="form-group">
-            <label>Теги (чипси, через кому)</label>
+            <label>Теги (чипси)</label>
             <div class="tags-selector">
-              <select id="tags-select" class="form-select" onchange="addTagFromSelect()">
+              <select id="tags-select" class="form-select">
                 <option value="">Оберіть тег</option>
-                <option value="Пляжі">🏖️ Пляжі</option>
-                <option value="Античність">🏛️ Античність</option>
-                <option value="Гори">⛰️ Гори</option>
-                <option value="Дайвінг">🤿 Дайвінг</option>
-                <option value="SPA">💆 SPA</option>
-                <option value="Екскурсії">🚌 Екскурсії</option>
-                <option value="Романтика">💕 Романтика</option>
-                <option value="Пригоди">🧗 Пригоди</option>
-                <option value="All Inclusive">🍹 All Inclusive</option>
-                <option value="Сніданки">🍳 Сніданки</option>
-                <option value="Вілли">🏡 Вілли</option>
-                <option value="Бунгало">🏠 Бунгало</option>
-                <option value="Лагуна">🌊 Лагуна</option>
-                <option value="Рифи">🐠 Рифи</option>
-                <option value="Вулкани">🌋 Вулкани</option>
-                <option value="Гейзери">💨 Гейзери</option>
-                <option value="Льодовики">❄️ Льодовики</option>
-                <option value="Храми">🛕 Храми</option>
-                <option value="Базари">🛍️ Базари</option>
-                <option value="Пустеля">🏜️ Пустеля</option>
               </select>
-              <input type="text" id="chips" class="form-input" placeholder="Або введіть свій тег через кому">
+              <input type="text" id="chipsInput" class="form-input" placeholder="Або введіть свій тег">
+              <button type="button" class="btn-outline" id="addTagBtn" style="padding: 0.5rem 1rem;">Додати</button>
             </div>
             <div id="selected-tags" class="selected-tags"></div>
+            <input type="hidden" id="chips">
           </div>
 
           <div class="form-actions">
