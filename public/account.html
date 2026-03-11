@@ -2,11 +2,11 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <title>Oceanica Travel — Мій кабінет</title>
+  <title>...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="index.css" />
-  <link rel="stylesheet" href="account.css" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/pages/account.css" />
 </head>
 <body class="cabinet-page">
   <div id="loading-spinner" style="text-align: center; padding: 50px; font-size: 1.2rem;">🌊 Завантаження...</div>
@@ -34,7 +34,6 @@
     <div class="container">
       <h2 class="section-title">Мій кабінет</h2>
 
-      <!-- Профіль -->
       <div class="profile-card">
         <div class="avatar-large" id="profile-avatar">В</div>
         <div class="profile-info">
@@ -45,7 +44,6 @@
         </div>
       </div>
 
-      <!-- Статистика -->
       <div class="stats-grid">
         <div class="stat-item">
           <div class="stat-value" id="bookedCount">0</div>
@@ -69,13 +67,11 @@
         </div>
       </div>
 
-      <!-- Вкладки -->
       <div class="cabinet-tabs">
         <button class="tab-btn active" data-tab="booked">Заброньовані</button>
         <button class="tab-btn" data-tab="favorites">Улюблені</button>
       </div>
 
-      <!-- Контент вкладок -->
       <div class="tab-content active" id="booked">
         <div class="items-list" id="bookedList"></div>
       </div>
@@ -83,17 +79,42 @@
       <div class="tab-content" id="favorites">
         <div class="items-list" id="favoritesList"></div>
       </div>
-
-    </div> <!-- закриття container -->
+    </div>
 
     <footer>
-      <!-- футер -->
+      <div class="footer-inner">
+        <div class="f-col">
+          <h4>Oceanica Travel</h4>
+          <p>Ми організовуємо подорожі, які запам’ятовуються. Комфорт, сервіс, прозорість — наші принципи.</p>
+        </div>
+        <div class="f-col">
+          <h4>Контакти</h4>
+          <p>Тел: +380 97 123 45 67</p>
+          <p>Email: hello@oceanica.travel</p>
+        </div>
+        <div class="f-col">
+          <h4>Навігація</h4>
+          <p><a href="index.html">Головна</a></p>
+          <p><a href="tours.html">Тури</a></p>
+          <p><a href="island.html">Острови</a></p>
+          <p><a href="cruise.html">Круїзи</a></p>
+          <p><a href="account.html">Мій кабінет</a></p>
+        </div>
+        <div class="f-col">
+          <h4>Соцмережі</h4>
+          <p><a href="#">Instagram</a> • <a href="#">Facebook</a> • <a href="#">TikTok</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Oceanica Travel</span>
+        <span>З любов’ю до моря та пригод 🌊</span>
+      </div>
     </footer>
-  </div> <!-- закриття app-content -->
+  </div>
 
-  <script src="auth.js"></script>
-  <script src="header.js"></script>
-  <script src="utils.js"></script>
-  <script src="account.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/account.js"></script>
 </body>
 </html>

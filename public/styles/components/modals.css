@@ -1,0 +1,582 @@
+/* ========== КОМПОНЕНТ МОДАЛЬНІ ВІКНА ========== */
+@import '../utils/variables.css';
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity var(--transition-normal);
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-container {
+  background: var(--bg-white);
+  border-radius: var(--radius-xl);
+  max-width: 900px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+
+.modal-container.modal-book {
+  max-width: 600px;
+}
+
+.modal-header-img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+}
+
+.modal-close {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.8);
+  border: none;
+  border-radius: var(--radius-round);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+  background: var(--bg-white);
+  transform: scale(1.1);
+}
+
+.modal-content {
+  padding: var(--spacing-xl);
+}
+
+.modal-badge {
+  display: inline-block;
+  background: var(--warning);
+  padding: 0.3rem 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  color: #1e293b;
+}
+
+.modal-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  background: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: 60px;
+}
+
+.modal-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 60px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modal-tab:hover {
+  color: var(--primary);
+  background: rgba(255,255,255,0.5);
+}
+
+.modal-tab.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+}
+
+.modal-panel {
+  display: none;
+}
+
+.modal-panel.active {
+  display: block;
+}
+
+.modal-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+.modal-subtitle {
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-md);
+  font-size: 1.1rem;
+}
+
+.modal-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #005e00;
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.modal-chip {
+  background: #f1f5f9;
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.modal-description {
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.modal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  background: #f8fafc;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-xl);
+}
+
+.modal-info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-info-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal-info-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+/* ========== ВІДГУКИ В МОДАЛЦІ ========== */
+.modal-reviews {
+  margin-bottom: var(--spacing-xl);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.modal-review {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: #f8fafc;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-review:last-child {
+  margin-bottom: 0;
+}
+
+.mrv-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.mrv-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.mrv-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mrv-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.mrv-stars {
+  color: #fbbf24;
+  font-size: 0.9rem;
+}
+
+.mrv-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ========== ФОРМА ВІДГУКУ ========== */
+.modal-review-form {
+  background: #f8fafc;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin-top: var(--spacing-xl);
+}
+
+.modal-review-form h3 {
+  color: var(--primary);
+  margin-bottom: var(--spacing-md);
+  font-size: 1.2rem;
+}
+
+.mrf-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.mrf-input {
+  flex: 1;
+  padding: 0.8rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+}
+
+.mrf-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.star-input {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.star-input span {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #d1d5db;
+  transition: color var(--transition-fast);
+}
+
+.star-input span[data-star] {
+  color: #fbbf24;
+}
+
+.star-input span[data-star] ~ span {
+  color: #d1d5db;
+}
+
+.mrf-textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.mrf-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.mrf-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.mrf-clear {
+  background: transparent;
+  border: 1px solid var(--error);
+  color: var(--error);
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mrf-clear:hover {
+  background: #fee2e2;
+}
+
+.mrf-submit {
+  background: var(--primary);
+  border: none;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mrf-submit:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+/* ========== ПОКРАЩЕНИЙ ДИЗАЙН БРОНЮВАННЯ ========== */
+
+.modal-book {
+  max-width: 600px;
+  width: 90%;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+
+.modal-book-header {
+  background: linear-gradient(135deg, #0f4c81, #1e7fb0);
+  color: white;
+  padding: 2rem;
+  position: relative;
+  text-align: center;
+}
+
+.modal-book-header h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.modal-book-header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.modal-book-header .modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-book-header .modal-close:hover {
+  background: rgba(255,255,255,0.3);
+  transform: rotate(90deg);
+}
+
+.modal-book-content {
+  padding: 2rem;
+  background: white;
+}
+
+#modalBookForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Покращені стилі для форми */
+#modalBookForm .form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0;
+}
+
+#modalBookForm .form-group {
+  flex: 1;
+  min-width: 0;
+}
+
+#modalBookForm .form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #0f4c81;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#modalBookForm .form-input,
+#modalBookForm .form-select,
+#modalBookForm .form-textarea {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+#modalBookForm .form-input:focus,
+#modalBookForm .form-select:focus,
+#modalBookForm .form-textarea:focus {
+  outline: none;
+  border-color: #0f4c81;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(15,76,129,0.1);
+}
+
+#modalBookForm .form-input:hover,
+#modalBookForm .form-select:hover,
+#modalBookForm .form-textarea:hover {
+  border-color: #94a3b8;
+}
+
+#modalBookForm .form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Стилі для випадаючого списку */
+#modalBookForm .form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230f4c81' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.2rem;
+  padding-right: 2.5rem;
+}
+
+/* Стилі для поля дати */
+#modalBookForm input[type="date"] {
+  padding-right: 1rem;
+}
+
+/* Кнопка відправки */
+.form-submit {
+  width: 100%;
+  background: linear-gradient(135deg, #0f4c81, #1e7fb0);
+  color: white;
+  border: none;
+  padding: 1.2rem;
+  border-radius: 60px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 10px 20px rgba(15,76,129,0.2);
+}
+
+.form-submit:hover {
+  background: linear-gradient(135deg, #1e7fb0, #0f4c81);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(15,76,129,0.3);
+}
+
+.form-submit:active {
+  transform: translateY(0);
+  box-shadow: 0 5px 10px rgba(15,76,129,0.2);
+}
+
+/* Повідомлення про успіх */
+.form-success {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 1.2rem;
+  border-radius: 16px;
+  margin-top: 1.5rem;
+  display: none;
+  text-align: center;
+  font-weight: 600;
+  border-left: 6px solid #10b981;
+  animation: slideUp 0.3s ease;
+}
+
+.form-success.active {
+  display: block;
+}
+
+/* Анімація */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптація для мобільних */
+@media (max-width: 640px) {
+  .modal-book-header h3 {
+    font-size: 1.4rem;
+  }
+  
+  .modal-book-header p {
+    font-size: 1rem;
+  }
+  
+  .modal-book-content {
+    padding: 1.5rem;
+  }
+  
+  #modalBookForm .form-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .form-submit {
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+}

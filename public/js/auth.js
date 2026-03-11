@@ -90,8 +90,13 @@
         setToken(data.token);
         setUserEmail(data.user?.email || email);
         
-        // Зберігаємо дані користувача в localStorage для швидкого доступу
+        // Зберігаємо дані користувача в localStorage
         localStorage.setItem('oceanica_user_data', JSON.stringify(data.user));
+        
+        // Викликаємо подію для оновлення header
+        window.dispatchEvent(new Event('authChange'));
+        
+        console.log('✅ Вхід успішний, роль:', data.user?.role);
         
         return { 
           success: true, 
@@ -107,15 +112,17 @@
     }
   }
 
-  // ========== Вихід ==========
   function logout() {
     setToken(null);
     setUserEmail(null);
     localStorage.removeItem('oceanica_user_data');
+    
+    // ВАЖЛИВО: викликаємо подію для оновлення header
+    window.dispatchEvent(new Event('authChange'));
+    
     window.location.href = 'index.html';
   }
 
-  // ========== Отримати дані користувача ==========
   async function getUserData() {
     const token = getToken();
     if (!token) return null;
@@ -124,7 +131,9 @@
     const cached = localStorage.getItem('oceanica_user_data');
     if (cached) {
       try {
-        return JSON.parse(cached);
+        const data = JSON.parse(cached);
+        console.log('📦 З кешу:', data); // ДОДАЙТЕ
+        return data;
       } catch (e) {
         // Якщо помилка, ігноруємо і йдемо на сервер
       }
@@ -142,7 +151,7 @@
       
       const data = await response.json();
       if (data.success) {
-        // Кешуємо отримані дані
+        console.log('🌐 З сервера:', data.user); // ДОДАЙТЕ
         localStorage.setItem('oceanica_user_data', JSON.stringify(data.user));
         return data.user;
       }

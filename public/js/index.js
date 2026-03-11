@@ -1,9 +1,7 @@
-// index.js
+// public/js/index.js
 (function() {
-  // Глобальні змінні
   let toursData = [];
   
-  // Дані турів з датами вильотів
   const tourDetailsData = {
     'Балі, Індонезія': {
       departureDates: ['15.03.2026', '22.03.2026', '05.04.2026'],
@@ -91,13 +89,12 @@
     }
   };
 
-  // Деталі для турів зі слайдера
   const sliderTourDetails = {
     'egypt': {
       title: 'Єгипет',
       subtitle: 'Трансфер + гід • листопад',
       price: '23 960 грн',
-      img: 'indeximg/bar1.jpg',
+      img: 'styles/img/index/bar1.jpg',
       badge: '-20%',
       tags: ['Піраміди', 'Червоне море', 'All Inclusive'],
       description: 'Розкішний відпочинок на березі Червоного моря. Готелі 5* з власним пляжем, аквапарками та анімацією.',
@@ -110,7 +107,7 @@
       title: 'Санторіні',
       subtitle: 'Готелі зі знижкою • 4–6 ночей',
       price: '19 160 грн',
-      img: 'indeximg/bar2.jpg',
+      img: 'styles/img/index/bar2.jpg',
       badge: '-15%',
       tags: ['Закати', 'Білі будинки', 'Романтика'],
       description: 'Неймовірні заходи сонця та білі будиночки на скелях. Екскурсії на вулкан та гарячі джерела.',
@@ -123,7 +120,7 @@
       title: 'Марокко',
       subtitle: 'Медина + пустеля • 6 ночей',
       price: '15 960 грн',
-      img: 'indeximg/bar3.jpg',
+      img: 'styles/img/index/bar3.jpg',
       badge: '-18%',
       tags: ['Сахара', 'Марракеш', 'Базари'],
       description: 'Загадкові базари та пустеля Сахара. Ночівля в пустелі, катання на верблюдах, традиційна кухня.',
@@ -136,7 +133,7 @@
       title: 'Мальдіви',
       subtitle: 'Над водою • 6–7 ночей',
       price: '51 960 грн',
-      img: 'indeximg/bar4.jpg',
+      img: 'styles/img/index/bar4.jpg',
       badge: '-12%',
       tags: ['Вілли над водою', 'Дайвінг', 'SPA'],
       description: 'Райські острови з віллами над водою. Кристально чиста вода, білий пісок, незаймана природа.',
@@ -149,7 +146,7 @@
       title: 'Сейшели',
       subtitle: 'Кришталеве море • 7 ночей',
       price: '43 960 грн',
-      img: 'indeximg/bar5.jpg',
+      img: 'styles/img/index/bar5.jpg',
       badge: '-18%',
       tags: ['Гранітні пляжі', 'Снорклінг', 'Праслін'],
       description: 'Гранітні скелі та найкрасивіші пляжі світу. Черепахи, кокосові плантації, екзотична природа.',
@@ -162,7 +159,7 @@
       title: 'Ісландія',
       subtitle: '5 днів • пригоди',
       price: '11 960 грн',
-      img: 'indeximg/bar6.jpg',
+      img: 'styles/img/index/bar6.jpg',
       badge: '-20%',
       tags: ['Вулкани', 'Гейзери', 'Льодовики'],
       description: 'Активний відпочинок з неймовірними краєвидами. Золоте коло, Північне сяйво, блакитна лагуна.',
@@ -175,7 +172,7 @@
       title: 'Альпи',
       subtitle: '8 днів • відпочинок',
       price: '27 960 грн',
-      img: 'indeximg/bar7.jpg',
+      img: 'styles/img/index/bar7.jpg',
       badge: '-25%',
       tags: ['Гірськолижні курорти', 'SPA', 'Фонду'],
       description: 'Гірськолижні курорти Європи. Траси різної складності, підйомники, вечірки після катання.',
@@ -186,12 +183,15 @@
     }
   };
 
-  // Допоміжні функції
   const qs = (selector, parent = document) => parent.querySelector(selector);
   const qsa = (selector, parent = document) => Array.from(parent.querySelectorAll(selector));
 
-  // Функція показу toast-повідомлень
   function showToast(message, type = 'info') {
+    if (window.utils?.showToast) {
+      window.utils.showToast(message, type);
+      return;
+    }
+    
     let toast = document.querySelector('.toast-notification');
     if (!toast) {
       toast = document.createElement('div');
@@ -208,9 +208,8 @@
     }, 3000);
   }
 
-  // Ініціалізація слайдера
-  function initSlider(sliderSelector) {
-    const slides = document.querySelector(sliderSelector);
+  function initSlider() {
+    const slides = document.getElementById('sliderSlides');
     if (!slides) return;
     
     const prevBtn = document.querySelector('.slider-arrow.prev');
@@ -235,23 +234,18 @@
       updateSlider();
     });
     
-    // Автоматичне перемикання
     setInterval(() => {
       currentIndex = (currentIndex + 1) % totalSlides;
       updateSlider();
     }, 5000);
   }
 
-  // Ініціалізація слайдера
-  initSlider('#sliderSlides');
-
-  // Функція створення картки з об'єкта туру
   function createCardFromTour(tour) {
     const chipsHtml = (tour.chips || []).map(c => `<span class="chip">${c}</span>`).join('');
     return `
       <article class="card" data-category="${tour.category || ''}">
         <div class="card-img-wrap">
-          <img class="card-img" src="${tour.image || 'indeximg/card1.jpg'}" alt="${tour.title}" />
+          <img class="card-img" src="${tour.image || 'styles/img/index/card1.jpg'}" alt="${tour.title}" />
           <span class="badge">${tour.badge || 'Тур'}</span>
           <button class="fav" title="В обране"></button>
         </div>
@@ -269,13 +263,12 @@
     `;
   }
 
-  // Початкові дані для карток
   const initialTours = [
     {
       title: 'Балі, Індонезія',
       duration: 'All Inclusive • 7 ночей',
       price: '35 960 грн',
-      image: 'indeximg/card1.jpg',
+      image: 'styles/img/index/card1.jpg',
       badge: 'Екзотика',
       chips: ['Серфінг', 'SPA', 'Вулкани'],
       category: 'екзотика'
@@ -284,7 +277,7 @@
       title: 'Крит, Греція',
       duration: 'Сніданки • 5 ночей',
       price: '19 960 грн',
-      image: 'indeximg/card2.jpg',
+      image: 'styles/img/index/card2.jpg',
       badge: 'Пляж',
       chips: ['Пляжі', 'Античність', 'Таверни'],
       category: 'пляж'
@@ -293,7 +286,7 @@
       title: 'Мальдіви',
       duration: 'Вілли • 6 ночей',
       price: '51 960 грн',
-      image: 'indeximg/card3.jpg',
+      image: 'styles/img/index/card3.jpg',
       badge: 'Люкс',
       chips: ['Океан', 'Рифи', 'Релакс'],
       category: 'люкс'
@@ -302,7 +295,7 @@
       title: 'Бора-Бора',
       duration: 'Лагуни • 7 ночей',
       price: '59 960 грн',
-      image: 'indeximg/card4.jpg',
+      image: 'styles/img/index/card4.jpg',
       badge: 'Екзотика',
       chips: ['Бунгало', 'Каяки', 'Снорклінг'],
       category: 'екзотика'
@@ -311,7 +304,7 @@
       title: 'Палаван, Філіппіни',
       duration: 'Еко-тур • 6 ночей',
       price: '31 960 грн',
-      image: 'indeximg/card5.jpg',
+      image: 'styles/img/index/card5.jpg',
       badge: 'Природа',
       chips: ['Лагуни', 'Печери', 'Острівці'],
       category: 'природа'
@@ -320,7 +313,7 @@
       title: 'Самуї, Таїланд',
       duration: 'Сніданки • 7 ночей',
       price: '27 960 грн',
-      image: 'indeximg/card6.jpg',
+      image: 'styles/img/index/card6.jpg',
       badge: 'Пляж',
       chips: ['Пальми', 'Фрукти', 'Храми'],
       category: 'пляж'
@@ -329,7 +322,7 @@
       title: 'Санторіні, Греція',
       duration: 'Романтика • 5 ночей',
       price: '23 160 грн',
-      image: 'indeximg/card7.jpg',
+      image: 'styles/img/index/card7.jpg',
       badge: 'Історія',
       chips: ['Закати', 'Круїзи', 'Вина'],
       category: 'історія'
@@ -338,14 +331,13 @@
       title: 'Марокко',
       duration: 'Гіди • 6 ночей',
       price: '15 960 грн',
-      image: 'indeximg/card8.jpg',
+      image: 'styles/img/index/card8.jpg',
       badge: 'Історія',
       chips: ['Медина', 'Сахара', 'Базар'],
       category: 'історія'
     }
   ];
 
-  // Завантаження карток
   function loadTours() {
     const track = document.getElementById('carouselTrack');
     if (track) {
@@ -354,7 +346,6 @@
     }
   }
 
-  // Отримання деталей з картки
   function getDetailsFromCard(card) {
     const title = card.querySelector('.card-title')?.textContent?.trim() || '';
     const tourData = toursData.find(t => t.title === title) || {};
@@ -375,7 +366,6 @@
     };
   }
 
-  // Отримання даних для бронювання з картки
   function getBookingItemFromCard(card) {
     const title = card.querySelector('.card-title')?.textContent?.trim() || '';
     return {
@@ -389,8 +379,7 @@
     };
   }
 
-  // Показ модального вікна з деталями
-  function showDetailsModal(details, bookingItem) {
+  function showDetailsModal(details) {
     const modal = document.getElementById('modalDetails');
     if (!modal) return;
     
@@ -438,11 +427,9 @@
       `;
     }
     
-    modal.dataset.bookingItem = JSON.stringify(bookingItem || details);
     modal.classList.add('active');
   }
 
-  // Показ модального вікна бронювання
   function showBookModal(item) {
     const modal = document.getElementById('modalBook');
     if (!modal) return;
@@ -456,33 +443,25 @@
       document.getElementById('modalBookSuccess').classList.remove('active');
     }
     
+    window.__currentBookingItem = item;
     modal.classList.add('active');
   }
 
-  // Показ деталей туру зі слайдера
   function showTourDetailsFromSlider(tourId) {
     const details = sliderTourDetails[tourId];
     if (details) {
-      showDetailsModal(details, details);
+      showDetailsModal(details);
     } else {
       showToast('Інформацію про тур не знайдено', 'error');
     }
   }
 
-  // Налаштування обробників для карток (ВИПРАВЛЕНО)
   function setupItemHandlers() {
     console.log('Налаштування обробників для карток');
     
-    // Видаляємо старі обробники
-    delete window.detailsHandler;
-    delete window.bookHandler;
-    
     // Обробники для кнопок "Детальніше"
-    document.querySelectorAll('.btn-outline').forEach(btn => {
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      
-      newBtn.addEventListener('click', function(e) {
+    document.querySelectorAll('.btn-outline:not(.modal-close)').forEach(btn => {
+      btn.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         
@@ -490,17 +469,13 @@
         if (!card) return;
         
         const details = getDetailsFromCard(card);
-        const bookingItem = getBookingItemFromCard(card);
-        showDetailsModal(details, bookingItem);
+        showDetailsModal(details);
       });
     });
     
     // Обробники для кнопок "Забронювати"
-    document.querySelectorAll('.btn-primary').forEach(btn => {
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      
-      newBtn.addEventListener('click', function(e) {
+    document.querySelectorAll('.btn-primary:not(.modal-close)').forEach(btn => {
+      btn.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         
@@ -512,16 +487,12 @@
       });
     });
     
-    // Обробники для кнопок лайків (ВИПРАВЛЕНО - з перевіркою авторизації)
+    // Обробники для кнопок лайків
     document.querySelectorAll('.fav').forEach(btn => {
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      
-      newBtn.addEventListener('click', async function(e) {
+      btn.addEventListener('click', async function(e) {
         e.preventDefault();
         e.stopPropagation();
         
-        // ПЕРЕВІРКА АВТОРИЗАЦІЇ
         if (!window.auth?.getToken()) {
           showToast('🔒 Увійдіть, щоб додавати в обране', 'info');
           setTimeout(() => { window.location.href = 'login.html'; }, 1500);
@@ -542,7 +513,6 @@
         const item = { title, image, price, meta, badge, chips, category };
         
         try {
-          // Якщо у вас є серверна логіка
           if (window.auth?.toggleFavorite) {
             const result = await window.auth.toggleFavorite(item);
             if (result.success) {
@@ -557,7 +527,6 @@
               showToast(result.message || 'Помилка', 'error');
             }
           } else {
-            // Якщо серверної логіки немає, просто імітуємо
             this.classList.toggle('active');
             showToast(this.classList.contains('active') ? '✅ Додано в улюблені' : '🗑️ Видалено з улюблених', 'success');
           }
@@ -569,15 +538,11 @@
     });
   }
 
-  // Налаштування обробників для слайдера
   function setupSliderHandlers() {
     console.log('Налаштування обробників для слайдера');
     
     document.querySelectorAll('.slide-detail-btn').forEach(btn => {
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      
-      newBtn.addEventListener('click', function(e) {
+      btn.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         const tourId = this.dataset.tour;
@@ -586,7 +551,6 @@
     });
   }
 
-  // Налаштування пошуку за датою
   function setupDateSearch() {
     const searchBtn = document.getElementById('searchByDate');
     const clearBtn = document.getElementById('clearSearch');
@@ -594,7 +558,6 @@
     const searchResultsDiv = document.getElementById('searchResults');
     const searchResultsTitle = document.getElementById('searchResultsTitle');
     
-    // Зібрати всі доступні дати
     const allDates = new Set();
     Object.values(tourDetailsData).forEach(d => {
       if (d.departureDates) d.departureDates.forEach(date => allDates.add(date));
@@ -622,7 +585,6 @@
         const [y, m, d] = selected.split('-');
         const formatted = `${d}.${m}.${y}`;
         
-        // Знайти тури з цією датою
         const foundTitles = [];
         for (const [title, data] of Object.entries(tourDetailsData)) {
           if (data.departureDates && data.departureDates.includes(formatted)) {
@@ -641,7 +603,6 @@
             searchResultsDiv.innerHTML = foundCards.map(card => card.outerHTML).join('');
             searchResultsDiv.classList.add('visible');
             
-            // Переналаштувати обробники для знайдених карток
             setTimeout(() => {
               document.querySelectorAll('#searchResults .btn-outline').forEach(btn => {
                 btn.addEventListener('click', function(e) {
@@ -650,8 +611,7 @@
                   const card = this.closest('.card');
                   if (card) {
                     const details = getDetailsFromCard(card);
-                    const bookingItem = getBookingItemFromCard(card);
-                    showDetailsModal(details, bookingItem);
+                    showDetailsModal(details);
                   }
                 });
               });
@@ -704,7 +664,6 @@
     }
   }
 
-  // Налаштування каруселі
   function setupCarousel() {
     const track = document.getElementById('carouselTrack');
     const leftBtn = document.getElementById('carouselLeft');
@@ -733,18 +692,15 @@
         });
         
         window.addEventListener('resize', updateCarousel);
+        setTimeout(updateCarousel, 100);
       }
     }
   }
 
-  // Налаштування модальних вікон
   function setupModals() {
     // Закриття по кнопках
     document.querySelectorAll('.modal-close').forEach(btn => {
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      
-      newBtn.addEventListener('click', function() {
+      btn.addEventListener('click', function() {
         const modal = this.closest('.modal-overlay');
         if (modal) modal.classList.remove('active');
       });
@@ -752,10 +708,7 @@
     
     // Закриття по кліку на оверлей
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
-      const newOverlay = overlay.cloneNode(true);
-      overlay.parentNode.replaceChild(newOverlay, overlay);
-      
-      newOverlay.addEventListener('click', function(e) {
+      overlay.addEventListener('click', function(e) {
         if (e.target === this) this.classList.remove('active');
       });
     });
@@ -763,15 +716,28 @@
     // Кнопка "Забронювати" в модальному вікні деталей
     const modalDetailsBook = document.getElementById('modalDetailsBook');
     if (modalDetailsBook) {
-      const newBtn = modalDetailsBook.cloneNode(true);
-      modalDetailsBook.parentNode.replaceChild(newBtn, modalDetailsBook);
-      
-      newBtn.addEventListener('click', function() {
+      modalDetailsBook.addEventListener('click', function() {
         const modal = document.getElementById('modalDetails');
         if (!modal) return;
         
-        const bookingItemStr = modal.dataset.bookingItem;
-        const bookingItem = bookingItemStr ? JSON.parse(bookingItemStr) : {};
+        const title = document.getElementById('modalDetailsTitle')?.textContent || '';
+        const price = document.getElementById('modalDetailsPrice')?.textContent || '';
+        const img = document.getElementById('modalDetailsImg')?.src || '';
+        const badge = document.getElementById('modalDetailsBadge')?.textContent || '';
+        const subtitle = document.getElementById('modalDetailsSubtitle')?.textContent || '';
+        
+        const chipsContainer = document.getElementById('modalDetailsChips');
+        const chips = chipsContainer ? Array.from(chipsContainer.querySelectorAll('.modal-chip')).map(c => c.textContent) : [];
+        
+        const bookingItem = {
+          title,
+          price: price.replace('від ', ''),
+          image: img,
+          badge,
+          chips,
+          meta: subtitle,
+          category: ''
+        };
         
         modal.classList.remove('active');
         showBookModal(bookingItem);
@@ -780,10 +746,7 @@
     
     // Перемикання вкладок
     document.querySelectorAll('.modal-tab').forEach(tab => {
-      const newTab = tab.cloneNode(true);
-      tab.parentNode.replaceChild(newTab, tab);
-      
-      newTab.addEventListener('click', function() {
+      tab.addEventListener('click', function() {
         const tabName = this.dataset.tab;
         const modalContent = this.closest('.modal-content');
         
@@ -799,16 +762,35 @@
     // Форма бронювання
     const bookForm = document.getElementById('modalBookForm');
     if (bookForm) {
-      const newForm = bookForm.cloneNode(true);
-      bookForm.parentNode.replaceChild(newForm, bookForm);
-      
-      newForm.addEventListener('submit', function(e) {
+      bookForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        document.getElementById('modalBookSuccess').classList.add('active');
+        
+        if (!window.auth?.getToken()) {
+          showToast('🔒 Увійдіть, щоб забронювати', 'info');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+          return;
+        }
+        
+        const dateInput = this.querySelector('input[name="date"]');
+        if (!dateInput.value) {
+          showToast('Оберіть дату', 'error');
+          return;
+        }
+        
+        const successEl = document.getElementById('modalBookSuccess');
+        if (successEl) {
+          successEl.classList.add('active');
+          successEl.style.display = 'block';
+        }
+        
         showToast('✓ Бронювання підтверджено', 'success');
         
         setTimeout(() => {
           this.closest('.modal-overlay').classList.remove('active');
+          if (successEl) {
+            successEl.classList.remove('active');
+            successEl.style.display = 'none';
+          }
         }, 2000);
       });
     }
@@ -816,10 +798,7 @@
     // Очищення форми відгуку
     const mrfClear = document.getElementById('mrfClear');
     if (mrfClear) {
-      const newBtn = mrfClear.cloneNode(true);
-      mrfClear.parentNode.replaceChild(newBtn, mrfClear);
-      
-      newBtn.addEventListener('click', function() {
+      mrfClear.addEventListener('click', function() {
         document.getElementById('mrfName').value = '';
         document.getElementById('mrfText').value = '';
       });
@@ -828,10 +807,7 @@
     // Відправка відгуку
     const mrfSubmit = document.getElementById('mrfSubmit');
     if (mrfSubmit) {
-      const newBtn = mrfSubmit.cloneNode(true);
-      mrfSubmit.parentNode.replaceChild(newBtn, mrfSubmit);
-      
-      newBtn.addEventListener('click', function() {
+      mrfSubmit.addEventListener('click', function() {
         const name = document.getElementById('mrfName').value;
         const text = document.getElementById('mrfText').value;
         
@@ -849,29 +825,25 @@
     // Зірковий рейтинг
     const starInput = document.getElementById('mrfStars');
     if (starInput) {
-      const newStarInput = starInput.cloneNode(true);
-      starInput.parentNode.replaceChild(newStarInput, starInput);
-      
-      newStarInput.querySelectorAll('span').forEach(star => {
+      starInput.querySelectorAll('span').forEach(star => {
         star.addEventListener('click', function() {
           const value = this.dataset.star;
-          newStarInput.dataset.value = value;
+          starInput.dataset.value = value;
           
-          newStarInput.querySelectorAll('span').forEach((s, i) => {
-            s.style.color = i < value ? '#fbbf24' : '#d1d5db';
+          starInput.querySelectorAll('span').forEach((s, i) => {
+            s.textContent = i < value ? '★' : '☆';
           });
         });
       });
     }
   }
 
-  // Ініціалізація
   function init() {
     console.log('Ініціалізація index.js');
     loadTours();
     
-    // Запускаємо налаштування обробників після завантаження DOM
     setTimeout(() => {
+      initSlider();
       setupSliderHandlers();
       setupItemHandlers();
       setupDateSearch();
@@ -880,7 +852,6 @@
     }, 100);
   }
 
-  // Запуск після завантаження DOM
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

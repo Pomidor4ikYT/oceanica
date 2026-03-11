@@ -2,11 +2,11 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <title>Oceanica Travel — Тури</title>
+  <title>...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="index.css" />
-  <link rel="stylesheet" href="tours.css" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/pages/tours.css" />
 </head>
 <body class="tours-page">
   <header>
@@ -14,25 +14,24 @@
       <div class="brand-bubble">🌊</div>
       <div class="brand-name">Oceanica Travel</div>
     </div>
-<nav class="nav">
-  <a class="nav-link" href="index.html">Головна</a>
-  <div class="dropdown">
-    <a class="nav-link dropdown-toggle" href="#">Відпочинки ▾</a>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="cruise.html">🚢 Круїзи</a>
-      <a class="dropdown-item" href="tours.html">✈️ Тури</a>
-      <a class="dropdown-item" href="island.html">🏝️ Острови</a>
-    </div>
-  </div>
-  <div id="userSection" class="user-section"></div>
-</nav>
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Головна</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle" href="#">Відпочинки ▾</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="cruise.html">🚢 Круїзи</a>
+          <a class="dropdown-item" href="tours.html">✈️ Тури</a>
+          <a class="dropdown-item" href="island.html">🏝️ Острови</a>
+        </div>
+      </div>
+      <div id="userSection" class="user-section"></div>
+    </nav>
   </header>
 
   <div id="mainView">
-    <!-- ========== Слайдер акційних турів ========== -->
     <section class="offers-slider" id="dealsSection">
       <div class="slides" id="sliderSlides">
-        <div class="offer-slide" style="background-image:url('toursimg/tours_slider1.jpg');">
+        <div class="offer-slide" style="background-image:url('styles/img/tours/tours_slider1.jpg');">
           <div class="offer-caption">
             <div class="offer-caption-inner">
               <div class="cap-left">
@@ -49,7 +48,7 @@
             </div>
           </div>
         </div>
-        <div class="offer-slide" style="background-image:url('toursimg/tours_slider2.jpg');">
+        <div class="offer-slide" style="background-image:url('styles/img/tours/tours_slider2.jpg');">
           <div class="offer-caption">
             <div class="offer-caption-inner">
               <div class="cap-left">
@@ -66,7 +65,7 @@
             </div>
           </div>
         </div>
-        <div class="offer-slide" style="background-image:url('toursimg/tours_slider3.jpg');">
+        <div class="offer-slide" style="background-image:url('styles/img/tours/tours_slider3.jpg');">
           <div class="offer-caption">
             <div class="offer-caption-inner">
               <div class="cap-left">
@@ -88,7 +87,6 @@
       <button class="slider-arrow next" aria-label="Наступний">›</button>
     </section>
 
-    <!-- ========== Пошук за датою ========== -->
     <div style="text-align:center;">
       <div class="date-search">
         <label for="datePicker">Оберіть дату туру:</label>
@@ -99,13 +97,11 @@
       <div class="available-dates-note" id="availableDatesNote"></div>
     </div>
 
-    <!-- Результати пошуку -->
     <div class="container">
       <h3 class="section-title" style="margin-top: 2rem;" id="searchResultsTitle">Знайдені тури</h3>
       <div id="searchResults" class="cards-grid"></div>
     </div>
 
-    <!-- ========== Переваги турів ========== -->
     <section class="container">
       <h2 class="section-title">Чому обирають наші тури</h2>
       <div class="features">
@@ -132,7 +128,6 @@
       </div>
     </section>
 
-    <!-- ========== Спеціальна пропозиція (банер) ========== -->
     <section class="container">
       <div class="special-offer">
         <div class="offer-content">
@@ -145,39 +140,32 @@
           </div>
           <button class="btn-primary" id="specialTourBtn">Дізнатися більше</button>
         </div>
-        <div class="offer-image" style="background-image:url('toursimg/tours_special.jpg');"></div>
+        <div class="offer-image" style="background-image:url('styles/img/tours/tours_special.jpg');"></div>
       </div>
     </section>
 
-    <!-- ========== Фільтр категорій та сітка турів ========== -->
     <section class="container" id="toursSection">
       <div class="section-header">
         <h2 class="section-title">✈️ Тури мрії</h2>
         <button id="filterBtn" class="filter-btn">Категорії</button>
       </div>
 
-      <!-- Панель фільтрації (оновлена) -->
       <div id="filterPanel" class="filter-panel">
-        <!-- Нові вкладки -->
         <div class="filter-tabs">
           <button class="filter-tab active" data-filter-type="category">🏖️ За типом</button>
           <button class="filter-tab" data-filter-type="name">🔤 За назвою</button>
           <button class="filter-tab" data-filter-type="price">💰 За ціною</button>
           <button class="filter-tab" data-filter-type="popular">⭐ За популярністю</button>
         </div>
-        <!-- Контейнер для чіпсів -->
         <div class="category-chips" id="categoryChips"></div>
       </div>
 
-      <!-- Індикатор активного фільтра (новий) -->
       <div id="activeFilterIndicator" class="active-filter-indicator"></div>
 
-      <!-- Сітка карток (12 штук) -->
       <div class="cards-grid" id="toursGrid">
-        <!-- Картки будуть вставлені з JS, але для початку залишимо статичні -->
         <article class="card" data-category="beach">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour1.jpg" alt="Таїланд" />
+            <img class="card-img" src="styles/img/tours/tour1.jpg" alt="Таїланд" />
             <span class="badge">🏖️Пляжний</span>
             <button class="fav" title="В обране"></button>
           </div>
@@ -198,7 +186,7 @@
         </article>
         <article class="card" data-category="excursion">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour2.jpg" alt="Італія" />
+            <img class="card-img" src="styles/img/tours/tour2.jpg" alt="Італія" />
             <span class="badge">🏛️Екскурсійний</span>
             <button class="fav"></button>
           </div>
@@ -219,7 +207,7 @@
         </article>
         <article class="card" data-category="mountain">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour3.jpg" alt="Непал" />
+            <img class="card-img" src="styles/img/tours/tour3.jpg" alt="Непал" />
             <span class="badge">⛰️Гірський</span>
             <button class="fav"></button>
           </div>
@@ -240,7 +228,7 @@
         </article>
         <article class="card" data-category="beach">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour4.jpg" alt="Мальдіви" />
+            <img class="card-img" src="styles/img/tours/tour4.jpg" alt="Мальдіви" />
             <span class="badge">🏖️Пляжний</span>
             <button class="fav"></button>
           </div>
@@ -261,7 +249,7 @@
         </article>
         <article class="card" data-category="excursion">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour5.jpg" alt="Франція" />
+            <img class="card-img" src="styles/img/tours/tour5.jpg" alt="Франція" />
             <span class="badge">🏛️Екскурсійний</span>
             <button class="fav"></button>
           </div>
@@ -282,7 +270,7 @@
         </article>
         <article class="card" data-category="mountain">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour6.jpg" alt="Швейцарія" />
+            <img class="card-img" src="styles/img/tours/tour6.jpg" alt="Швейцарія" />
             <span class="badge">⛰️Гірський</span>
             <button class="fav"></button>
           </div>
@@ -303,7 +291,7 @@
         </article>
         <article class="card" data-category="beach">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour7.jpg" alt="Єгипет" />
+            <img class="card-img" src="styles/img/tours/tour7.jpg" alt="Єгипет" />
             <span class="badge">🏖️Пляжний</span>
             <button class="fav"></button>
           </div>
@@ -324,7 +312,7 @@
         </article>
         <article class="card" data-category="excursion">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour8.jpg" alt="Греція" />
+            <img class="card-img" src="styles/img/tours/tour8.jpg" alt="Греція" />
             <span class="badge">🏛️Екскурсійний</span>
             <button class="fav"></button>
           </div>
@@ -345,7 +333,7 @@
         </article>
         <article class="card" data-category="mountain">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour9.jpg" alt="Перу" />
+            <img class="card-img" src="styles/img/tours/tour9.jpg" alt="Перу" />
             <span class="badge">⛰️Гірський</span>
             <button class="fav"></button>
           </div>
@@ -366,7 +354,7 @@
         </article>
         <article class="card" data-category="beach">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour10.jpg" alt="Балі" />
+            <img class="card-img" src="styles/img/tours/tour10.jpg" alt="Балі" />
             <span class="badge">🏖️Пляжний</span>
             <button class="fav"></button>
           </div>
@@ -387,7 +375,7 @@
         </article>
         <article class="card" data-category="mountain">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour11.jpg" alt="Ісландія" />
+            <img class="card-img" src="styles/img/tours/tour11.jpg" alt="Ісландія" />
             <span class="badge">⛰️Гірський</span>
             <button class="fav"></button>
           </div>
@@ -408,7 +396,7 @@
         </article>
         <article class="card" data-category="excursion">
           <div class="card-img-wrap">
-            <img class="card-img" src="toursimg/tour12.jpg" alt="Японія" />
+            <img class="card-img" src="styles/img/tours/tour12.jpg" alt="Японія" />
             <span class="badge">🏛️Екскурсійний</span>
             <button class="fav"></button>
           </div>
@@ -430,7 +418,6 @@
       </div>
     </section>
 
-    <!-- ========== Підписка на новини ========== -->
     <section class="container newsletter">
       <h3>Будьте в курсі гарячих турів</h3>
       <p>Підпишіться на розсилку та отримуйте найкращі пропозиції першими</p>
@@ -441,7 +428,6 @@
     </section>
   </div>
 
-  <!-- ========== Модальні вікна ========== -->
   <div id="modalDetails" class="modal-overlay">
     <div class="modal-container">
       <div style="position:relative;">
@@ -541,7 +527,6 @@
     </div>
   </div>
 
-  <!-- ========== Футер ========== -->
   <footer>
     <div class="footer-inner">
       <div class="f-col">
@@ -558,7 +543,7 @@
         <p><a href="index.html">Головна</a></p>
         <p><a href="cruise.html">Круїзи</a></p>
         <p><a href="tours.html">Тури</a></p>
-        <p><a href="islands.html">Острови</a></p>
+        <p><a href="island.html">Острови</a></p>
         <p><a href="account.html">Мій кабінет</a></p>
       </div>
       <div class="f-col">
@@ -572,9 +557,9 @@
     </div>
   </footer>
 
-  <script src="auth.js"></script>
-  <script src="utils.js"></script>
-  <script src="header.js"></script>
-  <script src="tours.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/tours.js"></script>
 </body>
 </html>

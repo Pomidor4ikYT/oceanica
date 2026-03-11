@@ -2,11 +2,14 @@
   "name": "oceanica-server",
   "version": "1.0.0",
   "description": "Server for Oceanica Travel",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
     "postinstall": "npm rebuild sqlite3 --build-from-source",
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "engines": {
+    "node": "18.x"
   },
   "keywords": [],
   "author": "",

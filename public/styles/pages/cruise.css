@@ -1,0 +1,151 @@
+/* ========== СТОРІНКА КРУЇЗІВ ========== */
+.cruises-page .features .feature-item {
+  background: #e6f2ff;
+  border: 1px solid #b8d6ff;
+}
+
+.cruises-page .features .feature-icon {
+  color: var(--primary);
+}
+
+.cruises-page .filter-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  background: white;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cruises-page .filter-btn:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(15,76,129,0.2);
+}
+
+.cruises-page .filter-panel {
+  display: none;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(5px);
+  border-radius: 60px;
+  border: 1px solid #b8d6ff;
+}
+
+.cruises-page .filter-panel.active {
+  display: block;
+}
+
+.cruises-page .filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.cruises-page .filter-tab {
+  padding: 0.6rem 1.2rem;
+  background: #f1f5f9;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.cruises-page .filter-tab:hover {
+  background: #e2e8f0;
+}
+
+.cruises-page .filter-tab.active {
+  background: var(--primary);
+  color: white;
+}
+
+.cruises-page .category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.cruises-page .category-chip {
+  padding: 0.5rem 1.2rem;
+  background: #f1f5f9;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.cruises-page .category-chip:hover {
+  background: #e2e8f0;
+}
+
+.cruises-page .category-chip.active {
+  background: var(--primary);
+  color: white;
+}
+
+.cruises-page .category-chip.reset {
+  background: #fee2e2;
+  color: var(--error-dark);
+}
+
+.cruises-page .category-chip.reset:hover {
+  background: #fecaca;
+}
+
+.cruises-page .active-filter-indicator {
+  padding: 0.5rem 1rem;
+  background: #e6f2ff;
+  border-radius: var(--radius-full);
+  display: inline-block;
+  border-left: 4px solid var(--primary);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.cruises-page .badge {
+  background: #cde1ff;
+  color: var(--primary);
+  border: 1px solid #7ab0ff;
+}
+
+.cruises-page .chip {
+  background: #cde1ff;
+  color: #0a2a44;
+}
+
+.cruises-page .btn-outline {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.cruises-page .btn-outline:hover {
+  background: #e1f0ff;
+}
+
+.section-header {
+  display: flex;
+  justify-content: flex-end;  /* ВСІ ЕЛЕМЕНТИ ПРАВОРУЧ */
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  margin-right: auto;  /* ЗАГОЛОВОК ЗЛІВА, КНОПКА СПРАВА */
+}

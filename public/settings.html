@@ -1,149 +1,12 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <title>Налаштування — Oceanica Travel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="index.css">
-  <style>
-    .settings-container {
-      max-width: 600px;
-      margin: 3rem auto;
-      background: white;
-      border-radius: 32px;
-      padding: 2rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    .settings-container h2 {
-      color: #0f4c81;
-      margin-bottom: 2rem;
-    }
-    .avatar-section {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-    .avatar-preview {
-      width: 100px;
-      height: 100px;
-      background: linear-gradient(145deg, #0f4c81, #1e7fb0);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      color: white;
-      font-weight: 700;
-    }
-    .avatar-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .color-picker {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .color-option {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: transform 0.2s;
-    }
-    .color-option:hover {
-      transform: scale(1.1);
-    }
-    .color-option.selected {
-      border-color: #0f4c81;
-      transform: scale(1.1);
-    }
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #0f4c81;
-    }
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 0.8rem;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      font-size: 1rem;
-    }
-    .form-group textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    .btn-danger {
-      background: #dc2626;
-      color: white;
-      border: none;
-      padding: 0.8rem 2rem;
-      border-radius: 40px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 1rem;
-    }
-    .btn-danger:hover {
-      background: #b91c1c;
-    }
-    .message {
-      margin-top: 1rem;
-      padding: 0.8rem;
-      border-radius: 12px;
-      display: none;
-    }
-    .message.success {
-      background: #d1fae5;
-      color: #065f46;
-      display: block;
-    }
-    .message.error {
-      background: #fee2e2;
-      color: #b91c1c;
-      display: block;
-    }
-      .settings-form .btn-outline,
-  .settings-form .btn-danger {
-    width: 100%;
-    margin-top: 1rem;
-    padding: 0.8rem;
-    border-radius: 40px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-sizing: border-box;
-  }
-  .settings-form .btn-outline {
-    background: transparent;
-    border: 2px solid #0f4c81;
-    color: #0f4c81;
-  }
-  .settings-form .btn-outline:hover {
-    background: #0f4c81;
-    color: white;
-  }
-  .settings-form .btn-danger {
-    background: #dc2626;
-    border: 2px solid #dc2626;
-    color: white;
-  }
-  .settings-form .btn-danger:hover {
-    background: #b91c1c;
-    border-color: #b91c1c;
-  }
-  </style>
+  <meta charset="UTF-8" />
+  <title>...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/pages/settings.css" />
 </head>
 <body>
   <header>
@@ -168,7 +31,6 @@
   <div class="settings-container">
     <h2>⚙️ Налаштування профілю</h2>
 
-    <!-- Аватар -->
     <div class="avatar-section">
       <div class="avatar-preview" id="avatarPreview">В</div>
       <div class="avatar-actions">
@@ -186,7 +48,6 @@
       </div>
     </div>
 
-    <!-- Форма -->
     <form id="settingsForm">
       <div class="form-group">
         <label>Ім'я</label>
@@ -213,10 +74,11 @@
         <input type="password" id="settingsConfirmPassword">
       </div>
 
-      <button type="submit" class="btn-primary" style="width:100%;">Зберегти зміни</button>
+      <div style="display: flex; gap: 1rem; margin-top: 2rem; width: 100%;">
+        <button type="submit" class="btn-primary" style="flex: 1; padding: 1rem 0; font-size: 1.1rem; font-weight: 600; border: none; border-radius: 40px; cursor: pointer; background: linear-gradient(145deg, #1e7fb0, #0f4c81); color: white; transition: all 0.2s; box-shadow: 0 4px 8px rgba(15,76,129,0.2);">💾 Зберегти зміни</button>
+        <button type="button" id="deleteAccountBtn" style="flex: 1; padding: 1rem 0; font-size: 1.1rem; font-weight: 600; border: 2px solid #dc2626; border-radius: 40px; cursor: pointer; background: transparent; color: #dc2626; transition: all 0.2s;">🗑️ Видалити акаунт</button>
+      </div>
     </form>
-
-    <button class="btn-danger" id="deleteAccountBtn">🗑️ Видалити акаунт</button>
 
     <div class="message" id="settingsMessage"></div>
   </div>
@@ -252,9 +114,9 @@
     </div>
   </footer>
 
-  <script src="auth.js"></script>
-  <script src="header.js"></script>
-  <script src="utils.js"></script>
-  <script src="settings.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/settings.js"></script>
 </body>
 </html>

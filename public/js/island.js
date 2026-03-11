@@ -1,4 +1,5 @@
 (function() {
+  console.log('🚀 island.js завантажено');
   const qs = (sel, ctx) => (ctx || document).querySelector(sel);
   const qsa = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
   
@@ -231,11 +232,49 @@
     { title: 'Сардінія', cat: 'exotic' }
   ];
 
+  // ========== Налаштування обробників для карток ==========
+function setupItemHandlers() {
+  console.log('Налаштування обробників для карток');
+  
+  // Кнопки "Детальніше"
+  qsa('.btn-outline:not(.modal-close)').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = this.closest('.card');
+      if (card) {
+        const data = buildDataFromCard(card);
+        openDetailsModal(data);
+      }
+    });
+  });
+  
+  // Кнопки "Забронювати"
+  qsa('.btn-primary:not(.modal-close)').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = this.closest('.card');
+      if (card) {
+        const title = qs('.card-title', card)?.textContent?.trim() || '';
+        const image = qs('.card-img', card)?.src || '';
+        const price = qs('.card-price', card)?.textContent?.trim() || '';
+        const meta = qs('.card-meta', card)?.textContent?.trim() || '';
+        const badge = qs('.badge', card)?.textContent?.trim() || '';
+        const chips = qsa('.chips .chip', card).map(c => c.textContent.trim());
+        const category = card.dataset.category || '';
+        
+        currentBookingItem = { title, image, price, meta, badge, chips, category };
+        openBookModal(currentBookingItem);
+      }
+    });
+  });
+}
   function createCardFromIsland(title) {
     const data = islandDetailsData[title] || {};
     const cat = islandList.find(i => i.title === title)?.cat || 'exotic';
     const index = islandList.findIndex(i => i.title === title) + 1;
-    const imgSrc = `islandimg/island${index}.jpg`;
+    const imgSrc = `styles/img/island/island${index}.jpg`;
 
     const badgeMap = {
       tropical: '🏝️ Тропічний',
@@ -267,8 +306,12 @@
 
   const islandsGrid = qs('#islandsGrid');
   if (islandsGrid) {
-    islandsGrid.innerHTML = islandList.map(i => createCardFromIsland(i.title)).join('');
-    loadFavorites();
+islandsGrid.innerHTML = islandList.map(i => createCardFromIsland(i.title)).join('');
+loadFavorites();
+// Додати обробники після завантаження
+setTimeout(() => {
+  setupItemHandlers();
+}, 100);
   }
 
   // ========== НОВИЙ РОЗШИРЕНИЙ ФІЛЬТР ==========
@@ -809,7 +852,7 @@ function showToast(msg, type = 'success') {
         title: 'Мальдіви + Шрі-Ланка',
         subtitle: '14 днів • два острови',
         price: '89 990 грн',
-        img: 'islandimg/island_special.jpg',
+        img: 'styles/img/island/island_special.jpg',
         badge: '🔥 Гаряча пропозиція',
         tags: ['Комбо', 'Пляжі', 'Екскурсії'],
         description: 'Неймовірне поєднання відпочинку на райських островах Мальдіви та культурної спадщини Шрі-Ланки. Ви насолодитеся білосніжними пляжами, дайвінгом, а потім вирушите до стародавніх міст, чайних плантацій та національних парків.',

@@ -1,0 +1,146 @@
+/* ========== СТОРІНКА ОСТРОВІВ ========== */
+.islands-page .section-title {
+  color: #2c7a7a;
+}
+
+.islands-page .filter-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  background: white;
+  border: 1px solid #2c7a7a;
+  color: #2c7a7a;
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.islands-page .filter-btn:hover {
+  background: #2c7a7a;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(44,122,122,0.2);
+}
+
+.islands-page .filter-panel {
+  display: none;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(5px);
+  border-radius: 60px;
+  border: 1px solid #b2f0e8;
+}
+
+.islands-page .filter-panel.active {
+  display: block;
+}
+
+.islands-page .filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.islands-page .filter-tab {
+  padding: 0.6rem 1.2rem;
+  background: #f1f5f9;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.islands-page .filter-tab:hover {
+  background: #e2e8f0;
+}
+
+.islands-page .filter-tab.active {
+  background: #2c7a7a;
+  color: white;
+}
+
+.islands-page .category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.islands-page .category-chip {
+  padding: 0.5rem 1.2rem;
+  background: #f1f5f9;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.islands-page .category-chip:hover {
+  background: #e2e8f0;
+}
+
+.islands-page .category-chip.active {
+  background: #2c7a7a;
+  color: white;
+}
+
+.islands-page .category-chip.reset {
+  background: #fee2e2;
+  color: var(--error-dark);
+}
+
+.islands-page .category-chip.reset:hover {
+  background: #fecaca;
+}
+
+.islands-page .active-filter-indicator {
+  padding: 0.5rem 1rem;
+  background: #e6fffa;
+  border-radius: var(--radius-full);
+  display: inline-block;
+  border-left: 4px solid #2c7a7a;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #2c7a7a;
+  font-weight: 500;
+}
+
+.islands-page .badge {
+  background: #d9f0ec;
+  color: #2c7a7a;
+  border: 1px solid #9fd9d1;
+}
+
+.islands-page .chip {
+  background: #d9f0ec;
+  color: #1e4a4a;
+}
+
+.islands-page .btn-outline {
+  border-color: #2c7a7a;
+  color: #2c7a7a;
+}
+
+.islands-page .btn-outline:hover {
+  background: #e6fffa;
+}
+
+.section-header {
+  display: flex;
+  justify-content: flex-end;  /* ВСІ ЕЛЕМЕНТИ ПРАВОРУЧ */
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  margin-right: auto;  /* ЗАГОЛОВОК ЗЛІВА, КНОПКА СПРАВА */
+}

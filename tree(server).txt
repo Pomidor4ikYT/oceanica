@@ -1,0 +1,40 @@
+server/
+│
+├── server.js                          # Головний файл сервера
+│
+├── config/
+│   └── constants.js                    # Константи
+│
+├── database/
+│   ├── db.js                           # Підключення до БД
+│   ├── init.js                          # Ініціалізація таблиць
+│   └── seed.js                          # Початкові дані
+│
+├── middleware/
+│   ├── auth.js                          # authenticateToken
+│   ├── admin.js                          # authenticateAdmin
+│   └── validation.js                     # Валідація даних
+│
+├── controllers/
+│   ├── authController.js                 # Реєстрація, вхід
+│   ├── userController.js                  # Профіль користувача
+│   ├── favoritesController.js             # Улюблене
+│   ├── bookingsController.js              # Бронювання
+│   └── adminController.js                  # Адмін-панель
+│
+├── routes/
+│   ├── auth.js                            # /register, /login, /user
+│   ├── user.js                             # /profile, /stats
+│   ├── favorites.js                        # /favorites
+│   ├── bookings.js                         # /bookings
+│   ├── admin.js                             # /admin/*
+│   └── api.js                               # /api/*
+│
+├── utils/
+│   ├── helpers.js                          # safeJsonParse
+│   └── logger.js                            # Логування
+│
+├── node_modules/
+├── oceanica.db
+├── package.json
+└── package-lock.json

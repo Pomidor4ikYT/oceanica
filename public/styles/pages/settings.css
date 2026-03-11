@@ -1,0 +1,198 @@
+/* ========== СТОРІНКА НАЛАШТУВАНЬ ========== */
+
+.settings-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 32px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.settings-container h2 {
+  color: #0f4c81;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  text-align: center;
+}
+
+/* Аватар */
+.avatar-section {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.avatar-preview {
+  width: 100px;
+  height: 100px;
+  background: #0f4c81;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: white;
+  box-shadow: 0 4px 12px rgba(15,76,129,0.2);
+}
+
+.color-picker {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+/* Кнопка завантаження фото */
+#uploadAvatarBtn {
+  background: transparent;
+  border: 2px solid #0f4c81;
+  color: #0f4c81;
+  padding: 0.5rem 1.2rem;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+
+#uploadAvatarBtn:hover {
+  background: #0f4c81;
+  color: white;
+}
+.color-option {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #0f4c81;
+}
+
+/* Форма */
+#settingsForm .form-group {
+  margin-bottom: 1.5rem;
+}
+
+#settingsForm label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #0f4c81;
+}
+
+#settingsForm input,
+#settingsForm textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+}
+
+#settingsForm input:focus,
+#settingsForm textarea:focus {
+  outline: none;
+  border-color: #0f4c81;
+}
+
+#settingsForm textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Кнопки */
+.settings-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-primary {
+  background: linear-gradient(145deg, #1e7fb0, #0f4c81);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(145deg, #0f4c81, #1e7fb0);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(15,76,129,0.2);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid #dc2626;
+  color: #dc2626;
+  padding: 1rem 2rem;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.btn-outline:hover {
+  background: #dc2626;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Повідомлення */
+.message {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  display: none;
+  text-align: center;
+  font-weight: 600;
+}
+
+.message.success {
+  display: block;
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.message.error {
+  display: block;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Адаптація */
+@media (max-width: 640px) {
+  .settings-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .avatar-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .settings-actions {
+    flex-direction: column;
+  }
+}

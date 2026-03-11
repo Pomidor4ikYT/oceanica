@@ -1,0 +1,183 @@
+/* ========== КОМПОНЕНТ ФОРМИ ========== */
+@import '../utils/variables.css';
+
+.form-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1 1 200px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--primary);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  transition: all var(--transition-fast);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(15,76,129,0.1);
+}
+
+.form-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-submit {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: var(--spacing-md);
+}
+
+.form-submit:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(15,76,129,0.2);
+}
+
+.form-submit:active {
+  transform: translateY(0);
+}
+
+.form-success {
+  background: #d1fae5;
+  color: var(--success-dark);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  margin-top: var(--spacing-md);
+  display: none;
+  text-align: center;
+  font-weight: 600;
+}
+
+.form-success.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ========== АВТОРИЗАЦІЯ ========== */
+.auth-container {
+  max-width: 400px;
+  margin: 4rem auto;
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-container h2 {
+  color: var(--primary);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  font-size: 2rem;
+}
+
+.auth-container .form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.auth-container label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+}
+
+.auth-container input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.auth-container button {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: var(--spacing-md);
+}
+
+.auth-container button:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(15,76,129,0.2);
+}
+
+.auth-container p {
+  text-align: center;
+  margin-top: var(--spacing-md);
+  color: var(--text-muted);
+}
+
+.auth-container a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-container a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  color: var(--error);
+  text-align: center;
+  margin-top: var(--spacing-md);
+  font-size: 0.9rem;
+  min-height: 20px;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

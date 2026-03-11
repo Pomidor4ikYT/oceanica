@@ -2,10 +2,11 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <title>Oceanica Travel — Острови</title>
+  <title>...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="island.css" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/pages/island.css" />
 </head>
 <body class="islands-page">
   <header>
@@ -13,25 +14,24 @@
       <div class="brand-bubble">🌊</div>
       <div class="brand-name">Oceanica Travel</div>
     </div>
-<nav class="nav">
-  <a class="nav-link" href="index.html">Головна</a>
-  <div class="dropdown">
-    <a class="nav-link dropdown-toggle" href="#">Відпочинки ▾</a>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="cruise.html">🚢 Круїзи</a>
-      <a class="dropdown-item" href="tours.html">✈️ Тури</a>
-      <a class="dropdown-item" href="island.html">🏝️ Острови</a>
-    </div>
-  </div>
-  <div id="userSection" class="user-section"></div>
-</nav>
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Головна</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle" href="#">Відпочинки ▾</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="cruise.html">🚢 Круїзи</a>
+          <a class="dropdown-item" href="tours.html">✈️ Тури</a>
+          <a class="dropdown-item" href="island.html">🏝️ Острови</a>
+        </div>
+      </div>
+      <div id="userSection" class="user-section"></div>
+    </nav>
   </header>
 
   <div id="mainView">
-    <!-- ========== Слайдер акційних островів ========== -->
     <section class="offers-slider" id="dealsSection">
       <div class="slides" id="sliderSlides">
-        <div class="offer-slide" style="background-image:url('islandimg/island_slider1.jpg');">
+        <div class="offer-slide" style="background-image:url('styles/img/island/island_slider1.jpg');">
           <div class="offer-caption">
             <div class="offer-caption-inner">
               <div class="cap-left">
@@ -48,7 +48,7 @@
             </div>
           </div>
         </div>
-        <div class="offer-slide" style="background-image:url('islandimg/island_slider2.jpg');">
+        <div class="offer-slide" style="background-image:url('styles/img/island/island_slider2.jpg');">
           <div class="offer-caption">
             <div class="offer-caption-inner">
               <div class="cap-left">
@@ -65,7 +65,7 @@
             </div>
           </div>
         </div>
-        <div class="offer-slide" style="background-image:url('islandimg/island_slider3.jpg');">
+        <div class="offer-slide" style="background-image:url('styles/img/island/island_slider3.jpg');">
           <div class="offer-caption">
             <div class="offer-caption-inner">
               <div class="cap-left">
@@ -87,7 +87,6 @@
       <button class="slider-arrow next" aria-label="Наступний">›</button>
     </section>
 
-    <!-- ========== Пошук за датою ========== -->
     <div style="text-align:center;">
       <div class="date-search">
         <label for="datePicker">Оберіть дату:</label>
@@ -98,13 +97,11 @@
       <div class="available-dates-note" id="availableDatesNote"></div>
     </div>
 
-    <!-- Результати пошуку -->
     <div class="container">
       <h3 class="section-title" style="margin-top: 2rem;" id="searchResultsTitle">Знайдені острови</h3>
       <div id="searchResults" class="cards-grid"></div>
     </div>
 
-    <!-- ========== Переваги островів ========== -->
     <section class="container">
       <h2 class="section-title">Чому острови з нами</h2>
       <div class="features">
@@ -131,7 +128,6 @@
       </div>
     </section>
 
-    <!-- ========== Спеціальна пропозиція (банер) ========== -->
     <section class="container">
       <div class="special-offer">
         <div class="offer-content">
@@ -144,38 +140,31 @@
           </div>
           <button class="btn-primary" id="specialIslandBtn">Дізнатися більше</button>
         </div>
-        <div class="offer-image" style="background-image:url('islandimg/island_special.jpg');"></div>
+        <div class="offer-image" style="background-image:url('styles/img/island/island_special.jpg');"></div>
       </div>
     </section>
 
-    <!-- ========== Фільтр категорій та сітка островів ========== -->
     <section class="container" id="islandsSection">
       <div class="section-header">
         <h2 class="section-title">🏝️ Острови мрії</h2>
         <button id="filterBtn" class="filter-btn">Категорії</button>
       </div>
 
-      <!-- Панель фільтрації (оновлена) -->
       <div id="filterPanel" class="filter-panel">
-        <!-- Нові вкладки -->
         <div class="filter-tabs">
           <button class="filter-tab active" data-filter-type="category">🏝️ За типом</button>
           <button class="filter-tab" data-filter-type="name">🔤 За назвою</button>
           <button class="filter-tab" data-filter-type="price">💰 За ціною</button>
           <button class="filter-tab" data-filter-type="popular">⭐ За популярністю</button>
         </div>
-        <!-- Контейнер для чіпсів -->
         <div class="category-chips" id="categoryChips"></div>
       </div>
 
-      <!-- Індикатор активного фільтра (новий) -->
       <div id="activeFilterIndicator" class="active-filter-indicator"></div>
 
-      <!-- Сітка карток (12 штук) -->
       <div class="cards-grid" id="islandsGrid"></div>
     </section>
 
-    <!-- ========== Підписка на новини ========== -->
     <section class="container newsletter">
       <h3>Будьте в курсі островних пропозицій</h3>
       <p>Підпишіться на розсилку та отримуйте найкращі пропозиції першими</p>
@@ -186,7 +175,6 @@
     </section>
   </div>
 
-  <!-- ========== Модальні вікна ========== -->
   <div id="modalDetails" class="modal-overlay">
     <div class="modal-container">
       <div style="position:relative;">
@@ -286,7 +274,6 @@
     </div>
   </div>
 
-  <!-- ========== Футер ========== -->
   <footer>
     <div class="footer-inner">
       <div class="f-col">
@@ -317,8 +304,8 @@
     </div>
   </footer>
 
-  <script src="auth.js"></script>
-  <script src="header.js"></script>
-  <script src="island.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/island.js"></script>
 </body>
 </html>

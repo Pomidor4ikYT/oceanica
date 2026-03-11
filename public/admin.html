@@ -1,157 +1,12 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <title>Адмін-панель — Oceanica Travel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css">
-  <style>
-    /* Додаткові стилі для адмін-шапки */
-    .admin-header {
-      background: white;
-      padding: 0.8rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      border-bottom: 1px solid #eef2f6;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .brand-bubble {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(145deg, #0f4c81, #1e7fb0);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: white;
-      box-shadow: 0 4px 10px rgba(15,76,129,0.2);
-    }
-
-    .brand-name {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #0f4c81;
-    }
-
-    .brand-name span {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #64748b;
-      margin-left: 0.5rem;
-    }
-
-    .admin-nav {
-      display: flex;
-      align-items: center;
-    }
-
-    .user-section {
-      display: flex;
-      align-items: center;
-    }
-
-    .user-dropdown {
-      position: relative;
-    }
-
-    .avatar {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(145deg, #0f4c81, #1e7fb0);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: white;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 10px rgba(15,76,129,0.2);
-    }
-
-    .avatar:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 15px rgba(15,76,129,0.3);
-    }
-
-    .user-dropdown .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 50px;
-      right: 0;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      min-width: 220px;
-      z-index: 1000;
-      padding: 0.5rem 0;
-      border: 1px solid #eef2f6;
-    }
-
-    .user-dropdown .dropdown-menu.show {
-      display: block;
-    }
-
-    .user-dropdown .dropdown-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0.7rem 1.5rem;
-      text-decoration: none;
-      color: #334155;
-      transition: background 0.2s;
-      font-size: 0.95rem;
-      font-weight: 500;
-      background: none;
-      border: none;
-      width: 100%;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .user-dropdown .dropdown-item:hover {
-      background: #f1f5f9;
-      color: #0f4c81;
-    }
-
-    .dropdown-divider {
-      height: 1px;
-      background: #eef2f6;
-      margin: 0.5rem 0;
-    }
-
-    .login-btn {
-      background: white;
-      color: #0f4c81;
-      border: 2px solid #0f4c81;
-      padding: 0.5rem 1.5rem;
-      border-radius: 40px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .login-btn:hover {
-      background: #0f4c81;
-      color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(15,76,129,0.2);
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/pages/admin.css" />
 </head>
 <body>
   <div id="loading-spinner" class="loading-spinner">🌊 Завантаження...</div>
@@ -180,7 +35,6 @@
       </div>
 
       <div class="admin-content">
-        <!-- Тури -->
         <div class="tab-content active" id="tours-tab">
           <div class="admin-toolbar">
             <h2>✈️ Управління турами</h2>
@@ -188,7 +42,6 @@
           <div class="items-grid" id="tours-grid"></div>
         </div>
 
-        <!-- Круїзи -->
         <div class="tab-content" id="cruises-tab">
           <div class="admin-toolbar">
             <h2>🚢 Управління круїзами</h2>
@@ -196,7 +49,6 @@
           <div class="items-grid" id="cruises-grid"></div>
         </div>
 
-        <!-- Острови -->
         <div class="tab-content" id="islands-tab">
           <div class="admin-toolbar">
             <h2>🏝️ Управління островами</h2>
@@ -204,7 +56,6 @@
           <div class="items-grid" id="islands-grid"></div>
         </div>
 
-        <!-- Гарячі путівки -->
         <div class="tab-content" id="hot-tab">
           <div class="admin-toolbar">
             <h2>🔥 Управління гарячими путівками</h2>
@@ -212,7 +63,6 @@
           <div class="items-grid" id="hot-grid"></div>
         </div>
 
-        <!-- Користувачі -->
         <div class="tab-content" id="users-tab">
           <div class="admin-toolbar">
             <h2>👥 Користувачі</h2>
@@ -220,7 +70,6 @@
           <div class="users-table" id="users-grid"></div>
         </div>
 
-        <!-- Всі бронювання -->
         <div class="tab-content" id="bookings-tab">
           <div class="admin-toolbar">
             <h2>📋 Всі бронювання</h2>
@@ -231,7 +80,6 @@
     </div>
   </div>
 
-  <!-- Модальне вікно для додавання/редагування -->
   <div id="itemModal" class="modal-overlay">
     <div class="modal-container modal-large">
       <div class="modal-header">
@@ -277,11 +125,11 @@
           <div class="form-row">
             <div class="form-group">
               <label>Бейдж</label>
-              <select id="badge" class="form-select" id="badgeSelect"></select>
+              <select id="badge" class="form-select"></select>
             </div>
             <div class="form-group">
               <label>Категорія</label>
-              <select id="category" class="form-select" id="categorySelect"></select>
+              <select id="category" class="form-select"></select>
             </div>
           </div>
 
@@ -340,8 +188,8 @@
     </div>
   </div>
 
-  <script src="auth.js"></script>
-  <script src="header.js"></script>
-  <script src="admin.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>

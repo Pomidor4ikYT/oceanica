@@ -1,0 +1,17 @@
+/* ========== ГОЛОВНИЙ CSS ФАЙЛ ========== */
+
+/* Базові стилі */
+@import './base.css';
+
+/* Компоненти */
+@import './components/header.css';
+@import './components/cards.css';
+@import './components/slider.css';
+@import './components/modals.css';
+@import './components/search.css';
+@import './components/forms.css';
+
+/* Утиліти */
+@import './utils/animations.css';
+
+/* Сторінки будуть підключатися окремо в HTML */
