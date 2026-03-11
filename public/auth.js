@@ -89,6 +89,10 @@
       if (data.success && data.token) {
         setToken(data.token);
         setUserEmail(data.user?.email || email);
+        
+        // Зберігаємо дані користувача в localStorage для швидкого доступу
+        localStorage.setItem('oceanica_user_data', JSON.stringify(data.user));
+        
         return { 
           success: true, 
           user: data.user,
@@ -107,6 +111,7 @@
   function logout() {
     setToken(null);
     setUserEmail(null);
+    localStorage.removeItem('oceanica_user_data');
     window.location.href = 'index.html';
   }
 
@@ -114,18 +119,36 @@
   async function getUserData() {
     const token = getToken();
     if (!token) return null;
+    
+    // Спочатку пробуємо отримати з localStorage (швидше)
+    const cached = localStorage.getItem('oceanica_user_data');
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        // Якщо помилка, ігноруємо і йдемо на сервер
+      }
+    }
+    
     try {
       const response = await fetch(`${API_URL}/user`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
       if (response.status === 401) {
         logout();
         return null;
       }
+      
       const data = await response.json();
-      return data.success ? data.user : null;
+      if (data.success) {
+        // Кешуємо отримані дані
+        localStorage.setItem('oceanica_user_data', JSON.stringify(data.user));
+        return data.user;
+      }
+      return null;
     } catch (error) {
-      console.error(error);
+      console.error('Помилка отримання даних користувача:', error);
       return null;
     }
   }
@@ -142,9 +165,9 @@
 
   // ========== Перевірка авторизації ==========
   function requireAuth() {
-    const user = getUserFromToken();
-    if (!user) {
-      logout();
+    const token = getToken();
+    if (!token) {
+      window.location.href = 'login.html';
       return false;
     }
     return true;
@@ -272,7 +295,12 @@
         logout();
         return { success: false, message: 'Термін сесії вичерпано' };
       }
-      return await response.json();
+      const data = await response.json();
+      if (data.success && data.user) {
+        // Оновлюємо кеш
+        localStorage.setItem('oceanica_user_data', JSON.stringify(data.user));
+      }
+      return data;
     } catch (error) {
       console.error(error);
       return { success: false, message: 'Помилка з\'єднання' };
