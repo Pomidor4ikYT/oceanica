@@ -1,9 +1,12 @@
+// server/server.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
 const app = express();
+
+// Визначаємо PORT - Render передає сюди значення автоматично
 const PORT = process.env.PORT || 5000;
 
 // Middleware
@@ -11,46 +14,88 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Логування запитів (опціонально)
+// Логування запитів (тільки для розробки)
 if (process.env.NODE_ENV === 'development') {
-  const logger = require('./utils/logger');
-  app.use(logger);
+  app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+  });
 }
 
-// Підключення до бази даних
-const db = require('./database/db');
-
-// Маршрути
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/users', require('./routes/user'));
-app.use('/api/admin', require('./routes/admin'));
-app.use('/api/bookings', require('./routes/bookings'));
-app.use('/api/favorites', require('./routes/favorites'));
-
 // Базовий маршрут для перевірки
-app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK', 
-    message: 'Server is running',
-    environment: process.env.NODE_ENV,
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Oceanica API Server',
+    status: 'running',
+    environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString()
   });
 });
 
-// Обробка 404
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
-// Обробка помилок
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    message: 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err.message : {}
+// Health check для Render
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    message: 'Server is healthy',
+    environment: process.env.NODE_ENV,
+    port: PORT,
+    timestamp: new Date().toISOString()
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
+// Підключаємо маршрути
+try {
+  app.use('/api/auth', require('./routes/auth'));
+  app.use('/api/users', require('./routes/user'));
+  app.use('/api/admin', require('./routes/admin'));
+  app.use('/api/bookings', require('./routes/bookings'));
+  app.use('/api/favorites', require('./routes/favorites'));
+  
+  console.log('✅ Маршрути підключено успішно');
+} catch (error) {
+  console.error('❌ Помилка підключення маршрутів:', error.message);
+}
+
+// Обробка 404 - маршрут не знайдено
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Маршрут не знайдено: ${req.originalUrl}`
+  });
 });
+
+// Глобальний обробник помилок
+app.use((err, req, res, next) => {
+  console.error('❌ Помилка сервера:', err.stack);
+  
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Внутрішня помилка сервера';
+  
+  res.status(statusCode).json({
+    success: false,
+    message: message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
+});
+
+// Запускаємо сервер - ВАЖЛИВО: використовуємо '0.0.0.0' для Render
+app.listen(PORT, '0.0.0.0', () => {
+  console.log('\n🚀 Сервер успішно запущено!');
+  console.log(`📡 Порт: ${PORT}`);
+  console.log(`🌍 Середовище: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 URL: http://localhost:${PORT}`);
+  console.log(`🏥 Health check: http://localhost:${PORT}/health\n`);
+});
+
+// Обробка неочікуваних помилок
+process.on('uncaughtException', (error) => {
+  console.error('❌ Необроблена помилка:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (error) => {
+  console.error('❌ Необроблений проміс:', error);
+  process.exit(1);
+});
+
+module.exports = app;
