@@ -11,23 +11,33 @@ async function initPostgreSQL() {
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
+        phone VARCHAR(50),
         password VARCHAR(255) NOT NULL,
+        registered VARCHAR(50),
+        bio TEXT,
         role VARCHAR(50) DEFAULT 'user',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
     console.log('✅ Таблиця users створена');
     
-    // Створення таблиці tours
+    // Створення таблиці tours (з колонкою meta)
     await query(`
       CREATE TABLE IF NOT EXISTS tours (
         id SERIAL PRIMARY KEY,
+        type VARCHAR(50) NOT NULL,
         title VARCHAR(255) NOT NULL,
         description TEXT,
-        price DECIMAL(10, 2),
-        duration INTEGER,
-        location VARCHAR(255),
-        image_url TEXT,
+        price VARCHAR(100),
+        duration VARCHAR(100),
+        groupSize VARCHAR(100),
+        accommodation VARCHAR(255),
+        badge VARCHAR(100),
+        category VARCHAR(100),
+        image TEXT,
+        departureDates JSONB DEFAULT '[]',
+        chips JSONB DEFAULT '[]',
+        meta TEXT DEFAULT '',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -37,12 +47,15 @@ async function initPostgreSQL() {
     await query(`
       CREATE TABLE IF NOT EXISTS bookings (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        tour_id INTEGER REFERENCES tours(id) ON DELETE CASCADE,
+        user_email VARCHAR(255) REFERENCES users(email) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        price VARCHAR(100),
+        image TEXT,
+        badge VARCHAR(100),
+        chips JSONB DEFAULT '[]',
+        meta VARCHAR(255),
+        category VARCHAR(100),
         booking_date DATE NOT NULL,
-        participants INTEGER DEFAULT 1,
-        total_price DECIMAL(10, 2),
-        status VARCHAR(50) DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -52,10 +65,16 @@ async function initPostgreSQL() {
     await query(`
       CREATE TABLE IF NOT EXISTS favorites (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        tour_id INTEGER REFERENCES tours(id) ON DELETE CASCADE,
+        user_email VARCHAR(255) REFERENCES users(email) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        price VARCHAR(100),
+        image TEXT,
+        badge VARCHAR(100),
+        chips JSONB DEFAULT '[]',
+        meta VARCHAR(255),
+        category VARCHAR(100),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(user_id, tour_id)
+        UNIQUE(user_email, title)
       )
     `);
     console.log('✅ Таблиця favorites створена');

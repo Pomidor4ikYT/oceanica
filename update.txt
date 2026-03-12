@@ -1,3 +1,0 @@
-git add .
-git commit -m "Підключення улюблених та бронювань до API для всіх сторінок"
-git push origin main

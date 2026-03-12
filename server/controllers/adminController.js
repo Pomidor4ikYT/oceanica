@@ -14,26 +14,28 @@ async function getItems(req, res) {
   try {
     let result;
     if (process.env.NODE_ENV === 'production') {
-      // PostgreSQL
       result = await query(
         'SELECT * FROM tours WHERE type = $1 ORDER BY id DESC',
         [type]
       );
+      const items = result.rows.map(row => ({
+        ...row,
+        departureDates: safeJsonParse(row.departuredates, []),
+        chips: safeJsonParse(row.chips, [])
+      }));
+      res.json({ success: true, items });
     } else {
-      // SQLite
       result = await query(
         'SELECT * FROM tours WHERE type = ? ORDER BY id DESC',
         [type]
       );
+      const items = result.map(row => ({
+        ...row,
+        departureDates: safeJsonParse(row.departureDates, []),
+        chips: safeJsonParse(row.chips, [])
+      }));
+      res.json({ success: true, items });
     }
-    
-    const items = (process.env.NODE_ENV === 'production' ? result.rows : result).map(row => ({
-      ...row,
-      departureDates: safeJsonParse(row.departureDates, []),
-      chips: safeJsonParse(row.chips, [])
-    }));
-    
-    res.json({ success: true, items });
   } catch (error) {
     console.error('❌ Помилка отримання:', error);
     res.status(500).json({ success: false, message: 'Помилка сервера' });
@@ -49,7 +51,7 @@ async function addItem(req, res) {
 
   const {
     title, description, price, duration, groupSize,
-    accommodation, badge, category, image, departureDates, chips
+    accommodation, badge, category, image, departureDates, chips, meta
   } = req.body;
 
   if (!title || !price) {
@@ -59,44 +61,32 @@ async function addItem(req, res) {
   try {
     const priceWithCurrency = price.toString().includes('грн') ? price : price + ' грн';
     
-    const formattedDuration = duration && !isNaN(duration) 
-      ? duration + (type === 'tour' || type === 'island' ? ' ночей' : ' днів') 
-      : duration;
-    const formattedGroup = groupSize && !isNaN(groupSize) ? groupSize + ' осіб' : groupSize;
-    const formattedAccom = accommodation && !isNaN(accommodation) 
-      ? 'Готель ' + accommodation + '*' 
-      : accommodation;
-    
-    let result;
     if (process.env.NODE_ENV === 'production') {
-      // PostgreSQL
-      result = await query(
+      const result = await query(
         `INSERT INTO tours (
-          type, title, description, price, duration, groupSize, 
-          accommodation, badge, category, image, departureDates, chips
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
+          type, title, description, price, duration, groupsize, 
+          accommodation, badge, category, image, departureDates, chips, meta
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
         [
-          type, title, description || '', priceWithCurrency, formattedDuration || '', 
-          formattedGroup || '', formattedAccom || '', badge || '', category || '',
-          image || '', JSON.stringify(departureDates || []), JSON.stringify(chips || [])
+          type, title, description || '', priceWithCurrency, duration || '', 
+          groupSize || '', accommodation || '', badge || '', category || '',
+          image || '', JSON.stringify(departureDates || []), JSON.stringify(chips || []), meta || ''
         ]
       );
       const newItem = result.rows[0];
       res.json({ success: true, item: newItem });
     } else {
-      // SQLite
-      result = await query(
+      const result = await query(
         `INSERT INTO tours (
           type, title, description, price, duration, groupSize, 
-          accommodation, badge, category, image, departureDates, chips
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          accommodation, badge, category, image, departureDates, chips, meta
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          type, title, description || '', priceWithCurrency, formattedDuration || '', 
-          formattedGroup || '', formattedAccom || '', badge || '', category || '',
-          image || '', JSON.stringify(departureDates || []), JSON.stringify(chips || [])
+          type, title, description || '', priceWithCurrency, duration || '', 
+          groupSize || '', accommodation || '', badge || '', category || '',
+          image || '', JSON.stringify(departureDates || []), JSON.stringify(chips || []), meta || ''
         ]
       );
-      // Для SQLite потрібно отримати ID
       const newItem = await query('SELECT * FROM tours WHERE id = ?', [result.lastID]);
       res.json({ success: true, item: newItem[0] });
     }
@@ -115,7 +105,7 @@ async function updateItem(req, res) {
 
   const {
     title, description, price, duration, groupSize,
-    accommodation, badge, category, image, departureDates, chips
+    accommodation, badge, category, image, departureDates, chips, meta
   } = req.body;
 
   try {
@@ -138,31 +128,20 @@ async function updateItem(req, res) {
       const priceWithCurrency = price.toString().includes('грн') ? price : price + ' грн';
       addUpdate('price', priceWithCurrency); 
     }
-    if (duration !== undefined) { 
-      const formattedDuration = duration && !isNaN(duration) 
-        ? duration + (type === 'tour' || type === 'island' ? ' ночей' : ' днів') 
-        : duration;
-      addUpdate('duration', formattedDuration); 
-    }
-    if (groupSize !== undefined) { 
-      const formattedGroup = groupSize && !isNaN(groupSize) ? groupSize + ' осіб' : groupSize;
-      addUpdate('groupSize', formattedGroup); 
-    }
-    if (accommodation !== undefined) { 
-      const formattedAccom = accommodation && !isNaN(accommodation) ? 'Готель ' + accommodation + '*' : accommodation;
-      addUpdate('accommodation', formattedAccom); 
-    }
+    if (duration !== undefined) addUpdate('duration', duration);
+    if (groupSize !== undefined) addUpdate('groupSize', groupSize);
+    if (accommodation !== undefined) addUpdate('accommodation', accommodation);
     if (badge !== undefined) addUpdate('badge', badge);
     if (category !== undefined) addUpdate('category', category);
     if (image !== undefined) addUpdate('image', image);
     if (departureDates !== undefined) addUpdate('departureDates', JSON.stringify(departureDates));
     if (chips !== undefined) addUpdate('chips', JSON.stringify(chips));
+    if (meta !== undefined) addUpdate('meta', meta);
 
     if (updates.length === 0) {
       return res.status(400).json({ success: false, message: 'Немає даних для оновлення' });
     }
 
-    // Додаємо умови WHERE
     if (process.env.NODE_ENV === 'production') {
       values.push(id, type);
       const queryStr = `UPDATE tours SET ${updates.join(', ')} WHERE id = $${paramIndex} AND type = $${paramIndex + 1} RETURNING *`;
@@ -224,19 +203,17 @@ async function deleteItem(req, res) {
 
 async function getUsers(req, res) {
   try {
-    let result;
     if (process.env.NODE_ENV === 'production') {
-      result = await query(
+      const result = await query(
         'SELECT id, name, email, phone, registered, role FROM users ORDER BY id DESC'
       );
+      res.json({ success: true, users: result.rows });
     } else {
-      result = await query(
+      const result = await query(
         'SELECT id, name, email, phone, registered, role FROM users ORDER BY id DESC'
       );
+      res.json({ success: true, users: result });
     }
-    
-    const users = process.env.NODE_ENV === 'production' ? result.rows : result;
-    res.json({ success: true, users });
   } catch (error) {
     console.error('❌ Помилка отримання користувачів:', error);
     res.status(500).json({ success: false, message: 'Помилка сервера' });

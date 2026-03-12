@@ -1,10 +1,209 @@
+// public/js/island.js
 (function() {
-  console.log('🚀 island.js завантажено');
   const qs = (sel, ctx) => (ctx || document).querySelector(sel);
   const qsa = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
-  
 
-  // ========== Управління модальними вікнами ==========
+  // ========== Дефолтні дані островів (якщо API не працює) ==========
+  const defaultIslands = [
+    {
+      id: 1,
+      title: 'Мальдіви',
+      price: '67 800 грн',
+      duration: '7 ночей',
+      groupSize: 'До 10 осіб',
+      accommodation: 'Вілли над водою 5*',
+      badge: '🏝️ Тропічний',
+      category: 'tropical',
+      image: 'styles/img/island/island1.jpg',
+      meta: '7 ночей',
+      departureDates: ['05.03.2026', '12.03.2026', '19.03.2026', '26.03.2026'],
+      chips: ['Вілли', 'Дайвінг', 'SPA'],
+      description: 'Райські острови в Індійському океані. Білосніжні пляжі, бунгало над водою, неймовірний підводний світ.'
+    },
+    {
+      id: 2,
+      title: 'Ісландія',
+      price: '62 300 грн',
+      duration: '8 днів',
+      groupSize: 'До 15 осіб',
+      accommodation: 'Готелі та котеджі',
+      badge: '🌋 Вулканічний',
+      category: 'volcanic',
+      image: 'styles/img/island/island2.jpg',
+      meta: '8 днів',
+      departureDates: ['10.03.2026', '17.03.2026', '24.03.2026', '31.03.2026'],
+      chips: ['Гейзери', 'Водоспади', 'Чорні пляжі'],
+      description: 'Країна льодовиків та вулканів. Гейзери, водоспади, чорні пляжі, північне сяйво.'
+    },
+    {
+      id: 3,
+      title: 'Бора-Бора',
+      price: '59 960 грн',
+      duration: '7 ночей',
+      groupSize: 'До 8 осіб',
+      accommodation: 'Бунгало над водою',
+      badge: '✨ Екзотичний',
+      category: 'exotic',
+      image: 'styles/img/island/island3.jpg',
+      meta: '7 ночей',
+      departureDates: ['15.03.2026', '22.03.2026', '29.03.2026', '05.04.2026'],
+      chips: ['Лагуна', 'Рифи', 'Бунгало'],
+      description: 'Найкрасивіша лагуна світу. Бунгало над водою, коралові рифи, акуляче сафарі.'
+    },
+    {
+      id: 4,
+      title: 'Сейшели',
+      price: '43 960 грн',
+      duration: '7 ночей',
+      groupSize: 'До 12 осіб',
+      accommodation: 'Готелі на березі',
+      badge: '🏝️ Тропічний',
+      category: 'tropical',
+      image: 'styles/img/island/island4.jpg',
+      meta: '7 ночей',
+      departureDates: ['20.03.2026', '27.03.2026', '03.04.2026', '10.04.2026'],
+      chips: ['Гранітні пляжі', 'Черепахи', 'Заповідники'],
+      description: 'Гранітні острови з унікальною природою. Заповідники, гігантські черепахи, снорклінг.'
+    },
+    {
+      id: 5,
+      title: 'Гаваї',
+      price: '72 500 грн',
+      duration: '10 днів',
+      groupSize: 'До 20 осіб',
+      accommodation: 'Готелі на океані',
+      badge: '🌋 Вулканічний',
+      category: 'volcanic',
+      image: 'styles/img/island/island5.jpg',
+      meta: '10 днів',
+      departureDates: ['25.03.2026', '01.04.2026', '08.04.2026', '15.04.2026'],
+      chips: ['Вулкани', 'Серфінг', 'Квіти'],
+      description: 'Американський тропічний рай. Вулкани, серфінг, квіткові гірлянди, гавайська культура.'
+    },
+    {
+      id: 6,
+      title: 'Таїті',
+      price: '55 960 грн',
+      duration: '6 ночей',
+      groupSize: 'До 10 осіб',
+      accommodation: 'Бунгало на березі',
+      badge: '✨ Екзотичний',
+      category: 'exotic',
+      image: 'styles/img/island/island6.jpg',
+      meta: '6 ночей',
+      departureDates: ['30.03.2026', '06.04.2026', '13.04.2026', '20.04.2026'],
+      chips: ['Чорні піски', 'Водоспади', 'Полінезія'],
+      description: 'Французька Полінезія. Чорні піски, водоспади, полінезійська культура, дайвінг.'
+    },
+    {
+      id: 7,
+      title: 'Фіджі',
+      price: '64 200 грн',
+      duration: '8 ночей',
+      groupSize: 'До 14 осіб',
+      accommodation: 'Курорти 5*',
+      badge: '🏝️ Тропічний',
+      category: 'tropical',
+      image: 'styles/img/island/island7.jpg',
+      meta: '8 ночей',
+      departureDates: ['05.04.2026', '12.04.2026', '19.04.2026', '26.04.2026'],
+      chips: ['Коралові сади', 'Серфінг', 'Аборигени'],
+      description: 'Тихоокеанський рай. Білі пляжі, дружні аборигени, коралові сади, серфінг.'
+    },
+    {
+      id: 8,
+      title: 'Шрі-Ланка',
+      price: '38 500 грн',
+      duration: '9 ночей',
+      groupSize: 'До 16 осіб',
+      accommodation: 'Готелі та вілли',
+      badge: '✨ Екзотичний',
+      category: 'exotic',
+      image: 'styles/img/island/island8.jpg',
+      meta: '9 ночей',
+      departureDates: ['10.04.2026', '17.04.2026', '24.04.2026', '01.05.2026'],
+      chips: ['Чайні плантації', 'Слони', 'Храми'],
+      description: 'Острів сліз. Чайні плантації, стародавні міста, слони, пляжі Індійського океану.'
+    },
+    {
+      id: 9,
+      title: 'Маврикій',
+      price: '59 800 грн',
+      duration: '7 ночей',
+      groupSize: 'До 12 осіб',
+      accommodation: 'Преміум-готелі',
+      badge: '🏝️ Тропічний',
+      category: 'tropical',
+      image: 'styles/img/island/island9.jpg',
+      meta: '7 ночей',
+      departureDates: ['15.04.2026', '22.04.2026', '29.04.2026', '06.05.2026'],
+      chips: ['Водоспади', 'Кольорові піски', 'Лагуни'],
+      description: 'Острів в Індійському океані. Розкішні курорти, водоспади, сімьо-кольорові піски.'
+    },
+    {
+      id: 10,
+      title: 'Куба',
+      price: '41 200 грн',
+      duration: '8 ночей',
+      groupSize: 'До 18 осіб',
+      accommodation: 'Готелі 4*',
+      badge: '✨ Екзотичний',
+      category: 'exotic',
+      image: 'styles/img/island/island10.jpg',
+      meta: '8 ночей',
+      departureDates: ['20.04.2026', '27.04.2026', '04.05.2026', '11.05.2026'],
+      chips: ['Гавана', 'Сігари', 'Ром'],
+      description: 'Острів свободи. Колоніальна архітектура, сигари, ром, карибські пляжі.'
+    },
+    {
+      id: 11,
+      title: 'Занзібар',
+      price: '36 900 грн',
+      duration: '7 ночей',
+      groupSize: 'До 15 осіб',
+      accommodation: 'Готелі на березі',
+      badge: '🏝️ Тропічний',
+      category: 'tropical',
+      image: 'styles/img/island/island11.jpg',
+      meta: '7 ночей',
+      departureDates: ['25.04.2026', '02.05.2026', '09.05.2026', '16.05.2026'],
+      chips: ['Кам\'яне місто', 'Спеції', 'Черепахи'],
+      description: 'Танзанійський острів спецій. Білі пляжі, кам\'яне місто, черепахи, дайвінг.'
+    },
+    {
+      id: 12,
+      title: 'Сардінія',
+      price: '48 700 грн',
+      duration: '7 ночей',
+      groupSize: 'До 20 осіб',
+      accommodation: 'Готелі та агротуризми',
+      badge: '✨ Екзотичний',
+      category: 'exotic',
+      image: 'styles/img/island/island12.jpg',
+      meta: '7 ночей',
+      departureDates: ['30.04.2026', '07.05.2026', '14.05.2026', '21.05.2026'],
+      chips: ['Білі пляжі', 'Нураги', 'Італійська кухня'],
+      description: 'Італійський острів у Середземному морі. Білі пляжі, стародавні нураги, кухня.'
+    }
+  ];
+
+  // ========== Дані для деталей островів ==========
+  const islandDetailsData = {};
+  defaultIslands.forEach(island => {
+    islandDetailsData[island.title] = {
+      description: island.description,
+      departureDates: island.departureDates,
+      duration: island.duration,
+      groupSize: island.groupSize,
+      accommodation: island.accommodation,
+      price: island.price
+    };
+  });
+
+  // Поточний елемент для бронювання
+  let currentBookingItem = null;
+
+  // ========== Функції модалок ==========
   function disableBodyScroll() { document.body.classList.add('modal-open'); }
   function enableBodyScroll() { document.body.classList.remove('modal-open'); }
 
@@ -16,6 +215,7 @@
       s.textContent = Number(s.dataset.star) <= val ? '★' : '☆';
     });
   }
+  
   function initStarInput(el) {
     if (!el) return;
     el.dataset.value = el.dataset.value || el.getAttribute('data-value') || '5';
@@ -32,6 +232,23 @@
       el.dataset.value = span.dataset.star;
       updateStars(el);
     });
+  }
+
+  // ========== Toast ==========
+  function showToast(msg, type = 'success') {
+    const old = document.querySelector('.toast-notification');
+    if (old) old.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   }
 
   // ========== Завантаження улюблених з сервера ==========
@@ -96,234 +313,140 @@
     }
   });
 
+  // ========== Завантаження островів з API ==========
+  async function loadIslands() {
+    console.log('🔍 Завантаження островів...');
+    
+    try {
+      const response = await fetch('/api/admin/island');
+      const data = await response.json();
+      
+      if (data.success && data.items && data.items.length > 0) {
+        console.log(`✅ Завантажено ${data.items.length} островів з API`);
+        renderIslands(data.items);
+      } else {
+        console.log('📋 Використовуємо локальні дані островів');
+        renderIslands(defaultIslands);
+      }
+    } catch (error) {
+      console.error('❌ Помилка завантаження островів:', error);
+      console.log('📋 Використовуємо локальні дані островів (помилка API)');
+      renderIslands(defaultIslands);
+    }
+  }
+
+  // ========== Відображення островів ==========
+  function renderIslands(islands) {
+    const islandsGrid = qs('#islandsGrid');
+    if (!islandsGrid) {
+      console.error('❌ Елемент #islandsGrid не знайдено!');
+      return;
+    }
+
+    let html = '';
+    
+    islands.forEach(island => {
+      const chipsHtml = (island.chips || []).map(chip => `<span class="chip">${chip}</span>`).join('');
+      
+      html += `
+        <article class="card" data-category="${island.category || ''}">
+          <div class="card-img-wrap">
+            <img class="card-img" src="${island.image || 'styles/img/island/island1.jpg'}" alt="${island.title}" />
+            <span class="badge">${island.badge || 'Острів'}</span>
+            <button class="fav" title="В обране"></button>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${island.title}</h3>
+            <span class="card-meta">${island.meta || island.duration || ''}</span>
+            <span class="card-price">${island.price || ''}</span>
+            <div class="chips">${chipsHtml}</div>
+            <div class="card-actions">
+              <div class="left-actions"><button class="btn-primary">Забронювати</button></div>
+              <div class="right-actions"><button class="btn-outline">Детальніше</button></div>
+            </div>
+          </div>
+        </article>
+      `;
+    });
+
+    islandsGrid.innerHTML = html;
+    console.log(`✅ Відображено ${islands.length} островів`);
+    
+    // Завантажуємо улюблені після рендеру
+    loadFavorites();
+  }
+
   // ========== Слайдер ==========
-  const slidesContainer = qs('#sliderSlides');
-  const slides = qsa('.offer-slide', slidesContainer);
-  if (slides.length) {
+  function initSlider() {
+    const slidesContainer = qs('#sliderSlides');
+    if (!slidesContainer) return;
+    
+    const slides = qsa('.offer-slide', slidesContainer);
+    if (!slides.length) return;
+    
     let currentIdx = 0;
     let autoInterval;
     const totalSlides = slides.length;
-    function updateSlider() { slidesContainer.style.transform = `translateX(-${currentIdx * 100}%)`; }
-    function next() { currentIdx = (currentIdx + 1) % totalSlides; updateSlider(); }
-    function prev() { currentIdx = (currentIdx - 1 + totalSlides) % totalSlides; updateSlider(); }
-    function startAuto() { autoInterval = setInterval(next, 5000); }
-    function stopAuto() { clearInterval(autoInterval); }
+    
+    function updateSlider() { 
+      slidesContainer.style.transform = `translateX(-${currentIdx * 100}%)`; 
+    }
+    
+    function next() { 
+      currentIdx = (currentIdx + 1) % totalSlides; 
+      updateSlider(); 
+    }
+    
+    function prev() { 
+      currentIdx = (currentIdx - 1 + totalSlides) % totalSlides; 
+      updateSlider(); 
+    }
+    
+    function startAuto() { 
+      autoInterval = setInterval(next, 5000); 
+    }
+    
+    function stopAuto() { 
+      clearInterval(autoInterval); 
+    }
+    
     startAuto();
+    
     const sliderEl = qs('.offers-slider');
     sliderEl?.addEventListener('mouseenter', stopAuto);
     sliderEl?.addEventListener('mouseleave', startAuto);
-    qs('.slider-arrow.prev')?.addEventListener('click', () => { stopAuto(); prev(); startAuto(); });
-    qs('.slider-arrow.next')?.addEventListener('click', () => { stopAuto(); next(); startAuto(); });
+    
+    const prevBtn = qs('.slider-arrow.prev');
+    const nextBtn = qs('.slider-arrow.next');
+    
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => { 
+        stopAuto(); 
+        prev(); 
+        startAuto(); 
+      });
+    }
+    
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => { 
+        stopAuto(); 
+        next(); 
+        startAuto(); 
+      });
+    }
+    
     updateSlider();
   }
 
-  // ========== Дані островів ==========
-  const islandDetailsData = {
-    'Мальдіви': {
-      description: 'Райські острови в Індійському океані. Білосніжні пляжі, бунгало над водою, неймовірний підводний світ.',
-      departureDates: ['05.03.2026', '12.03.2026', '19.03.2026', '26.03.2026'],
-      duration: '7 ночей',
-      groupSize: 'До 10 осіб',
-      accommodation: 'Вілли над водою 5*',
-      price: '67 800 грн'
-    },
-    'Ісландія': {
-      description: 'Країна льодовиків та вулканів. Гейзери, водоспади, чорні пляжі, північне сяйво.',
-      departureDates: ['10.03.2026', '17.03.2026', '24.03.2026', '31.03.2026'],
-      duration: '8 днів',
-      groupSize: 'До 15 осіб',
-      accommodation: 'Готелі та котеджі',
-      price: '62 300 грн'
-    },
-    'Бора-Бора': {
-      description: 'Найкрасивіша лагуна світу. Бунгало над водою, коралові рифи, акуляче сафарі.',
-      departureDates: ['15.03.2026', '22.03.2026', '29.03.2026', '05.04.2026'],
-      duration: '7 ночей',
-      groupSize: 'До 8 осіб',
-      accommodation: 'Бунгало над водою',
-      price: '59 960 грн'
-    },
-    'Сейшели': {
-      description: 'Гранітні острови з унікальною природою. Заповідники, гігантські черепахи, снорклінг.',
-      departureDates: ['20.03.2026', '27.03.2026', '03.04.2026', '10.04.2026'],
-      duration: '7 ночей',
-      groupSize: 'До 12 осіб',
-      accommodation: 'Готелі на березі',
-      price: '43 960 грн'
-    },
-    'Гаваї': {
-      description: 'Американський тропічний рай. Вулкани, серфінг, квіткові гірлянди, гавайська культура.',
-      departureDates: ['25.03.2026', '01.04.2026', '08.04.2026', '15.04.2026'],
-      duration: '10 днів',
-      groupSize: 'До 20 осіб',
-      accommodation: 'Готелі на океані',
-      price: '72 500 грн'
-    },
-    'Таїті': {
-      description: 'Французька Полінезія. Чорні піски, водоспади, полінезійська культура, дайвінг.',
-      departureDates: ['30.03.2026', '06.04.2026', '13.04.2026', '20.04.2026'],
-      duration: '6 ночей',
-      groupSize: 'До 10 осіб',
-      accommodation: 'Бунгало на березі',
-      price: '55 960 грн'
-    },
-    'Фіджі': {
-      description: 'Тихоокеанський рай. Білі пляжі, дружні аборигени, коралові сади, серфінг.',
-      departureDates: ['05.04.2026', '12.04.2026', '19.04.2026', '26.04.2026'],
-      duration: '8 ночей',
-      groupSize: 'До 14 осіб',
-      accommodation: 'Курорти 5*',
-      price: '64 200 грн'
-    },
-    'Шрі-Ланка': {
-      description: 'Острів сліз. Чайні плантації, стародавні міста, слони, пляжі Індійського океану.',
-      departureDates: ['10.04.2026', '17.04.2026', '24.04.2026', '01.05.2026'],
-      duration: '9 ночей',
-      groupSize: 'До 16 осіб',
-      accommodation: 'Готелі та вілли',
-      price: '38 500 грн'
-    },
-    'Маврикій': {
-      description: 'Острів в Індійському океані. Розкішні курорти, водоспади, сімьо-кольорові піски.',
-      departureDates: ['15.04.2026', '22.04.2026', '29.04.2026', '06.05.2026'],
-      duration: '7 ночей',
-      groupSize: 'До 12 осіб',
-      accommodation: 'Преміум-готелі',
-      price: '59 800 грн'
-    },
-    'Куба': {
-      description: 'Острів свободи. Колоніальна архітектура, сигари, ром, карибські пляжі.',
-      departureDates: ['20.04.2026', '27.04.2026', '04.05.2026', '11.05.2026'],
-      duration: '8 ночей',
-      groupSize: 'До 18 осіб',
-      accommodation: 'Готелі 4*',
-      price: '41 200 грн'
-    },
-    'Занзібар': {
-      description: 'Танзанійський острів спецій. Білі пляжі, кам\'яне місто, черепахи, дайвінг.',
-      departureDates: ['25.04.2026', '02.05.2026', '09.05.2026', '16.05.2026'],
-      duration: '7 ночей',
-      groupSize: 'До 15 осіб',
-      accommodation: 'Готелі на березі',
-      price: '36 900 грн'
-    },
-    'Сардінія': {
-      description: 'Італійський острів у Середземному морі. Білі пляжі, стародавні нураги, кухня.',
-      departureDates: ['30.04.2026', '07.05.2026', '14.05.2026', '21.05.2026'],
-      duration: '7 ночей',
-      groupSize: 'До 20 осіб',
-      accommodation: 'Готелі та агротуризми',
-      price: '48 700 грн'
-    }
-  };
-
-  const islandList = [
-    { title: 'Мальдіви', cat: 'tropical' },
-    { title: 'Ісландія', cat: 'volcanic' },
-    { title: 'Бора-Бора', cat: 'exotic' },
-    { title: 'Сейшели', cat: 'tropical' },
-    { title: 'Гаваї', cat: 'volcanic' },
-    { title: 'Таїті', cat: 'exotic' },
-    { title: 'Фіджі', cat: 'tropical' },
-    { title: 'Шрі-Ланка', cat: 'exotic' },
-    { title: 'Маврикій', cat: 'tropical' },
-    { title: 'Куба', cat: 'exotic' },
-    { title: 'Занзібар', cat: 'tropical' },
-    { title: 'Сардінія', cat: 'exotic' }
-  ];
-
-  // ========== Налаштування обробників для карток ==========
-function setupItemHandlers() {
-  console.log('Налаштування обробників для карток');
-  
-  // Кнопки "Детальніше"
-  qsa('.btn-outline:not(.modal-close)').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      const card = this.closest('.card');
-      if (card) {
-        const data = buildDataFromCard(card);
-        openDetailsModal(data);
-      }
-    });
-  });
-  
-  // Кнопки "Забронювати"
-  qsa('.btn-primary:not(.modal-close)').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      const card = this.closest('.card');
-      if (card) {
-        const title = qs('.card-title', card)?.textContent?.trim() || '';
-        const image = qs('.card-img', card)?.src || '';
-        const price = qs('.card-price', card)?.textContent?.trim() || '';
-        const meta = qs('.card-meta', card)?.textContent?.trim() || '';
-        const badge = qs('.badge', card)?.textContent?.trim() || '';
-        const chips = qsa('.chips .chip', card).map(c => c.textContent.trim());
-        const category = card.dataset.category || '';
-        
-        currentBookingItem = { title, image, price, meta, badge, chips, category };
-        openBookModal(currentBookingItem);
-      }
-    });
-  });
-}
-  function createCardFromIsland(title) {
-    const data = islandDetailsData[title] || {};
-    const cat = islandList.find(i => i.title === title)?.cat || 'exotic';
-    const index = islandList.findIndex(i => i.title === title) + 1;
-    const imgSrc = `styles/img/island/island${index}.jpg`;
-
-    const badgeMap = {
-      tropical: '🏝️ Тропічний',
-      volcanic: '🌋 Вулканічний',
-      exotic: '✨ Екзотичний'
-    };
-    const badge = badgeMap[cat] || '🏝️ Острів';
-
-    return `
-      <article class="card" data-category="${cat}">
-        <div class="card-img-wrap">
-          <img class="card-img" src="${imgSrc}" alt="${title}" />
-          <span class="badge">${badge}</span>
-          <button class="fav" title="В обране"></button>
-        </div>
-        <div class="card-body">
-          <h3 class="card-title">${title}</h3>
-          <span class="card-meta">${data.duration || '7 ночей'}</span>
-          <span class="card-price">${data.price || '50 000 грн'}</span>
-          <div class="chips">${(data.departureDates || []).slice(0,3).map(d => `<span class="chip">${d}</span>`).join('')}</div>
-          <div class="card-actions">
-            <div class="left-actions"><button class="btn-primary">Забронювати</button></div>
-            <div class="right-actions"><button class="btn-outline">Детальніше</button></div>
-          </div>
-        </div>
-      </article>
-    `;
-  }
-
-  const islandsGrid = qs('#islandsGrid');
-  if (islandsGrid) {
-islandsGrid.innerHTML = islandList.map(i => createCardFromIsland(i.title)).join('');
-loadFavorites();
-// Додати обробники після завантаження
-setTimeout(() => {
-  setupItemHandlers();
-}, 100);
-  }
-
-  // ========== НОВИЙ РОЗШИРЕНИЙ ФІЛЬТР ==========
+  // ========== Фільтр ==========
   const filterBtn = qs('#filterBtn');
   const filterPanel = qs('#filterPanel');
   const categoryChips = qs('#categoryChips');
   let cards = qsa('.card');
   const filterTabs = qsa('.filter-tab');
-  let currentFilterType = 'category'; // 'category', 'name', 'price', 'popular'
+  let currentFilterType = 'category';
   const selectedCategories = new Set();
 
-  // Дані для різних типів фільтрів
   const categories = ['tropical', 'volcanic', 'exotic'];
   const categoryNames = {
     tropical: '🏝️ Тропічні',
@@ -345,7 +468,6 @@ setTimeout(() => {
     { value: 'popular-desc', label: '⭐ За рейтингом' }
   ];
 
-  // Функція для отримання популярності острова (на основі відгуків)
   function getIslandPopularity(title) {
     const LS_KEY = 'oceanica_card_reviews_v1';
     try {
@@ -360,15 +482,13 @@ setTimeout(() => {
     }
   }
 
-  // Функція для парсингу ціни з рядка
   function extractPrice(priceStr) {
     const match = priceStr.replace(/\s/g, '').match(/(\d+)/);
     return match ? parseInt(match[0], 10) : 0;
   }
 
-  // Рендер чіпсів залежно від типу фільтра
   function renderChipsByType(type) {
-    let html = '<div class="category-chip reset" data-category="reset" data-sort="reset">✖ Скинути</div>';
+    let html = '<div class="category-chip reset" data-category="reset">✖ Скинути</div>';
     
     if (type === 'category') {
       categories.forEach(cat => {
@@ -388,36 +508,25 @@ setTimeout(() => {
       });
     }
     
-    categoryChips.innerHTML = html;
+    if (categoryChips) categoryChips.innerHTML = html;
   }
 
-  // Ініціалізація вкладок
   filterTabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      // Видаляємо active з усіх вкладок
       filterTabs.forEach(t => t.classList.remove('active'));
-      // Додаємо active поточній вкладці
       tab.classList.add('active');
       
-      // Оновлюємо тип фільтра
       currentFilterType = tab.dataset.filterType;
-      
-      // Очищаємо вибрані категорії
       selectedCategories.clear();
-      
-      // Рендеримо відповідні чіпси
       renderChipsByType(currentFilterType);
       
-      // Скидаємо відображення карток
       cards = qsa('.card');
       cards.forEach(card => card.style.display = '');
       
-      // Оновлюємо індикатор
       updateFilterIndicator();
     });
   });
 
-  // Функція оновлення індикатора
   function updateFilterIndicator() {
     const indicator = qs('#activeFilterIndicator');
     if (!indicator) return;
@@ -437,13 +546,11 @@ setTimeout(() => {
     indicator.textContent = text;
   }
 
-  // Оновлена функція фільтрації/сортування
   function filterAndSortCards() {
     cards = qsa('.card');
     const cardsArray = Array.from(cards);
     
     if (currentFilterType === 'category') {
-      // Фільтрація за категорією
       if (selectedCategories.size === 0) {
         cardsArray.forEach(card => card.style.display = '');
       } else {
@@ -456,16 +563,13 @@ setTimeout(() => {
         });
       }
     } else {
-      // Сортування для інших типів
-      const sortValue = Array.from(selectedCategories)[0]; // Беремо перше вибране значення
+      const sortValue = Array.from(selectedCategories)[0];
       
       if (!sortValue) {
-        // Якщо нічого не вибрано, показуємо всі в оригінальному порядку
         cardsArray.forEach(card => card.style.display = '');
         return;
       }
       
-      // Сортуємо масив карток
       const sortedCards = [...cardsArray].sort((a, b) => {
         const titleA = qs('.card-title', a)?.textContent?.trim() || '';
         const titleB = qs('.card-title', b)?.textContent?.trim() || '';
@@ -484,7 +588,6 @@ setTimeout(() => {
           case 'price-desc':
             return priceB - priceA;
           case 'popular-desc':
-            // Сортуємо за середнім рейтингом, потім за кількістю відгуків
             if (popB.avg !== popA.avg) return popB.avg - popA.avg;
             return popB.count - popA.count;
           default:
@@ -492,92 +595,60 @@ setTimeout(() => {
         }
       });
       
-      // Переставляємо картки в DOM згідно з сортуванням
       const parent = cards[0]?.parentNode;
       if (parent) {
         sortedCards.forEach(card => parent.appendChild(card));
       }
       
-      // Показуємо всі картки
       cardsArray.forEach(card => card.style.display = '');
     }
   }
 
-  // ВИПРАВЛЕНИЙ обробник кліку по чіпсах
-  categoryChips.addEventListener('click', (e) => {
-    const chip = e.target.closest('.category-chip');
-    if (!chip) return;
-    
-    const cat = chip.dataset.category;
-    const sortVal = chip.dataset.sort;
+  if (categoryChips) {
+    categoryChips.addEventListener('click', (e) => {
+      const chip = e.target.closest('.category-chip');
+      if (!chip) return;
+      
+      const cat = chip.dataset.category;
+      const sortVal = chip.dataset.sort;
 
-    // Перевіряємо, чи це кнопка "Скинути" (має або data-category="reset" або data-sort="reset")
-    if (cat === 'reset' || sortVal === 'reset') {
-      // Скидання всіх фільтрів
-      selectedCategories.clear();
-      
-      // Видаляємо активний клас з усіх чіпсів
-      qsa('.category-chip').forEach(ch => {
-        ch.classList.remove('active');
-      });
-      
-      // Показуємо всі картки
-      cards = qsa('.card');
-      cards.forEach(card => card.style.display = '');
-      
-      // Якщо це режим сортування (не категорія), скидаємо порядок до оригінального
-      if (currentFilterType !== 'category') {
-        // Відновлюємо оригінальний порядок карток (за індексом)
-        const parent = cards[0]?.parentNode;
-        if (parent) {
-          // Сортуємо за оригінальним порядком (за атрибутом data-original-index)
-          cards.sort((a, b) => {
-            const indexA = parseInt(a.dataset.originalIndex || '0');
-            const indexB = parseInt(b.dataset.originalIndex || '0');
-            return indexA - indexB;
-          });
-          cards.forEach(card => parent.appendChild(card));
+      if (cat === 'reset' || sortVal === 'reset') {
+        selectedCategories.clear();
+        qsa('.category-chip').forEach(ch => ch.classList.remove('active'));
+        cards = qsa('.card');
+        cards.forEach(card => card.style.display = '');
+      } else {
+        if (currentFilterType === 'category') {
+          if (selectedCategories.has(cat)) {
+            selectedCategories.delete(cat);
+            chip.classList.remove('active');
+          } else {
+            selectedCategories.add(cat);
+            chip.classList.add('active');
+          }
+        } else {
+          selectedCategories.clear();
+          qsa('.category-chip').forEach(ch => ch.classList.remove('active'));
+          selectedCategories.add(sortVal);
+          chip.classList.add('active');
         }
       }
       
-      return;
-    }
+      filterAndSortCards();
+    });
+  }
 
-    // Якщо це не кнопка "Скинути", обробляємо вибір
-    if (currentFilterType === 'category') {
-      // Для категорій - мультивибір
-      if (selectedCategories.has(cat)) {
-        selectedCategories.delete(cat);
-        chip.classList.remove('active');
-      } else {
-        selectedCategories.add(cat);
-        chip.classList.add('active');
-      }
-    } else {
-      // Для сортування - одиночний вибір
-      selectedCategories.clear();
-      qsa('.category-chip').forEach(ch => ch.classList.remove('active'));
-      
-      selectedCategories.add(sortVal);
-      chip.classList.add('active');
-    }
-    
-    filterAndSortCards();
-  });
+  if (filterBtn) {
+    filterBtn.addEventListener('click', () => {
+      filterPanel.classList.toggle('active');
+    });
+  }
 
-  filterBtn.addEventListener('click', () => {
-    filterPanel.classList.toggle('active');
-  });
-
-  // Зберігаємо оригінальний порядок карток при завантаженні
+  // Зберігаємо оригінальний порядок карток
   cards = qsa('.card');
   cards.forEach((card, index) => {
     card.dataset.originalIndex = index;
   });
-
-  // Ініціалізація
-  renderChipsByType('category');
-  updateFilterIndicator();
 
   // ========== Пошук за датою ==========
   const searchBtn = qs('#searchByDate');
@@ -593,31 +664,16 @@ setTimeout(() => {
     const [d2,m2,y2] = b.split('.').map(Number);
     return new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2);
   });
+  
   const availableNote = qs('#availableDatesNote');
   if (availableNote) {
     availableNote.innerHTML = `📅 Доступні дати: ${sortedDates.slice(0, 7).join(', ')}`;
   }
 
-function showToast(msg, type = 'success') {
-  const old = document.querySelector('.toast-notification');
-  if (old) old.remove();
-
-  const toast = document.createElement('div');
-  toast.className = `toast-notification ${type}`;
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
-
   if (searchBtn && datePicker) {
     searchBtn.addEventListener('click', () => {
       const selected = datePicker.value;
-      if (!selected) { showToast('❌ Оберіть дату', false); return; }
+      if (!selected) { showToast('❌ Оберіть дату', 'error'); return; }
       const [y,m,d] = selected.split('-');
       const formatted = `${d}.${m}.${y}`;
 
@@ -627,7 +683,13 @@ function showToast(msg, type = 'success') {
       }
 
       if (foundTitles.length) {
-        searchResultsDiv.innerHTML = foundTitles.map(title => createCardFromIsland(title)).join('');
+        const allCards = qsa('#islandsGrid .card');
+        const foundCards = allCards.filter(card => {
+          const title = qs('.card-title', card)?.textContent?.trim();
+          return foundTitles.includes(title);
+        });
+        
+        searchResultsDiv.innerHTML = foundCards.map(card => card.outerHTML).join('');
         loadFavorites();
         searchResultsDiv.classList.add('visible');
         searchResultsTitle.classList.add('visible');
@@ -664,13 +726,6 @@ function showToast(msg, type = 'success') {
   const modalBookSuccess = qs('#modalBookSuccess');
   const bookCloseBtn = qs('#modalBookClose');
 
-  // Поточний елемент для бронювання
-  let currentBookingItem = null;
-
-  function findDataByTitle(title) {
-    return islandDetailsData[title] || null;
-  }
-
   function buildDataFromCard(card) {
     const title = qs('.card-title', card)?.textContent?.trim() || '';
     const details = islandDetailsData[title] || {};
@@ -690,27 +745,33 @@ function showToast(msg, type = 'success') {
   }
 
   function openDetailsModal(data) {
-    if (!data) return;
+    if (!data || !detailsModal) return;
+    
     const tabBtns = qsa('.modal-tab', detailsModal);
     const panels = qsa('.modal-panel', detailsModal);
+    
     function setTab(tab) {
       tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
       panels.forEach(p => p.classList.toggle('active', p.dataset.panel === tab));
     }
+    
     tabBtns.forEach(b => { b.onclick = () => setTab(b.dataset.tab || 'info'); });
     setTab('info');
 
-    modalDetailsImg && (modalDetailsImg.src = data.img || '');
-    modalDetailsBadge && (modalDetailsBadge.textContent = data.badge || '');
-    modalDetailsTitle && (modalDetailsTitle.textContent = data.title || '');
-    modalDetailsSubtitle && (modalDetailsSubtitle.textContent = data.subtitle || '');
+    if (modalDetailsImg) modalDetailsImg.src = data.img || '';
+    if (modalDetailsBadge) modalDetailsBadge.textContent = data.badge || '';
+    if (modalDetailsTitle) modalDetailsTitle.textContent = data.title || '';
+    if (modalDetailsSubtitle) modalDetailsSubtitle.textContent = data.subtitle || '';
     if (modalDetailsPrice) {
       modalDetailsPrice.textContent = data.price ? 'від ' + data.price : '';
     }
     if (modalDetailsChips) {
       modalDetailsChips.innerHTML = (data.tags || []).map(t => `<span class="modal-chip">${t}</span>`).join('');
     }
-    qs('#modalDetailsDescription', detailsModal).textContent = data.description || '';
+    
+    const descEl = qs('#modalDetailsDescription', detailsModal);
+    if (descEl) descEl.textContent = data.description || '';
+    
     const infoEl = qs('#modalDetailsInfo', detailsModal);
     if (infoEl) {
       infoEl.innerHTML = `
@@ -728,43 +789,88 @@ function showToast(msg, type = 'success') {
     const mrfText = qs('#mrfText', detailsModal);
     const mrfClear = qs('#mrfClear', detailsModal);
     const mrfSubmit = qs('#mrfSubmit', detailsModal);
-    initStarInput(mrfStars);
+    
+    if (mrfStars) initStarInput(mrfStars);
 
     function loadAll() { try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}') || {}; } catch { return {}; } }
     function saveAll(obj) { localStorage.setItem(LS_KEY, JSON.stringify(obj)); }
     function hash(str) { let h = 2166136261; for (let i=0; i<str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return Math.abs(h); }
     function stars(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5-n); }
+    
     function defaultReviews(title) {
-      const names = ['Марія','Олег','Ірина','Дмитро','Наталія']; const texts = ['Райське місце!','Неймовірно','Хочу ще!','Все супер','Казка!'];
-      const h = hash(title || 'island'); const count = 5 + (h % 3); const out = [];
+      const names = ['Марія','Олег','Ірина','Дмитро','Наталія']; 
+      const texts = ['Райське місце!','Неймовірно','Хочу ще!','Все супер','Казка!'];
+      const h = hash(title || 'island'); 
+      const count = 5 + (h % 3); 
+      const out = [];
       for (let i=0; i<count; i++) {
-        out.push({ name: names[(h+i)%names.length], stars: 4+((h+i)%2), text: texts[(h+i)%texts.length], date: new Date(Date.now()-i*86400000).toISOString().slice(0,10) });
-      } return out;
+        out.push({ 
+          name: names[(h+i)%names.length], 
+          stars: 4+((h+i)%2), 
+          text: texts[(h+i)%texts.length], 
+          date: new Date(Date.now()-i*86400000).toLocaleDateString('uk-UA') 
+        });
+      } 
+      return out;
     }
-    function getReviews(title) { const all = loadAll(); return (all[title] && all[title].length) ? all[title] : defaultReviews(title); }
-    function setReviews(title, list) { const all = loadAll(); all[title] = list; saveAll(all); }
+    
+    function getReviews(title) { 
+      const all = loadAll(); 
+      return (all[title] && all[title].length) ? all[title] : defaultReviews(title); 
+    }
+    
+    function setReviews(title, list) { 
+      const all = loadAll(); 
+      all[title] = list; 
+      saveAll(all); 
+    }
+    
     function renderReviews(title) {
       if (!reviewsList) return;
       const list = getReviews(title);
       reviewsList.innerHTML = list.map(r => `
-        <div class="modal-review"><div class="mrv-avatar">${(r.name||'Г')[0]}</div><div><div class="mrv-top"><span class="mrv-name">${r.name||'Гість'}</span><div style="display:flex;gap:10px;"><span class="mrv-date">${r.date||''}</span><span class="mrv-stars">${stars(Number(r.stars)||5)}</span></div></div><p class="mrv-text">${r.text||''}</p></div></div>
+        <div class="modal-review">
+          <div class="mrv-avatar">${(r.name||'Г')[0]}</div>
+          <div>
+            <div class="mrv-top">
+              <span class="mrv-name">${r.name||'Гість'}</span>
+              <div style="display:flex;gap:10px;">
+                <span class="mrv-date">${r.date||''}</span>
+                <span class="mrv-stars">${stars(Number(r.stars)||5)}</span>
+              </div>
+            </div>
+            <p class="mrv-text">${r.text||''}</p>
+          </div>
+        </div>
       `).join('');
     }
+    
     renderReviews(data.title);
-    if (mrfClear) mrfClear.onclick = () => { mrfName && (mrfName.value = ''); mrfText && (mrfText.value = ''); mrfStars && (mrfStars.dataset.value = '5'); updateStars(mrfStars); };
-    if (mrfSubmit) mrfSubmit.onclick = () => {
-      const title = data.title.trim();
-      const name = (mrfName?.value || '').trim() || 'Гість';
-      const text = (mrfText?.value || '').trim();
-      const st = Number(mrfStars?.dataset.value || '5');
-      if (!title || text.length < 3) { setTab('reviews'); return; }
-      const list = getReviews(title).slice();
-      list.unshift({ name, stars: Math.min(5, Math.max(1, st)), text, date: new Date().toISOString().slice(0,10) });
-      setReviews(title, list);
-      renderReviews(title);
-      if (mrfText) mrfText.value = '';
-      setTab('reviews');
-    };
+    
+    if (mrfClear) {
+      mrfClear.onclick = () => { 
+        if (mrfName) mrfName.value = ''; 
+        if (mrfText) mrfText.value = ''; 
+        if (mrfStars) mrfStars.dataset.value = '5'; 
+        updateStars(mrfStars); 
+      };
+    }
+    
+    if (mrfSubmit) {
+      mrfSubmit.onclick = () => {
+        const title = data.title.trim();
+        const name = (mrfName?.value || '').trim() || 'Гість';
+        const text = (mrfText?.value || '').trim();
+        const st = Number(mrfStars?.dataset.value || '5');
+        if (!title || text.length < 3) { setTab('reviews'); return; }
+        const list = getReviews(title).slice();
+        list.unshift({ name, stars: Math.min(5, Math.max(1, st)), text, date: new Date().toLocaleDateString('uk-UA') });
+        setReviews(title, list);
+        renderReviews(title);
+        if (mrfText) mrfText.value = '';
+        setTab('reviews');
+      };
+    }
 
     detailsModal.classList.add('active');
     detailsModal.style.display = 'flex';
@@ -772,38 +878,72 @@ function showToast(msg, type = 'success') {
   }
 
   function closeDetails() {
+    if (!detailsModal) return;
     detailsModal.classList.remove('active');
     setTimeout(() => detailsModal.style.display = 'none', 300);
     enableBodyScroll();
   }
+  
   function openBookModal(data) {
-    modalBookTitle && (modalBookTitle.textContent = 'Бронювання туру на острів');
-    qs('#modalBookSubtitle', bookModal) && (qs('#modalBookSubtitle', bookModal).textContent = data?.title || '');
-    modalBookForm && modalBookForm.reset();
+    if (!bookModal || !data) return;
+    
+    if (modalBookTitle) modalBookTitle.textContent = 'Бронювання острова';
+    const subtitleEl = qs('#modalBookSubtitle', bookModal);
+    if (subtitleEl) subtitleEl.textContent = data?.title || '';
+    
+    if (modalBookForm) modalBookForm.reset();
+    
     const successEl = qs('#modalBookSuccess', bookModal);
-    successEl && (successEl.classList.remove('active'), successEl.style.display = 'none');
+    if (successEl) {
+      successEl.classList.remove('active');
+      successEl.style.display = 'none';
+    }
+    
     const dateInput = qs('input[name="date"]', modalBookForm);
     if (dateInput) {
-      const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrow = new Date(); 
+      tomorrow.setDate(tomorrow.getDate() + 1);
       dateInput.min = tomorrow.toISOString().split('T')[0];
     }
+    
     bookModal.classList.add('active');
     bookModal.style.display = 'flex';
     disableBodyScroll();
   }
+  
   function closeBook() {
+    if (!bookModal) return;
     bookModal.classList.remove('active');
     setTimeout(() => bookModal.style.display = 'none', 300);
     enableBodyScroll();
   }
 
-  detailsCloseBtns.forEach(btn => btn.addEventListener('click', closeDetails));
+  detailsCloseBtns.forEach(btn => {
+    if (btn) btn.addEventListener('click', closeDetails);
+  });
+  
   if (bookCloseBtn) bookCloseBtn.addEventListener('click', closeBook);
-  if (detailsModal) detailsModal.addEventListener('click', e => { if (e.target === detailsModal) closeDetails(); });
-  if (bookModal) bookModal.addEventListener('click', e => { if (e.target === bookModal) closeBook(); });
-  if (modalDetailsBook) modalDetailsBook.addEventListener('click', () => { closeDetails(); openBookModal({ title: modalDetailsTitle?.textContent?.trim() }); });
+  
+  if (detailsModal) {
+    detailsModal.addEventListener('click', e => { 
+      if (e.target === detailsModal) closeDetails(); 
+    });
+  }
+  
+  if (bookModal) {
+    bookModal.addEventListener('click', e => { 
+      if (e.target === bookModal) closeBook(); 
+    });
+  }
+  
+  if (modalDetailsBook) {
+    modalDetailsBook.addEventListener('click', () => { 
+      const title = modalDetailsTitle?.textContent?.trim();
+      closeDetails(); 
+      openBookModal({ title }); 
+    });
+  }
 
-  // Обробка форми бронювання
   if (modalBookForm) {
     modalBookForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -813,7 +953,7 @@ function showToast(msg, type = 'success') {
         return;
       }
       if (!currentBookingItem) {
-        showToast('Помилка: дані туру відсутні', 'error');
+        showToast('Помилка: дані острова відсутні', 'error');
         return;
       }
       const dateInput = qs('input[name="date"]', modalBookForm);
@@ -824,6 +964,7 @@ function showToast(msg, type = 'success') {
       const [y, m, d] = dateInput.value.split('-');
       const bookingDate = `${d}.${m}.${y}`;
       const bookingItem = { ...currentBookingItem, bookingDate };
+      
       try {
         const result = await window.auth.addBooking(bookingItem);
         if (result.success) {
@@ -844,6 +985,7 @@ function showToast(msg, type = 'success') {
     });
   }
 
+  // ========== Обробник для кнопки "Дізнатися більше" в гарячій пропозиції ==========
   const specialIslandBtn = qs('#specialIslandBtn');
   if (specialIslandBtn) {
     specialIslandBtn.addEventListener('click', function(e) {
@@ -855,7 +997,7 @@ function showToast(msg, type = 'success') {
         img: 'styles/img/island/island_special.jpg',
         badge: '🔥 Гаряча пропозиція',
         tags: ['Комбо', 'Пляжі', 'Екскурсії'],
-        description: 'Неймовірне поєднання відпочинку на райських островах Мальдіви та культурної спадщини Шрі-Ланки. Ви насолодитеся білосніжними пляжами, дайвінгом, а потім вирушите до стародавніх міст, чайних плантацій та національних парків.',
+        description: 'Неймовірне поєднання відпочинку на райських островах Мальдіви та культурної спадщини Шрі-Ланки.',
         departureDates: ['05.04.2026', '19.04.2026', '03.05.2026'],
         duration: '14 днів',
         groupSize: 'До 12 осіб',
@@ -865,6 +1007,7 @@ function showToast(msg, type = 'success') {
     });
   }
 
+  // ========== Обробники кліків для карток ==========
   document.addEventListener('click', (e) => {
     const detailBtn = e.target.closest('.btn-outline:not(.modal-close)') || e.target.closest('.slide-detail-btn');
     if (detailBtn) {
@@ -884,11 +1027,6 @@ function showToast(msg, type = 'success') {
           data.subtitle = qs('.cap-desc', slide)?.textContent?.trim() || '';
           data.price = qs('.new-price', slide)?.textContent?.trim() || '';
           data.tags = [];
-          data.departureDates = data.departureDates || ['15.03.2026', '22.03.2026', '29.03.2026'];
-          data.duration = data.duration || (qs('.cap-sub', slide)?.textContent || '').trim();
-          data.groupSize = data.groupSize || 'До 15 осіб';
-          data.accommodation = data.accommodation || 'Готель';
-          data.description = data.description || 'Неймовірний острів';
           openDetailsModal(data);
         }
       }
@@ -912,5 +1050,31 @@ function showToast(msg, type = 'success') {
     }
   });
 
-  // Ініціалізація улюблених при завантаженні (вже викликано після вставки карток)
+  // ========== Ініціалізація ==========
+  function init() {
+    console.log('🚀 island.js ініціалізація');
+    
+    // Зберігаємо оригінальний порядок карток
+    cards = qsa('.card');
+    cards.forEach((card, index) => {
+      card.dataset.originalIndex = index;
+    });
+    
+    // Ініціалізуємо слайдер
+    initSlider();
+    
+    // Завантажуємо острови
+    loadIslands();
+    
+    // Налаштовуємо фільтр
+    renderChipsByType('category');
+    updateFilterIndicator();
+  }
+
+  // Запускаємо після завантаження DOM
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

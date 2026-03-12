@@ -1,7 +1,85 @@
 // public/js/index.js
 (function() {
-  let toursData = [];
-  
+  const qs = (sel, ctx) => (ctx || document).querySelector(sel);
+  const qsa = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
+
+  // ========== Дефолтні дані для головної ==========
+  const initialTours = [
+    {
+      title: 'Балі, Індонезія',
+      duration: 'All Inclusive • 7 ночей',
+      price: '35 960 грн',
+      image: 'styles/img/index/card1.jpg',
+      badge: 'Екзотика',
+      chips: ['Серфінг', 'SPA', 'Вулкани'],
+      category: 'екзотика'
+    },
+    {
+      title: 'Крит, Греція',
+      duration: 'Сніданки • 5 ночей',
+      price: '19 960 грн',
+      image: 'styles/img/index/card2.jpg',
+      badge: 'Пляж',
+      chips: ['Пляжі', 'Античність', 'Таверни'],
+      category: 'пляж'
+    },
+    {
+      title: 'Мальдіви',
+      duration: 'Вілли • 6 ночей',
+      price: '51 960 грн',
+      image: 'styles/img/index/card3.jpg',
+      badge: 'Люкс',
+      chips: ['Океан', 'Рифи', 'Релакс'],
+      category: 'люкс'
+    },
+    {
+      title: 'Бора-Бора',
+      duration: 'Лагуни • 7 ночей',
+      price: '59 960 грн',
+      image: 'styles/img/index/card4.jpg',
+      badge: 'Екзотика',
+      chips: ['Бунгало', 'Каяки', 'Снорклінг'],
+      category: 'екзотика'
+    },
+    {
+      title: 'Палаван, Філіппіни',
+      duration: 'Еко-тур • 6 ночей',
+      price: '31 960 грн',
+      image: 'styles/img/index/card5.jpg',
+      badge: 'Природа',
+      chips: ['Лагуни', 'Печери', 'Острівці'],
+      category: 'природа'
+    },
+    {
+      title: 'Самуї, Таїланд',
+      duration: 'Сніданки • 7 ночей',
+      price: '27 960 грн',
+      image: 'styles/img/index/card6.jpg',
+      badge: 'Пляж',
+      chips: ['Пальми', 'Фрукти', 'Храми'],
+      category: 'пляж'
+    },
+    {
+      title: 'Санторіні, Греція',
+      duration: 'Романтика • 5 ночей',
+      price: '23 160 грн',
+      image: 'styles/img/index/card7.jpg',
+      badge: 'Історія',
+      chips: ['Закати', 'Круїзи', 'Вина'],
+      category: 'історія'
+    },
+    {
+      title: 'Марокко',
+      duration: 'Гіди • 6 ночей',
+      price: '15 960 грн',
+      image: 'styles/img/index/card8.jpg',
+      badge: 'Історія',
+      chips: ['Медина', 'Сахара', 'Базар'],
+      category: 'історія'
+    }
+  ];
+
+  // ========== Дані для деталей турів на головній ==========
   const tourDetailsData = {
     'Балі, Індонезія': {
       departureDates: ['15.03.2026', '22.03.2026', '05.04.2026'],
@@ -58,34 +136,6 @@
       duration: 'Гіди • 6 ночей',
       groupSize: 'До 20 осіб',
       accommodation: 'Готелі 3-4*'
-    },
-    'Хайнань, Китай': {
-      departureDates: ['04.04.2026', '18.04.2026', '02.05.2026'],
-      description: 'Тропічний острів Хайнань з пляжами та парками...',
-      duration: 'Пляжі • 7 ночей',
-      groupSize: 'До 28 осіб',
-      accommodation: 'Готель 4-5*'
-    },
-    'Таїті': {
-      departureDates: ['10.06.2026', '24.06.2026', '07.07.2026'],
-      description: 'Екзотична Таїті з дайвінгом, круїзами та культурою...',
-      duration: 'Екзотика • 6 ночей',
-      groupSize: 'До 16 осіб',
-      accommodation: 'Готель класу люкс'
-    },
-    'Сейшели': {
-      departureDates: ['20.05.2026', '04.06.2026', '18.06.2026'],
-      description: 'Гранітні скелі та найкрасивіші пляжі світу на Сейшелях...',
-      duration: 'Пляжі • 7 ночей',
-      groupSize: 'До 14 осіб',
-      accommodation: 'Готель 5*'
-    },
-    'Афінська Рив\'єра': {
-      departureDates: ['12.06.2026', '26.06.2026', '09.07.2026'],
-      description: 'Античні Афіни та красиві пляжі рів\'єри...',
-      duration: 'Історія • 5 ночей',
-      groupSize: 'До 25 осіб',
-      accommodation: 'Готель 4*'
     }
   };
 
@@ -183,9 +233,7 @@
     }
   };
 
-  const qs = (selector, parent = document) => parent.querySelector(selector);
-  const qsa = (selector, parent = document) => Array.from(parent.querySelectorAll(selector));
-
+  // ========== Функції ==========
   function showToast(message, type = 'info') {
     if (window.utils?.showToast) {
       window.utils.showToast(message, type);
@@ -208,6 +256,37 @@
     }, 3000);
   }
 
+  function createCardFromTour(tour) {
+    const chipsHtml = (tour.chips || []).map(c => `<span class="chip">${c}</span>`).join('');
+    return `
+      <article class="card" data-category="${tour.category || ''}">
+        <div class="card-img-wrap">
+          <img class="card-img" src="${tour.image || 'styles/img/index/card1.jpg'}" alt="${tour.title}" />
+          <span class="badge">${tour.badge || 'Тур'}</span>
+          <button class="fav" title="В обране"></button>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">${tour.title}</h3>
+          <span class="card-meta">${tour.duration || ''}</span>
+          <span class="card-price">${tour.price || ''}</span>
+          <div class="chips">${chipsHtml}</div>
+          <div class="card-actions">
+            <div class="left-actions"><button class="btn-primary">Забронювати</button></div>
+            <div class="right-actions"><button class="btn-outline">Детальніше</button></div>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function loadTours() {
+    const track = document.getElementById('carouselTrack');
+    if (track) {
+      track.innerHTML = initialTours.map(tour => createCardFromTour(tour)).join('');
+    }
+  }
+
+  // ========== Слайдер ==========
   function initSlider() {
     const slides = document.getElementById('sliderSlides');
     if (!slides) return;
@@ -240,115 +319,9 @@
     }, 5000);
   }
 
-  function createCardFromTour(tour) {
-    const chipsHtml = (tour.chips || []).map(c => `<span class="chip">${c}</span>`).join('');
-    return `
-      <article class="card" data-category="${tour.category || ''}">
-        <div class="card-img-wrap">
-          <img class="card-img" src="${tour.image || 'styles/img/index/card1.jpg'}" alt="${tour.title}" />
-          <span class="badge">${tour.badge || 'Тур'}</span>
-          <button class="fav" title="В обране"></button>
-        </div>
-        <div class="card-body">
-          <h3 class="card-title">${tour.title}</h3>
-          <span class="card-meta">${tour.duration || ''}</span>
-          <span class="card-price">${tour.price || ''}</span>
-          <div class="chips">${chipsHtml}</div>
-          <div class="card-actions">
-            <div class="left-actions"><button class="btn-primary">Забронювати</button></div>
-            <div class="right-actions"><button class="btn-outline">Детальніше</button></div>
-          </div>
-        </div>
-      </article>
-    `;
-  }
-
-  const initialTours = [
-    {
-      title: 'Балі, Індонезія',
-      duration: 'All Inclusive • 7 ночей',
-      price: '35 960 грн',
-      image: 'styles/img/index/card1.jpg',
-      badge: 'Екзотика',
-      chips: ['Серфінг', 'SPA', 'Вулкани'],
-      category: 'екзотика'
-    },
-    {
-      title: 'Крит, Греція',
-      duration: 'Сніданки • 5 ночей',
-      price: '19 960 грн',
-      image: 'styles/img/index/card2.jpg',
-      badge: 'Пляж',
-      chips: ['Пляжі', 'Античність', 'Таверни'],
-      category: 'пляж'
-    },
-    {
-      title: 'Мальдіви',
-      duration: 'Вілли • 6 ночей',
-      price: '51 960 грн',
-      image: 'styles/img/index/card3.jpg',
-      badge: 'Люкс',
-      chips: ['Океан', 'Рифи', 'Релакс'],
-      category: 'люкс'
-    },
-    {
-      title: 'Бора-Бора',
-      duration: 'Лагуни • 7 ночей',
-      price: '59 960 грн',
-      image: 'styles/img/index/card4.jpg',
-      badge: 'Екзотика',
-      chips: ['Бунгало', 'Каяки', 'Снорклінг'],
-      category: 'екзотика'
-    },
-    {
-      title: 'Палаван, Філіппіни',
-      duration: 'Еко-тур • 6 ночей',
-      price: '31 960 грн',
-      image: 'styles/img/index/card5.jpg',
-      badge: 'Природа',
-      chips: ['Лагуни', 'Печери', 'Острівці'],
-      category: 'природа'
-    },
-    {
-      title: 'Самуї, Таїланд',
-      duration: 'Сніданки • 7 ночей',
-      price: '27 960 грн',
-      image: 'styles/img/index/card6.jpg',
-      badge: 'Пляж',
-      chips: ['Пальми', 'Фрукти', 'Храми'],
-      category: 'пляж'
-    },
-    {
-      title: 'Санторіні, Греція',
-      duration: 'Романтика • 5 ночей',
-      price: '23 160 грн',
-      image: 'styles/img/index/card7.jpg',
-      badge: 'Історія',
-      chips: ['Закати', 'Круїзи', 'Вина'],
-      category: 'історія'
-    },
-    {
-      title: 'Марокко',
-      duration: 'Гіди • 6 ночей',
-      price: '15 960 грн',
-      image: 'styles/img/index/card8.jpg',
-      badge: 'Історія',
-      chips: ['Медина', 'Сахара', 'Базар'],
-      category: 'історія'
-    }
-  ];
-
-  function loadTours() {
-    const track = document.getElementById('carouselTrack');
-    if (track) {
-      track.innerHTML = initialTours.map(tour => createCardFromTour(tour)).join('');
-      toursData = initialTours;
-    }
-  }
-
   function getDetailsFromCard(card) {
     const title = card.querySelector('.card-title')?.textContent?.trim() || '';
-    const tourData = toursData.find(t => t.title === title) || {};
+    const tourData = initialTours.find(t => t.title === title) || {};
     const details = tourDetailsData[title] || {};
     
     return {
@@ -379,9 +352,13 @@
     };
   }
 
+  // ========== Модальні вікна ==========
+  const detailsModal = document.getElementById('modalDetails');
+  const bookModal = document.getElementById('modalBook');
+  let currentBookingItem = null;
+
   function showDetailsModal(details) {
-    const modal = document.getElementById('modalDetails');
-    if (!modal) return;
+    if (!detailsModal) return;
     
     document.getElementById('modalDetailsImg').src = details.img || '';
     document.getElementById('modalDetailsImg').alt = details.title || '';
@@ -427,12 +404,11 @@
       `;
     }
     
-    modal.classList.add('active');
+    detailsModal.classList.add('active');
   }
 
   function showBookModal(item) {
-    const modal = document.getElementById('modalBook');
-    if (!modal) return;
+    if (!bookModal) return;
     
     document.getElementById('modalBookTitle').textContent = `Бронювання: ${item.title || ''}`;
     document.getElementById('modalBookSubtitle').textContent = `${item.meta || ''} • ${item.price || ''}`;
@@ -444,7 +420,7 @@
     }
     
     window.__currentBookingItem = item;
-    modal.classList.add('active');
+    bookModal.classList.add('active');
   }
 
   function showTourDetailsFromSlider(tourId) {
@@ -459,7 +435,6 @@
   function setupItemHandlers() {
     console.log('Налаштування обробників для карток');
     
-    // Обробники для кнопок "Детальніше"
     document.querySelectorAll('.btn-outline:not(.modal-close)').forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -473,7 +448,6 @@
       });
     });
     
-    // Обробники для кнопок "Забронювати"
     document.querySelectorAll('.btn-primary:not(.modal-close)').forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -487,7 +461,6 @@
       });
     });
     
-    // Обробники для кнопок лайків
     document.querySelectorAll('.fav').forEach(btn => {
       btn.addEventListener('click', async function(e) {
         e.preventDefault();
@@ -698,7 +671,6 @@
   }
 
   function setupModals() {
-    // Закриття по кнопках
     document.querySelectorAll('.modal-close').forEach(btn => {
       btn.addEventListener('click', function() {
         const modal = this.closest('.modal-overlay');
@@ -706,14 +678,12 @@
       });
     });
     
-    // Закриття по кліку на оверлей
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
       overlay.addEventListener('click', function(e) {
         if (e.target === this) this.classList.remove('active');
       });
     });
     
-    // Кнопка "Забронювати" в модальному вікні деталей
     const modalDetailsBook = document.getElementById('modalDetailsBook');
     if (modalDetailsBook) {
       modalDetailsBook.addEventListener('click', function() {
@@ -744,7 +714,6 @@
       });
     }
     
-    // Перемикання вкладок
     document.querySelectorAll('.modal-tab').forEach(tab => {
       tab.addEventListener('click', function() {
         const tabName = this.dataset.tab;
@@ -759,7 +728,6 @@
       });
     });
     
-    // Форма бронювання
     const bookForm = document.getElementById('modalBookForm');
     if (bookForm) {
       bookForm.addEventListener('submit', async function(e) {
@@ -795,7 +763,6 @@
       });
     }
     
-    // Очищення форми відгуку
     const mrfClear = document.getElementById('mrfClear');
     if (mrfClear) {
       mrfClear.addEventListener('click', function() {
@@ -804,7 +771,6 @@
       });
     }
     
-    // Відправка відгуку
     const mrfSubmit = document.getElementById('mrfSubmit');
     if (mrfSubmit) {
       mrfSubmit.addEventListener('click', function() {
@@ -822,7 +788,6 @@
       });
     }
     
-    // Зірковий рейтинг
     const starInput = document.getElementById('mrfStars');
     if (starInput) {
       starInput.querySelectorAll('span').forEach(star => {

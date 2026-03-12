@@ -3,6 +3,211 @@
   const qs = (sel, ctx) => (ctx || document).querySelector(sel);
   const qsa = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
 
+  // ========== Дефолтні дані круїзів (якщо API не працює) ==========
+  const defaultCruises = [
+    {
+      id: 1,
+      title: 'Середземне море',
+      price: '42 500 грн',
+      duration: '7 ночей',
+      groupSize: 'До 200 осіб',
+      accommodation: 'Лайнер класу люкс',
+      badge: '🌊 Помірні води',
+      category: 'temperate',
+      image: 'styles/img/cruise/cruise1.jpg',
+      meta: '7 ночей',
+      departureDates: ['15.03.2026', '22.03.2026', '05.04.2026'],
+      chips: ['Італія', 'Греція', 'Іспанія'],
+      description: 'Чарівний круїз Середземним морем. Відвідайте Італію, Грецію та Іспанію.'
+    },
+    {
+      id: 2,
+      title: 'Карибські острови',
+      price: '67 800 грн',
+      duration: '10 ночей',
+      groupSize: 'До 250 осіб',
+      accommodation: 'Лайнер з балконами',
+      badge: '☀️ Теплі води',
+      category: 'warm',
+      image: 'styles/img/cruise/cruise2.jpg',
+      meta: '10 ночей',
+      departureDates: ['10.04.2026', '24.04.2026', '08.05.2026'],
+      chips: ['Багами', 'Ямайка', 'Дайвінг'],
+      description: 'Райський круїз Карибами. Білі пляжі, бірюзова вода, дайвінг.'
+    },
+    {
+      id: 3,
+      title: 'Норвезькі фіорди',
+      price: '53 200 грн',
+      duration: '8 ночей',
+      groupSize: 'До 180 осіб',
+      accommodation: 'Експедиційний лайнер',
+      badge: '❄️ Холодні води',
+      category: 'cold',
+      image: 'styles/img/cruise/cruise3.jpg',
+      meta: '8 ночей',
+      departureDates: ['20.03.2026', '03.04.2026', '17.04.2026'],
+      chips: ['Берген', 'Гейрангер', 'Північне сяйво'],
+      description: 'Неймовірний круїз норвезькими фіордами. Льодовики, водоспади, північне сяйво.'
+    },
+    {
+      id: 4,
+      title: 'Аляска',
+      price: '61 500 грн',
+      duration: '9 ночей',
+      groupSize: 'До 220 осіб',
+      accommodation: 'Лайнер преміум-класу',
+      badge: '❄️ Холодні води',
+      category: 'cold',
+      image: 'styles/img/cruise/cruise4.jpg',
+      meta: '9 ночей',
+      departureDates: ['05.05.2026', '19.05.2026', '02.06.2026'],
+      chips: ['Джуно', 'Сьюард', 'Льодовики'],
+      description: 'Круїз до найбільшого штату США. Величні льодовики, кити, національні парки.'
+    },
+    {
+      id: 5,
+      title: 'Грецькі острови',
+      price: '38 900 грн',
+      duration: '6 ночей',
+      groupSize: 'До 150 осіб',
+      accommodation: 'Комфортабельний лайнер',
+      badge: '☀️ Теплі води',
+      category: 'warm',
+      image: 'styles/img/cruise/cruise5.jpg',
+      meta: '6 ночей',
+      departureDates: ['12.04.2026', '26.04.2026', '10.05.2026'],
+      chips: ['Санторіні', 'Міконос', 'Кріт'],
+      description: 'Знамениті грецькі острови. Санторіні, Міконос, Кріт.'
+    },
+    {
+      id: 6,
+      title: 'Дунай',
+      price: '29 800 грн',
+      duration: '7 ночей',
+      groupSize: 'До 120 осіб',
+      accommodation: 'Річковий лайнер',
+      badge: '🌊 Помірні води',
+      category: 'temperate',
+      image: 'styles/img/cruise/cruise6.jpg',
+      meta: '7 ночей',
+      departureDates: ['08.03.2026', '22.03.2026', '05.04.2026'],
+      chips: ['Відень', 'Будапешт', 'Братислава'],
+      description: 'Річковий круїз Дунаєм. Відень, Будапешт, Братислава.'
+    },
+    {
+      id: 7,
+      title: 'Аравія',
+      price: '73 200 грн',
+      duration: '8 ночей',
+      groupSize: 'До 200 осіб',
+      accommodation: 'Лайнер класу люкс',
+      badge: '☀️ Теплі води',
+      category: 'warm',
+      image: 'styles/img/cruise/cruise7.jpg',
+      meta: '8 ночей',
+      departureDates: ['25.05.2026', '09.06.2026', '23.06.2026'],
+      chips: ['Дубай', 'Оман', 'Катар'],
+      description: 'Розкішний круїз узбережжям Аравії. Дубай, Оман, Катар.'
+    },
+    {
+      id: 8,
+      title: 'Андаманське море',
+      price: '33 500 грн',
+      duration: '5 ночей',
+      groupSize: 'До 160 осіб',
+      accommodation: 'Лайнер з відкритими палубами',
+      badge: '☀️ Теплі води',
+      category: 'warm',
+      image: 'styles/img/cruise/cruise8.jpg',
+      meta: '5 ночей',
+      departureDates: ['15.06.2026', '29.06.2026', '13.07.2026'],
+      chips: ['Пхукет', 'Пхі-Пхі', 'Краби'],
+      description: 'Екзотичний круїз Таїландом. Пхукет, Пхі-Пхі, Крабі.'
+    },
+    {
+      id: 9,
+      title: 'Японське море',
+      price: '89 900 грн',
+      duration: '10 ночей',
+      groupSize: 'До 180 осіб',
+      accommodation: 'Лайнер преміум-класу',
+      badge: '🌊 Помірні води',
+      category: 'temperate',
+      image: 'styles/img/cruise/cruise9.jpg',
+      meta: '10 ночей',
+      departureDates: ['04.04.2026', '18.04.2026', '02.05.2026'],
+      chips: ['Токіо', 'Осака', 'Хоккайдо'],
+      description: 'Неймовірний круїз Японією. Токіо, Осака, Хоккайдо.'
+    },
+    {
+      id: 10,
+      title: 'Ісландія',
+      price: '65 200 грн',
+      duration: '7 ночей',
+      groupSize: 'До 140 осіб',
+      accommodation: 'Експедиційний лайнер',
+      badge: '❄️ Холодні води',
+      category: 'cold',
+      image: 'styles/img/cruise/cruise10.jpg',
+      meta: '7 ночей',
+      departureDates: ['10.06.2026', '24.06.2026', '07.07.2026'],
+      chips: ['Рейк\'явік', 'Гейзери', 'Водоспади'],
+      description: 'Круїз до країни льодовиків та вулканів. Рейк\'явік, гейзери, водоспади.'
+    },
+    {
+      id: 11,
+      title: 'Чорне море',
+      price: '18 500 грн',
+      duration: '5 ночей',
+      groupSize: 'До 200 осіб',
+      accommodation: 'Комфортабельний лайнер',
+      badge: '🌊 Помірні води',
+      category: 'temperate',
+      image: 'styles/img/cruise/cruise11.jpg',
+      meta: '5 ночей',
+      departureDates: ['20.05.2026', '04.06.2026', '18.06.2026'],
+      chips: ['Одеса', 'Сочі', 'Болгарія'],
+      description: 'Чорноморський круїз. Одеса, Сочі, Болгарія.'
+    },
+    {
+      id: 12,
+      title: 'Балтійське море',
+      price: '41 200 грн',
+      duration: '8 ночей',
+      groupSize: 'До 210 осіб',
+      accommodation: 'Лайнер з балконами',
+      badge: '🌊 Помірні води',
+      category: 'temperate',
+      image: 'styles/img/cruise/cruise12.jpg',
+      meta: '8 ночей',
+      departureDates: ['12.06.2026', '26.06.2026', '09.07.2026'],
+      chips: ['Стокгольм', 'Гельсінкі', 'Санкт-Петербург'],
+      description: 'Круїз Балтійським морем. Стокгольм, Гельсінкі, Санкт-Петербург.'
+    }
+  ];
+
+  // ========== Дані для деталей круїзів ==========
+  const cruiseDetailsData = {};
+  defaultCruises.forEach(cruise => {
+    cruiseDetailsData[cruise.title] = {
+      description: cruise.description,
+      departureDates: cruise.departureDates,
+      duration: cruise.duration,
+      groupSize: cruise.groupSize,
+      accommodation: cruise.accommodation,
+      price: cruise.price
+    };
+  });
+  cruiseDetailsData['Круїз навколо світу'] = {
+    description: 'Неймовірна навколосвітня подорож тривалістю 120 днів. Ви відвідаєте 6 континентів, 30 країн, побачите найвідоміші пам\'ятки планети.',
+    departureDates: ['10.01.2026', '05.03.2026', '15.05.2026'],
+    duration: '120 днів',
+    groupSize: 'До 300 осіб',
+    accommodation: 'Лайнер преміум-класу',
+    price: '799 000 грн'
+  };
+
   // Поточний елемент для бронювання
   let currentBookingItem = null;
 
@@ -37,23 +242,6 @@
     });
   }
 
-  // ========== Завантаження улюблених з сервера ==========
-  async function loadFavorites() {
-    if (!window.auth?.getToken()) return;
-    try {
-      const favs = await window.auth.getFavorites();
-      const favTitles = new Set(favs.map(f => f.title));
-      qsa('.card').forEach(card => {
-        const title = qs('.card-title', card)?.textContent?.trim();
-        if (title && favTitles.has(title)) {
-          qs('.fav', card)?.classList.add('active');
-        }
-      });
-    } catch (error) {
-      console.error('Помилка завантаження улюблених:', error);
-    }
-  }
-
   // ========== Toast ==========
   function showToast(msg, type = 'success') {
     const old = document.querySelector('.toast-notification');
@@ -69,6 +257,23 @@
       toast.classList.remove('show');
       setTimeout(() => toast.remove(), 300);
     }, 3000);
+  }
+
+  // ========== Завантаження улюблених з сервера ==========
+  async function loadFavorites() {
+    if (!window.auth?.getToken()) return;
+    try {
+      const favs = await window.auth.getFavorites();
+      const favTitles = new Set(favs.map(f => f.title));
+      qsa('.card').forEach(card => {
+        const title = qs('.card-title', card)?.textContent?.trim();
+        if (title && favTitles.has(title)) {
+          qs('.fav', card)?.classList.add('active');
+        }
+      });
+    } catch (error) {
+      console.error('Помилка завантаження улюблених:', error);
+    }
   }
 
   // ========== Глобальний обробник кліку на лайк ==========
@@ -115,6 +320,69 @@
       }
     }
   });
+
+  // ========== Завантаження круїзів з API ==========
+  async function loadCruises() {
+    console.log('🔍 Завантаження круїзів...');
+    
+    try {
+      const response = await fetch('/api/admin/cruise');
+      const data = await response.json();
+      
+      if (data.success && data.items && data.items.length > 0) {
+        console.log(`✅ Завантажено ${data.items.length} круїзів з API`);
+        renderCruises(data.items);
+      } else {
+        console.log('📋 Використовуємо локальні дані круїзів');
+        renderCruises(defaultCruises);
+      }
+    } catch (error) {
+      console.error('❌ Помилка завантаження круїзів:', error);
+      console.log('📋 Використовуємо локальні дані круїзів (помилка API)');
+      renderCruises(defaultCruises);
+    }
+  }
+
+  // ========== Відображення круїзів ==========
+  function renderCruises(cruises) {
+    const cruisesGrid = qs('#cruisesGrid');
+    if (!cruisesGrid) {
+      console.error('❌ Елемент #cruisesGrid не знайдено!');
+      return;
+    }
+
+    let html = '';
+    
+    cruises.forEach(cruise => {
+      const chipsHtml = (cruise.chips || []).map(chip => `<span class="chip">${chip}</span>`).join('');
+      
+      html += `
+        <article class="card" data-category="${cruise.category || ''}">
+          <div class="card-img-wrap">
+            <img class="card-img" src="${cruise.image || 'styles/img/cruise/cruise1.jpg'}" alt="${cruise.title}" />
+            <span class="badge">${cruise.badge || 'Круїз'}</span>
+            <button class="fav" title="В обране"></button>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${cruise.title}</h3>
+            <span class="card-meta">${cruise.meta || cruise.duration || ''}</span>
+            <span class="card-price">${cruise.price || ''}</span>
+            <div class="chips">${chipsHtml}</div>
+            <div class="card-actions">
+              <div class="left-actions"><button class="btn-primary">Забронювати</button></div>
+              <div class="right-actions"><button class="btn-outline">Детальніше</button></div>
+            </div>
+          </div>
+        </article>
+      `;
+    });
+
+    cruisesGrid.innerHTML = html;
+    console.log(`✅ Відображено ${cruises.length} круїзів`);
+    
+    // Завантажуємо улюблені після рендеру
+    loadFavorites();
+  }
 
   // ========== Слайдер ==========
   function initSlider() {
@@ -178,235 +446,7 @@
     updateSlider();
   }
 
-  // ========== Дані круїзів ==========
-  const cruiseDetailsData = {
-    'Середземне море': {
-      description: 'Чарівний круїз Середземним морем. Відвідайте Італію, Грецію та Іспанію. На вас чекають античні міста, мальовничі острови та середземноморська кухня.',
-      departureDates: ['15.03.2026', '22.03.2026', '05.04.2026'],
-      duration: '7 ночей',
-      groupSize: 'До 200 осіб',
-      accommodation: 'Лайнер класу люкс',
-      price: '42 500 грн'
-    },
-    'Карибські острови': {
-      description: 'Райський круїз Карибами. Білі пляжі, бірюзова вода, дайвінг серед коралових рифів. Відвідайте Багами, Ямайку та інші острови.',
-      departureDates: ['10.04.2026', '24.04.2026', '08.05.2026'],
-      duration: '10 ночей',
-      groupSize: 'До 250 осіб',
-      accommodation: 'Лайнер з балконами',
-      price: '67 800 грн'
-    },
-    'Норвезькі фіорди': {
-      description: 'Неймовірний круїз норвезькими фіордами. Льодовики, водоспади, північне сяйво. Відвідайте Берген, Гейрангер та інші міста.',
-      departureDates: ['20.03.2026', '03.04.2026', '17.04.2026'],
-      duration: '8 ночей',
-      groupSize: 'До 180 осіб',
-      accommodation: 'Експедиційний лайнер',
-      price: '53 200 грн'
-    },
-    'Аляска': {
-      description: 'Круїз до найбільшого штату США. Величні льодовики, кити, національні парки. Відвідайте Джуно, Сьюард та інші міста.',
-      departureDates: ['05.05.2026', '19.05.2026', '02.06.2026'],
-      duration: '9 ночей',
-      groupSize: 'До 220 осіб',
-      accommodation: 'Лайнер преміум-класу',
-      price: '61 500 грн'
-    },
-    'Грецькі острови': {
-      description: 'Знамениті грецькі острови. Санторіні, Міконос, Кріт. Білі будиночки, сині куполи, неймовірні заходи сонця.',
-      departureDates: ['12.04.2026', '26.04.2026', '10.05.2026'],
-      duration: '6 ночей',
-      groupSize: 'До 150 осіб',
-      accommodation: 'Комфортабельний лайнер',
-      price: '38 900 грн'
-    },
-    'Дунай': {
-      description: 'Річковий круїз Дунаєм. Відень, Будапешт, Братислава. Чарівні європейські міста, палаци, музеї.',
-      departureDates: ['08.03.2026', '22.03.2026', '05.04.2026'],
-      duration: '7 ночей',
-      groupSize: 'До 120 осіб',
-      accommodation: 'Річковий лайнер',
-      price: '29 800 грн'
-    },
-    'Аравія': {
-      description: 'Розкішний круїз узбережжям Аравії. Дубай, Оман, Катар. Хмарочоси, пустелі, східний колорит.',
-      departureDates: ['25.05.2026', '09.06.2026', '23.06.2026'],
-      duration: '8 ночей',
-      groupSize: 'До 200 осіб',
-      accommodation: 'Лайнер класу люкс',
-      price: '73 200 грн'
-    },
-    'Андаманське море': {
-      description: 'Екзотичний круїз Таїландом. Пхукет, Пхі-Пхі, Крабі. Тропічні острови, дайвінг, тайська кухня.',
-      departureDates: ['15.06.2026', '29.06.2026', '13.07.2026'],
-      duration: '5 ночей',
-      groupSize: 'До 160 осіб',
-      accommodation: 'Лайнер з відкритими палубами',
-      price: '33 500 грн'
-    },
-    'Японське море': {
-      description: 'Неймовірний круїз Японією. Токіо, Осака, Хоккайдо. Сучасні мегаполіси, стародавні храми, унікальна кухня.',
-      departureDates: ['04.04.2026', '18.04.2026', '02.05.2026'],
-      duration: '10 ночей',
-      groupSize: 'До 180 осіб',
-      accommodation: 'Лайнер преміум-класу',
-      price: '89 900 грн'
-    },
-    'Ісландія': {
-      description: 'Круїз до країни льодовиків та вулканів. Рейк\'явік, гейзери, водоспади, чорні пляжі, північне сяйво.',
-      departureDates: ['10.06.2026', '24.06.2026', '07.07.2026'],
-      duration: '7 ночей',
-      groupSize: 'До 140 осіб',
-      accommodation: 'Експедиційний лайнер',
-      price: '65 200 грн'
-    },
-    'Чорне море': {
-      description: 'Чорноморський круїз. Одеса, Сочі, Болгарія. Курорти, пляжі, гірські краєвиди.',
-      departureDates: ['20.05.2026', '04.06.2026', '18.06.2026'],
-      duration: '5 ночей',
-      groupSize: 'До 200 осіб',
-      accommodation: 'Комфортабельний лайнер',
-      price: '18 500 грн'
-    },
-    'Балтійське море': {
-      description: 'Круїз Балтійським морем. Стокгольм, Гельсінкі, Санкт-Петербург. Скандинавські столиці, королівські палаци.',
-      departureDates: ['12.06.2026', '26.06.2026', '09.07.2026'],
-      duration: '8 ночей',
-      groupSize: 'До 210 осіб',
-      accommodation: 'Лайнер з балконами',
-      price: '41 200 грн'
-    },
-    'Круїз навколо світу': {
-      description: 'Неймовірна навколосвітня подорож тривалістю 120 днів. Ви відвідаєте 6 континентів, 30 країн, побачите найвідоміші пам\'ятки планети. На вас чекають: Ріо-де-Жанейро, Сідней, Токіо, Венеція, Нью-Йорк та багато інших. Розкішний лайнер, все включено, насичена екскурсійна програма.',
-      departureDates: ['10.01.2026', '05.03.2026', '15.05.2026'],
-      duration: '120 днів',
-      groupSize: 'До 300 осіб',
-      accommodation: 'Лайнер преміум-класу',
-      price: '799 000 грн'
-    }
-  };
-
-  function createCruiseCard(title, category) {
-    const data = cruiseDetailsData[title] || {};
-    let imgSrc = 'styles/img/cruise/cruise1.jpg';
-    
-    if (title.includes('Середземне')) imgSrc = 'styles/img/cruise/cruise1.jpg';
-    else if (title.includes('Карибські')) imgSrc = 'styles/img/cruise/cruise2.jpg';
-    else if (title.includes('Норвезькі')) imgSrc = 'styles/img/cruise/cruise3.jpg';
-    else if (title.includes('Аляска')) imgSrc = 'styles/img/cruise/cruise4.jpg';
-    else if (title.includes('Грецькі')) imgSrc = 'styles/img/cruise/cruise5.jpg';
-    else if (title.includes('Дунай')) imgSrc = 'styles/img/cruise/cruise6.jpg';
-    else if (title.includes('Аравія')) imgSrc = 'styles/img/cruise/cruise7.jpg';
-    else if (title.includes('Андаманське')) imgSrc = 'styles/img/cruise/cruise8.jpg';
-    else if (title.includes('Японське')) imgSrc = 'styles/img/cruise/cruise9.jpg';
-    else if (title.includes('Ісландія')) imgSrc = 'styles/img/cruise/cruise10.jpg';
-    else if (title.includes('Чорне')) imgSrc = 'styles/img/cruise/cruise11.jpg';
-    else if (title.includes('Балтійське')) imgSrc = 'styles/img/cruise/cruise12.jpg';
-
-    const badgeMap = {
-      warm: '☀️ Теплі води',
-      cold: '❄️ Холодні води',
-      temperate: '🌊 Помірні води'
-    };
-    const badge = badgeMap[category] || '🌊 Круїз';
-
-    return `
-      <article class="card" data-category="${category}">
-        <div class="card-img-wrap">
-          <img class="card-img" src="${imgSrc}" alt="${title}" />
-          <span class="badge">${badge}</span>
-          <button class="fav" title="В обране"></button>
-        </div>
-        <div class="card-body">
-          <h3 class="card-title">${title}</h3>
-          <span class="card-meta">${data.duration || '7 ночей'}</span>
-          <span class="card-price">${data.price || '42 500 грн'}</span>
-          <div class="chips">${(data.departureDates || []).slice(0,3).map(d => `<span class="chip">${d}</span>`).join('')}</div>
-          <div class="card-actions">
-            <div class="left-actions"><button class="btn-primary">Забронювати</button></div>
-            <div class="right-actions"><button class="btn-outline">Детальніше</button></div>
-          </div>
-        </div>
-      </article>
-    `;
-  }
-
-  // ========== Завантаження карток ==========
-  function loadCruises() {
-    const cruisesGrid = qs('#cruisesGrid');
-    if (!cruisesGrid) return;
-
-    const cruiseList = [
-      { title: 'Середземне море', cat: 'temperate' },
-      { title: 'Карибські острови', cat: 'warm' },
-      { title: 'Норвезькі фіорди', cat: 'cold' },
-      { title: 'Аляска', cat: 'cold' },
-      { title: 'Грецькі острови', cat: 'warm' },
-      { title: 'Дунай', cat: 'temperate' },
-      { title: 'Аравія', cat: 'warm' },
-      { title: 'Андаманське море', cat: 'warm' },
-      { title: 'Японське море', cat: 'temperate' },
-      { title: 'Ісландія', cat: 'cold' },
-      { title: 'Чорне море', cat: 'temperate' },
-      { title: 'Балтійське море', cat: 'temperate' }
-    ];
-    
-    cruisesGrid.innerHTML = cruiseList.map(c => createCruiseCard(c.title, c.cat)).join('');
-    setupItemHandlers(); // Додаємо обробники після завантаження карток
-    loadFavorites();
-  }
-
-  // ========== Налаштування обробників для карток ==========
-  function setupItemHandlers() {
-    console.log('Налаштування обробників для карток круїзів');
-    
-    // Обробники для кнопок "Детальніше"
-    document.querySelectorAll('.btn-outline:not(.modal-close)').forEach(btn => {
-      // Видаляємо старі обробники, щоб не було дублів
-      btn.removeEventListener('click', window.detailsHandler);
-      
-      window.detailsHandler = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const card = this.closest('.card');
-        if (!card) return;
-        
-        const data = buildDataFromCard(card);
-        openDetailsModal(data);
-      };
-      
-      btn.addEventListener('click', window.detailsHandler);
-    });
-    
-    // Обробники для кнопок "Забронювати"
-    document.querySelectorAll('.btn-primary:not(.modal-close)').forEach(btn => {
-      btn.removeEventListener('click', window.bookHandler);
-      
-      window.bookHandler = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const card = this.closest('.card');
-        if (!card) return;
-        
-        const title = qs('.card-title', card)?.textContent?.trim() || '';
-        const image = qs('.card-img', card)?.src || '';
-        const price = qs('.card-price', card)?.textContent?.trim() || '';
-        const meta = qs('.card-meta', card)?.textContent?.trim() || '';
-        const badge = qs('.badge', card)?.textContent?.trim() || '';
-        const chips = qsa('.chips .chip', card).map(c => c.textContent.trim());
-        const category = card.dataset.category || '';
-        
-        currentBookingItem = { title, image, price, meta, badge, chips, category };
-        openBookModal(currentBookingItem);
-      };
-      
-      btn.addEventListener('click', window.bookHandler);
-    });
-  }
-
-  // ========== ФІЛЬТР ==========
+  // ========== Фільтр ==========
   const filterBtn = qs('#filterBtn');
   const filterPanel = qs('#filterPanel');
   const categoryChips = qs('#categoryChips');
@@ -612,6 +652,12 @@
     });
   }
 
+  // Зберігаємо оригінальний порядок карток
+  cards = qsa('.card');
+  cards.forEach((card, index) => {
+    card.dataset.originalIndex = index;
+  });
+
   // ========== Пошук за датою ==========
   const searchBtn = qs('#searchByDate');
   const clearBtn = qs('#clearSearch');
@@ -645,23 +691,13 @@
       }
 
       if (foundTitles.length) {
-        const cruiseList = [
-          { title: 'Середземне море', cat: 'temperate' },
-          { title: 'Карибські острови', cat: 'warm' },
-          { title: 'Норвезькі фіорди', cat: 'cold' },
-          { title: 'Аляска', cat: 'cold' },
-          { title: 'Грецькі острови', cat: 'warm' },
-          { title: 'Дунай', cat: 'temperate' },
-          { title: 'Аравія', cat: 'warm' },
-          { title: 'Андаманське море', cat: 'warm' },
-          { title: 'Японське море', cat: 'temperate' },
-          { title: 'Ісландія', cat: 'cold' },
-          { title: 'Чорне море', cat: 'temperate' },
-          { title: 'Балтійське море', cat: 'temperate' }
-        ];
-        const filtered = cruiseList.filter(c => foundTitles.includes(c.title));
-        searchResultsDiv.innerHTML = filtered.map(c => createCruiseCard(c.title, c.cat)).join('');
-        setupItemHandlers(); // Додаємо обробники для знайдених карток
+        const allCards = qsa('#cruisesGrid .card');
+        const foundCards = allCards.filter(card => {
+          const title = qs('.card-title', card)?.textContent?.trim();
+          return foundTitles.includes(title);
+        });
+        
+        searchResultsDiv.innerHTML = foundCards.map(card => card.outerHTML).join('');
         loadFavorites();
         searchResultsDiv.classList.add('visible');
         searchResultsTitle.classList.add('visible');
@@ -962,25 +998,80 @@
   if (worldCruiseBtn) {
     worldCruiseBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      const data = cruiseDetailsData['Круїз навколо світу'] || {};
-      data.title = 'Круїз навколо світу';
-      data.img = 'styles/img/cruise/world_cruise.jpg';
-      data.badge = '🔥 Гаряча пропозиція';
-      data.subtitle = '120 днів • 6 континентів • 30 країн';
-      data.price = '799 000 грн';
-      data.tags = ['Навколо світу', 'Преміум', 'Все включено'];
+      const data = {
+        title: 'Круїз навколо світу',
+        subtitle: '120 днів • 6 континентів • 30 країн',
+        price: '799 000 грн',
+        img: 'styles/img/cruise/world_cruise.jpg',
+        badge: '🔥 Гаряча пропозиція',
+        tags: ['Навколо світу', 'Преміум', 'Все включено'],
+        description: cruiseDetailsData['Круїз навколо світу'].description,
+        departureDates: cruiseDetailsData['Круїз навколо світу'].departureDates,
+        duration: cruiseDetailsData['Круїз навколо світу'].duration,
+        groupSize: cruiseDetailsData['Круїз навколо світу'].groupSize,
+        accommodation: cruiseDetailsData['Круїз навколо світу'].accommodation
+      };
       openDetailsModal(data);
     });
   }
+
+  // ========== Обробники кліків для карток ==========
+  document.addEventListener('click', (e) => {
+    const detailBtn = e.target.closest('.btn-outline:not(.modal-close)') || e.target.closest('.slide-detail-btn');
+    if (detailBtn) {
+      e.preventDefault();
+      let card = detailBtn.closest('.card');
+      if (card) {
+        const data = buildDataFromCard(card);
+        openDetailsModal(data);
+      } else if (detailBtn.classList.contains('slide-detail-btn')) {
+        const slide = detailBtn.closest('.offer-slide');
+        if (slide) {
+          const title = qs('.cap-title', slide)?.textContent?.trim() || '';
+          const data = cruiseDetailsData[title] || {};
+          data.title = title;
+          data.img = slide.style.backgroundImage.slice(5, -2) || '';
+          data.badge = qs('.cap-pill', slide)?.textContent?.trim() || '';
+          data.subtitle = qs('.cap-desc', slide)?.textContent?.trim() || '';
+          data.price = qs('.new-price', slide)?.textContent?.trim() || '';
+          data.tags = [];
+          openDetailsModal(data);
+        }
+      }
+      return;
+    }
+
+    const bookBtn = e.target.closest('.btn-primary');
+    if (bookBtn && !e.target.closest('#modalDetails')) {
+      const card = bookBtn.closest('.card');
+      if (card) {
+        const title = qs('.card-title', card)?.textContent?.trim() || '';
+        const image = qs('.card-img', card)?.src || '';
+        const price = qs('.card-price', card)?.textContent?.trim() || '';
+        const meta = qs('.card-meta', card)?.textContent?.trim() || '';
+        const badge = qs('.badge', card)?.textContent?.trim() || '';
+        const chips = qsa('.chips .chip', card).map(c => c.textContent.trim());
+        const category = card.dataset.category || '';
+        currentBookingItem = { title, image, price, meta, badge, chips, category };
+        openBookModal(currentBookingItem);
+      }
+    }
+  });
 
   // ========== Ініціалізація ==========
   function init() {
     console.log('🚀 cruise.js ініціалізація');
     
+    // Зберігаємо оригінальний порядок карток
+    cards = qsa('.card');
+    cards.forEach((card, index) => {
+      card.dataset.originalIndex = index;
+    });
+    
     // Ініціалізуємо слайдер
     initSlider();
     
-    // Завантажуємо картки
+    // Завантажуємо круїзи
     loadCruises();
     
     // Налаштовуємо фільтр
