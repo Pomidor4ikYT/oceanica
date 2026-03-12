@@ -1,4 +1,4 @@
-// admin.js - ВИПРАВЛЕНА ВЕРСІЯ
+// public/js/admin.js
 (function() {
   const qs = (sel) => document.querySelector(sel);
   const qsa = (sel) => Array.from(document.querySelectorAll(sel));
@@ -9,14 +9,6 @@
   let currentDates = [];
   // Поточний тип
   let currentType = 'tour';
-  
-  // Глобальний об'єкт для зберігання демо-даних
-  let demoData = {
-    tour: [],
-    cruise: [],
-    island: [],
-    hot: []
-  };
 
   // Конфігурація для різних типів
   const typeConfig = {
@@ -104,750 +96,6 @@
     }
   };
 
-  // ========== ПОЧАТКОВІ ДАНІ ДЛЯ ТУРІВ (12 карток) ==========
-  const initialToursData = [
-    {
-      id: 1,
-      title: 'Таїланд: Пхукет & Пхі-Пхі',
-      price: '39 900 грн',
-      duration: '10 ночей',
-      groupSize: '25 осіб',
-      accommodation: 'Готель 4*',
-      badge: '🏖️ Пляжний',
-      category: 'beach',
-      image: 'styles/img/tours/tour1.jpg',
-      meta: '10 днів • All Inclusive',
-      departureDates: ['15.03.2026', '22.03.2026', '05.04.2026'],
-      chips: ['Пальми', 'Вапнякові скелі', 'Дайвінг'],
-      description: 'Райські пляжі Таїланду з кристальною водою та островами Пхі-Пхі.'
-    },
-    {
-      id: 2,
-      title: 'Італія: Рим, Флоренція, Венеція',
-      price: '31 200 грн',
-      duration: '8 днів',
-      groupSize: '30 осіб',
-      accommodation: 'Готель 3-4*',
-      badge: '🏛️ Екскурсійний',
-      category: 'excursion',
-      image: 'styles/img/tours/tour2.jpg',
-      meta: '8 днів • сніданки',
-      departureDates: ['10.04.2026', '24.04.2026', '08.05.2026'],
-      chips: ['Колізей', 'Да Вінчі', 'Гондоли'],
-      description: 'Класичний тур по найвідоміших містах Італії.'
-    },
-    {
-      id: 3,
-      title: 'Непал: Еверест та храми',
-      price: '47 500 грн',
-      duration: '12 днів',
-      groupSize: '15 осіб',
-      accommodation: 'Кемп',
-      badge: '⛰️ Гірський',
-      category: 'mountain',
-      image: 'styles/img/tours/tour3.jpg',
-      meta: '12 днів • Trekking',
-      departureDates: ['20.03.2026', '03.04.2026', '17.04.2026'],
-      chips: ['Гімалаї', 'Буддизм', 'Базовий табір'],
-      description: 'Треккінг до Евересту.'
-    },
-    {
-      id: 4,
-      title: 'Мальдіви: райські атоли',
-      price: '67 800 грн',
-      duration: '7 ночей',
-      groupSize: '20 осіб',
-      accommodation: 'Вілли над водою 5*',
-      badge: '🏖️ Пляжний',
-      category: 'beach',
-      image: 'styles/img/tours/tour4.jpg',
-      meta: '7 днів • вілли над водою',
-      departureDates: ['05.05.2026', '19.05.2026', '02.06.2026'],
-      chips: ['Лагуна', 'Снорклінг', 'SPA'],
-      description: 'Екзотичні атоли Мальдів з бунгало над водою.'
-    },
-    {
-      id: 5,
-      title: 'Франція: Париж, Долина Луари',
-      price: '28 900 грн',
-      duration: '6 днів',
-      groupSize: '28 осіб',
-      accommodation: 'Готель 3-4*',
-      badge: '🏛️ Екскурсійний',
-      category: 'excursion',
-      image: 'styles/img/tours/tour5.jpg',
-      meta: '6 днів • сніданки',
-      departureDates: ['12.04.2026', '26.04.2026', '10.05.2026'],
-      chips: ['Ейфелева вежа', 'Замки', 'Вина'],
-      description: 'Романтична Франція.'
-    },
-    {
-      id: 6,
-      title: 'Швейцарія: Альпи та озера',
-      price: '52 300 грн',
-      duration: '7 ночей',
-      groupSize: '22 осіб',
-      accommodation: 'Гірський готель',
-      badge: '⛰️ Гірський',
-      category: 'mountain',
-      image: 'styles/img/tours/tour6.jpg',
-      meta: '7 днів • напівпансіон',
-      departureDates: ['08.03.2026', '22.03.2026', '05.04.2026'],
-      chips: ['Маттергорн', 'Женевське озеро', 'Сири'],
-      description: 'Гірські шедеври Швейцарії.'
-    },
-    {
-      id: 7,
-      title: 'Єгипет: Хургада, піраміди',
-      price: '24 500 грн',
-      duration: '10 ночей',
-      groupSize: '30 осіб',
-      accommodation: 'Готель 4*',
-      badge: '🏖️ Пляжний',
-      category: 'beach',
-      image: 'styles/img/tours/tour7.jpg',
-      meta: '10 днів • All Inclusive',
-      departureDates: ['25.05.2026', '09.06.2026', '23.06.2026'],
-      chips: ['Червоне море', 'Сфінкс', 'Дайвінг'],
-      description: 'Поєднання пляжного відпочинку з екскурсіями.'
-    },
-    {
-      id: 8,
-      title: 'Греція: Афіни, Метеори, Салоніки',
-      price: '26 800 грн',
-      duration: '7 ночей',
-      groupSize: '25 осіб',
-      accommodation: 'Готель 3-4*',
-      badge: '🏛️ Екскурсійний',
-      category: 'excursion',
-      image: 'styles/img/tours/tour8.jpg',
-      meta: '7 днів • сніданки',
-      departureDates: ['15.06.2026', '29.06.2026', '13.07.2026'],
-      chips: ['Акрополь', 'Монастирі', 'Олімп'],
-      description: 'Класична Греція.'
-    },
-    {
-      id: 9,
-      title: 'Перу: Мачу-Пікчу та Анди',
-      price: '58 900 грн',
-      duration: '9 ночей',
-      groupSize: '16 осіб',
-      accommodation: 'Еко-готель',
-      badge: '⛰️ Гірський',
-      category: 'mountain',
-      image: 'styles/img/tours/tour9.jpg',
-      meta: '9 днів • експедиція',
-      departureDates: ['04.04.2026', '18.04.2026', '02.05.2026'],
-      chips: ['Інки', 'Амазонка', 'Куско'],
-      description: 'Експедиція до стародавнього міста інків.'
-    },
-    {
-      id: 10,
-      title: 'Балі: храми та серфінг',
-      price: '44 200 грн',
-      duration: '11 ночей',
-      groupSize: '20 осіб',
-      accommodation: 'Готель 4*',
-      badge: '🏖️ Пляжний',
-      category: 'beach',
-      image: 'styles/img/tours/tour10.jpg',
-      meta: '11 днів • All Inclusive',
-      departureDates: ['10.06.2026', '24.06.2026', '07.07.2026'],
-      chips: ['Вулкани', 'Ритуали', 'Чайні плантації'],
-      description: 'Духовна Балі з храмами та серфінгом.'
-    },
-    {
-      id: 11,
-      title: 'Ісландія: вулкани та льодовики',
-      price: '62 300 грн',
-      duration: '8 ночей',
-      groupSize: '14 осіб',
-      accommodation: 'Готель 3-4*',
-      badge: '⛰️ Гірський',
-      category: 'mountain',
-      image: 'styles/img/tours/tour11.jpg',
-      meta: '8 днів • пригоди',
-      departureDates: ['20.05.2026', '04.06.2026', '18.06.2026'],
-      chips: ['Гейзери', 'Північне сяйво', 'Чорні пляжі'],
-      description: 'Льодовики, гейзери та північне сяйво.'
-    },
-    {
-      id: 12,
-      title: 'Японія: Токіо, Кіото, Осака',
-      price: '72 500 грн',
-      duration: '10 ночей',
-      groupSize: '22 осіб',
-      accommodation: 'Готель 4*',
-      badge: '🏛️ Екскурсійний',
-      category: 'excursion',
-      image: 'styles/img/tours/tour12.jpg',
-      meta: '10 днів • сніданки',
-      departureDates: ['12.06.2026', '26.06.2026', '09.07.2026'],
-      chips: ['Фудзі', 'Храми', 'Суші'],
-      description: 'Модерна та традиційна Японія.'
-    }
-  ];
-
-  // ========== ПОЧАТКОВІ ДАНІ ДЛЯ КРУЇЗІВ (12 карток) ==========
-  const initialCruisesData = [
-    {
-      id: 1,
-      title: 'Середземне море',
-      price: '42 500 грн',
-      duration: '7 ночей',
-      groupSize: '200 осіб',
-      accommodation: 'Лайнер класу люкс',
-      badge: '☀️ Теплі води',
-      category: 'warm',
-      image: 'styles/img/cruise/cruise1.jpg',
-      meta: '7 ночей',
-      departureDates: ['15.03.2026', '22.03.2026', '05.04.2026'],
-      chips: ['Італія', 'Греція', 'Іспанія'],
-      description: 'Чарівний круїз Середземним морем.'
-    },
-    {
-      id: 2,
-      title: 'Карибські острови',
-      price: '67 800 грн',
-      duration: '10 ночей',
-      groupSize: '250 осіб',
-      accommodation: 'Лайнер з балконами',
-      badge: '☀️ Теплі води',
-      category: 'warm',
-      image: 'styles/img/cruise/cruise2.jpg',
-      meta: '10 ночей',
-      departureDates: ['10.04.2026', '24.04.2026', '08.05.2026'],
-      chips: ['Багами', 'Ямайка', 'Дайвінг'],
-      description: 'Райський круїз Карибами.'
-    },
-    {
-      id: 3,
-      title: 'Норвезькі фіорди',
-      price: '53 200 грн',
-      duration: '8 ночей',
-      groupSize: '180 осіб',
-      accommodation: 'Експедиційний лайнер',
-      badge: '❄️ Холодні води',
-      category: 'cold',
-      image: 'styles/img/cruise/cruise3.jpg',
-      meta: '8 ночей',
-      departureDates: ['20.03.2026', '03.04.2026', '17.04.2026'],
-      chips: ['Берген', 'Гейрангер', 'Північне сяйво'],
-      description: 'Неймовірний круїз норвезькими фіордами.'
-    },
-    {
-      id: 4,
-      title: 'Аляска',
-      price: '61 500 грн',
-      duration: '9 ночей',
-      groupSize: '220 осіб',
-      accommodation: 'Лайнер преміум-класу',
-      badge: '❄️ Холодні води',
-      category: 'cold',
-      image: 'styles/img/cruise/cruise4.jpg',
-      meta: '9 ночей',
-      departureDates: ['05.05.2026', '19.05.2026', '02.06.2026'],
-      chips: ['Джуно', 'Сьюард', 'Льодовики'],
-      description: 'Круїз до найбільшого штату США.'
-    },
-    {
-      id: 5,
-      title: 'Грецькі острови',
-      price: '38 900 грн',
-      duration: '6 ночей',
-      groupSize: '150 осіб',
-      accommodation: 'Комфортабельний лайнер',
-      badge: '☀️ Теплі води',
-      category: 'warm',
-      image: 'styles/img/cruise/cruise5.jpg',
-      meta: '6 ночей',
-      departureDates: ['12.04.2026', '26.04.2026', '10.05.2026'],
-      chips: ['Санторіні', 'Міконос', 'Кріт'],
-      description: 'Знамениті грецькі острови.'
-    },
-    {
-      id: 6,
-      title: 'Дунай',
-      price: '29 800 грн',
-      duration: '7 ночей',
-      groupSize: '120 осіб',
-      accommodation: 'Річковий лайнер',
-      badge: '🌊 Помірні води',
-      category: 'temperate',
-      image: 'styles/img/cruise/cruise6.jpg',
-      meta: '7 ночей',
-      departureDates: ['08.03.2026', '22.03.2026', '05.04.2026'],
-      chips: ['Відень', 'Будапешт', 'Братислава'],
-      description: 'Річковий круїз Дунаєм.'
-    },
-    {
-      id: 7,
-      title: 'Аравія',
-      price: '73 200 грн',
-      duration: '8 ночей',
-      groupSize: '200 осіб',
-      accommodation: 'Лайнер класу люкс',
-      badge: '☀️ Теплі води',
-      category: 'warm',
-      image: 'styles/img/cruise/cruise7.jpg',
-      meta: '8 ночей',
-      departureDates: ['25.05.2026', '09.06.2026', '23.06.2026'],
-      chips: ['Дубай', 'Оман', 'Катар'],
-      description: 'Розкішний круїз узбережжям Аравії.'
-    },
-    {
-      id: 8,
-      title: 'Андаманське море',
-      price: '33 500 грн',
-      duration: '5 ночей',
-      groupSize: '160 осіб',
-      accommodation: 'Лайнер з відкритими палубами',
-      badge: '☀️ Теплі води',
-      category: 'warm',
-      image: 'styles/img/cruise/cruise8.jpg',
-      meta: '5 ночей',
-      departureDates: ['15.06.2026', '29.06.2026', '13.07.2026'],
-      chips: ['Пхукет', 'Пхі-Пхі', 'Краби'],
-      description: 'Екзотичний круїз Таїландом.'
-    },
-    {
-      id: 9,
-      title: 'Японське море',
-      price: '89 900 грн',
-      duration: '10 ночей',
-      groupSize: '180 осіб',
-      accommodation: 'Лайнер преміум-класу',
-      badge: '🌊 Помірні води',
-      category: 'temperate',
-      image: 'styles/img/cruise/cruise9.jpg',
-      meta: '10 ночей',
-      departureDates: ['04.04.2026', '18.04.2026', '02.05.2026'],
-      chips: ['Токіо', 'Осака', 'Хоккайдо'],
-      description: 'Неймовірний круїз Японією.'
-    },
-    {
-      id: 10,
-      title: 'Ісландія',
-      price: '65 200 грн',
-      duration: '7 ночей',
-      groupSize: '140 осіб',
-      accommodation: 'Експедиційний лайнер',
-      badge: '❄️ Холодні води',
-      category: 'cold',
-      image: 'styles/img/cruise/cruise10.jpg',
-      meta: '7 ночей',
-      departureDates: ['10.06.2026', '24.06.2026', '07.07.2026'],
-      chips: ['Рейк\'явік', 'Гейзери', 'Водоспади'],
-      description: 'Круїз до країни льодовиків та вулканів.'
-    },
-    {
-      id: 11,
-      title: 'Чорне море',
-      price: '18 500 грн',
-      duration: '5 ночей',
-      groupSize: '200 осіб',
-      accommodation: 'Комфортабельний лайнер',
-      badge: '🌊 Помірні води',
-      category: 'temperate',
-      image: 'styles/img/cruise/cruise11.jpg',
-      meta: '5 ночей',
-      departureDates: ['20.05.2026', '04.06.2026', '18.06.2026'],
-      chips: ['Одеса', 'Сочі', 'Болгарія'],
-      description: 'Чорноморський круїз.'
-    },
-    {
-      id: 12,
-      title: 'Балтійське море',
-      price: '41 200 грн',
-      duration: '8 ночей',
-      groupSize: '210 осіб',
-      accommodation: 'Лайнер з балконами',
-      badge: '🌊 Помірні води',
-      category: 'temperate',
-      image: 'styles/img/cruise/cruise12.jpg',
-      meta: '8 ночей',
-      departureDates: ['12.06.2026', '26.06.2026', '09.07.2026'],
-      chips: ['Стокгольм', 'Гельсінкі', 'Санкт-Петербург'],
-      description: 'Круїз Балтійським морем.'
-    }
-  ];
-
-  // ========== ПОЧАТКОВІ ДАНІ ДЛЯ ОСТРОВІВ (12 карток) ==========
-  const initialIslandsData = [
-    {
-      id: 1,
-      title: 'Мальдіви',
-      price: '67 800 грн',
-      duration: '7 ночей',
-      groupSize: '10 осіб',
-      accommodation: 'Вілли над водою 5*',
-      badge: '🏝️ Тропічний',
-      category: 'tropical',
-      image: 'styles/img/island/island1.jpg',
-      meta: '7 ночей',
-      departureDates: ['05.03.2026', '12.03.2026', '19.03.2026'],
-      chips: ['Вілли', 'Дайвінг', 'SPA'],
-      description: 'Райські острови в Індійському океані.'
-    },
-    {
-      id: 2,
-      title: 'Ісландія',
-      price: '62 300 грн',
-      duration: '8 днів',
-      groupSize: '15 осіб',
-      accommodation: 'Готелі та котеджі',
-      badge: '🌋 Вулканічний',
-      category: 'volcanic',
-      image: 'styles/img/island/island2.jpg',
-      meta: '8 днів',
-      departureDates: ['10.03.2026', '17.03.2026', '24.03.2026'],
-      chips: ['Гейзери', 'Водоспади', 'Чорні пляжі'],
-      description: 'Країна льодовиків та вулканів.'
-    },
-    {
-      id: 3,
-      title: 'Бора-Бора',
-      price: '59 960 грн',
-      duration: '7 ночей',
-      groupSize: '8 осіб',
-      accommodation: 'Бунгало над водою',
-      badge: '✨ Екзотичний',
-      category: 'exotic',
-      image: 'styles/img/island/island3.jpg',
-      meta: '7 ночей',
-      departureDates: ['15.03.2026', '22.03.2026', '29.03.2026'],
-      chips: ['Лагуна', 'Рифи', 'Бунгало'],
-      description: 'Найкрасивіша лагуна світу.'
-    },
-    {
-      id: 4,
-      title: 'Сейшели',
-      price: '43 960 грн',
-      duration: '7 ночей',
-      groupSize: '12 осіб',
-      accommodation: 'Готелі на березі',
-      badge: '🏝️ Тропічний',
-      category: 'tropical',
-      image: 'styles/img/island/island4.jpg',
-      meta: '7 ночей',
-      departureDates: ['20.03.2026', '27.03.2026', '03.04.2026'],
-      chips: ['Гранітні пляжі', 'Черепахи', 'Заповідники'],
-      description: 'Гранітні острови з унікальною природою.'
-    },
-    {
-      id: 5,
-      title: 'Гаваї',
-      price: '72 500 грн',
-      duration: '10 днів',
-      groupSize: '20 осіб',
-      accommodation: 'Готелі на океані',
-      badge: '🌋 Вулканічний',
-      category: 'volcanic',
-      image: 'styles/img/island/island5.jpg',
-      meta: '10 днів',
-      departureDates: ['25.03.2026', '01.04.2026', '08.04.2026'],
-      chips: ['Вулкани', 'Серфінг', 'Квіти'],
-      description: 'Американський тропічний рай.'
-    },
-    {
-      id: 6,
-      title: 'Таїті',
-      price: '55 960 грн',
-      duration: '6 ночей',
-      groupSize: '10 осіб',
-      accommodation: 'Бунгало на березі',
-      badge: '✨ Екзотичний',
-      category: 'exotic',
-      image: 'styles/img/island/island6.jpg',
-      meta: '6 ночей',
-      departureDates: ['30.03.2026', '06.04.2026', '13.04.2026'],
-      chips: ['Чорні піски', 'Водоспади', 'Полінезія'],
-      description: 'Французька Полінезія.'
-    },
-    {
-      id: 7,
-      title: 'Фіджі',
-      price: '64 200 грн',
-      duration: '8 ночей',
-      groupSize: '14 осіб',
-      accommodation: 'Курорти 5*',
-      badge: '🏝️ Тропічний',
-      category: 'tropical',
-      image: 'styles/img/island/island7.jpg',
-      meta: '8 ночей',
-      departureDates: ['05.04.2026', '12.04.2026', '19.04.2026'],
-      chips: ['Коралові сади', 'Серфінг', 'Аборигени'],
-      description: 'Тихоокеанський рай.'
-    },
-    {
-      id: 8,
-      title: 'Шрі-Ланка',
-      price: '38 500 грн',
-      duration: '9 ночей',
-      groupSize: '16 осіб',
-      accommodation: 'Готелі та вілли',
-      badge: '✨ Екзотичний',
-      category: 'exotic',
-      image: 'styles/img/island/island8.jpg',
-      meta: '9 ночей',
-      departureDates: ['10.04.2026', '17.04.2026', '24.04.2026'],
-      chips: ['Чайні плантації', 'Слони', 'Храми'],
-      description: 'Острів сліз.'
-    },
-    {
-      id: 9,
-      title: 'Маврикій',
-      price: '59 800 грн',
-      duration: '7 ночей',
-      groupSize: '12 осіб',
-      accommodation: 'Преміум-готелі',
-      badge: '🏝️ Тропічний',
-      category: 'tropical',
-      image: 'styles/img/island/island9.jpg',
-      meta: '7 ночей',
-      departureDates: ['15.04.2026', '22.04.2026', '29.04.2026'],
-      chips: ['Водоспади', 'Кольорові піски', 'Лагуни'],
-      description: 'Острів в Індійському океані.'
-    },
-    {
-      id: 10,
-      title: 'Куба',
-      price: '41 200 грн',
-      duration: '8 ночей',
-      groupSize: '18 осіб',
-      accommodation: 'Готелі 4*',
-      badge: '✨ Екзотичний',
-      category: 'exotic',
-      image: 'styles/img/island/island10.jpg',
-      meta: '8 ночей',
-      departureDates: ['20.04.2026', '27.04.2026', '04.05.2026'],
-      chips: ['Гавана', 'Сігари', 'Ром'],
-      description: 'Острів свободи.'
-    },
-    {
-      id: 11,
-      title: 'Занзібар',
-      price: '36 900 грн',
-      duration: '7 ночей',
-      groupSize: '15 осіб',
-      accommodation: 'Готелі на березі',
-      badge: '🏝️ Тропічний',
-      category: 'tropical',
-      image: 'styles/img/island/island11.jpg',
-      meta: '7 ночей',
-      departureDates: ['25.04.2026', '02.05.2026', '09.05.2026'],
-      chips: ['Кам\'яне місто', 'Спеції', 'Черепахи'],
-      description: 'Танзанійський острів спецій.'
-    },
-    {
-      id: 12,
-      title: 'Сардінія',
-      price: '48 700 грн',
-      duration: '7 ночей',
-      groupSize: '20 осіб',
-      accommodation: 'Готелі та агротуризми',
-      badge: '✨ Екзотичний',
-      category: 'exotic',
-      image: 'styles/img/island/island12.jpg',
-      meta: '7 ночей',
-      departureDates: ['30.04.2026', '07.05.2026', '14.05.2026'],
-      chips: ['Білі пляжі', 'Нураги', 'Італійська кухня'],
-      description: 'Італійський острів у Середземному морі.'
-    }
-  ];
-
-  // ========== ПОЧАТКОВІ ДАНІ ДЛЯ ГАРЯЧИХ ПУТІВОК (12 карток) ==========
-  const initialHotData = [
-    {
-      id: 1,
-      title: 'Єгипет All Inclusive',
-      price: '23 960 грн',
-      duration: '7 ночей',
-      groupSize: '40 осіб',
-      accommodation: 'Готель 5*',
-      badge: '-20%',
-      category: 'beach',
-      image: 'styles/img/index/bar1.jpg',
-      meta: '7 ночей',
-      departureDates: ['01.11.2026', '08.11.2026', '15.11.2026'],
-      chips: ['Піраміди', 'Червоне море', 'All Inclusive'],
-      description: 'Гаряча пропозиція Єгипту.'
-    },
-    {
-      id: 2,
-      title: 'Санторіні',
-      price: '19 160 грн',
-      duration: '5 ночей',
-      groupSize: '25 осіб',
-      accommodation: 'Готель 4*',
-      badge: '-15%',
-      category: 'excursion',
-      image: 'styles/img/index/bar2.jpg',
-      meta: '5 ночей',
-      departureDates: ['15.05.2026', '22.05.2026', '29.05.2026'],
-      chips: ['Закати', 'Білі будинки', 'Романтика'],
-      description: 'Неймовірні заходи сонця.'
-    },
-    {
-      id: 3,
-      title: 'Марокко',
-      price: '15 960 грн',
-      duration: '6 ночей',
-      groupSize: '20 осіб',
-      accommodation: 'Готелі 4*',
-      badge: '-18%',
-      category: 'excursion',
-      image: 'styles/img/index/bar3.jpg',
-      meta: '6 ночей',
-      departureDates: ['10.09.2026', '17.09.2026', '24.09.2026'],
-      chips: ['Сахара', 'Марракеш', 'Базари'],
-      description: 'Загадкові базари та пустеля.'
-    },
-    {
-      id: 4,
-      title: 'Мальдіви',
-      price: '51 960 грн',
-      duration: '7 ночей',
-      groupSize: '15 осіб',
-      accommodation: 'Вілла над водою',
-      badge: '-12%',
-      category: 'tropical',
-      image: 'styles/img/index/bar4.jpg',
-      meta: '7 ночей',
-      departureDates: ['05.12.2026', '12.12.2026', '19.12.2026'],
-      chips: ['Вілли над водою', 'Дайвінг', 'SPA'],
-      description: 'Райські острови.'
-    },
-    {
-      id: 5,
-      title: 'Сейшели',
-      price: '43 960 грн',
-      duration: '7 ночей',
-      groupSize: '18 осіб',
-      accommodation: 'Готель 5*',
-      badge: '-18%',
-      category: 'tropical',
-      image: 'styles/img/index/bar5.jpg',
-      meta: '7 ночей',
-      departureDates: ['18.07.2026', '25.07.2026', '01.08.2026'],
-      chips: ['Гранітні пляжі', 'Снорклінг', 'Праслін'],
-      description: 'Гранітні скелі.'
-    },
-    {
-      id: 6,
-      title: 'Ісландія',
-      price: '11 960 грн',
-      duration: '5 ночей',
-      groupSize: '16 осіб',
-      accommodation: 'Готелі + котеджі',
-      badge: '-20%',
-      category: 'mountain',
-      image: 'styles/img/index/bar6.jpg',
-      meta: '5 ночей',
-      departureDates: ['20.10.2026', '27.10.2026', '03.11.2026'],
-      chips: ['Вулкани', 'Гейзери', 'Льодовики'],
-      description: 'Активний відпочинок.'
-    },
-    {
-      id: 7,
-      title: 'Альпи',
-      price: '27 960 грн',
-      duration: '8 ночей',
-      groupSize: '30 осіб',
-      accommodation: 'Шале 4*',
-      badge: '-25%',
-      category: 'mountain',
-      image: 'styles/img/index/bar7.jpg',
-      meta: '8 ночей',
-      departureDates: ['10.01.2027', '17.01.2027', '24.01.2027'],
-      chips: ['Гірськолижні курорти', 'SPA', 'Фонду'],
-      description: 'Гірськолижні курорти.'
-    },
-    {
-      id: 8,
-      title: 'Балі',
-      price: '35 960 грн',
-      duration: '7 ночей',
-      groupSize: '25 осіб',
-      accommodation: 'Готель 4*',
-      badge: '-15%',
-      category: 'tropical',
-      image: 'styles/img/island/island1.jpg',
-      meta: '7 ночей',
-      departureDates: ['15.06.2026', '22.06.2026', '29.06.2026'],
-      chips: ['Храми', 'Серфінг', 'Вулкани'],
-      description: 'Райський острів.'
-    },
-    {
-      id: 9,
-      title: 'Крит',
-      price: '19 960 грн',
-      duration: '5 ночей',
-      groupSize: '25 осіб',
-      accommodation: 'Готель 3-4*',
-      badge: '-15%',
-      category: 'beach',
-      image: 'styles/img/tours/tour2.jpg',
-      meta: '5 ночей',
-      departureDates: ['10.07.2026', '17.07.2026', '24.07.2026'],
-      chips: ['Пляжі', 'Античність', 'Таверни'],
-      description: 'Легендарний острів.'
-    },
-    {
-      id: 10,
-      title: 'Бора-Бора',
-      price: '59 960 грн',
-      duration: '7 ночей',
-      groupSize: '22 осіб',
-      accommodation: 'Бунгало 5*',
-      badge: '-20%',
-      category: 'tropical',
-      image: 'styles/img/island/island3.jpg',
-      meta: '7 ночей',
-      departureDates: ['05.08.2026', '12.08.2026', '19.08.2026'],
-      chips: ['Бунгало', 'Каяки', 'Снорклінг'],
-      description: 'Екзотична Бора-Бора.'
-    },
-    {
-      id: 11,
-      title: 'Палаван',
-      price: '31 960 грн',
-      duration: '6 ночей',
-      groupSize: '15 осіб',
-      accommodation: 'Еко-готель',
-      badge: '-15%',
-      category: 'tropical',
-      image: 'styles/img/island/island7.jpg',
-      meta: '6 ночей',
-      departureDates: ['12.09.2026', '19.09.2026', '26.09.2026'],
-      chips: ['Лагуни', 'Печери', 'Острівці'],
-      description: 'Найкрасивіший острів світу.'
-    },
-    {
-      id: 12,
-      title: 'Самуї',
-      price: '27 960 грн',
-      duration: '7 ночей',
-      groupSize: '25 осіб',
-      accommodation: 'Готель 4*',
-      badge: '-10%',
-      category: 'beach',
-      image: 'styles/img/island/island6.jpg',
-      meta: '7 ночей',
-      departureDates: ['08.10.2026', '15.10.2026', '22.10.2026'],
-      chips: ['Пальми', 'Фрукти', 'Храми'],
-      description: 'Популярний курорт.'
-    }
-  ];
-
-  // Об'єкт з усіма початковими даними
-  const initialDemoData = {
-    tour: initialToursData,
-    cruise: initialCruisesData,
-    island: initialIslandsData,
-    hot: initialHotData
-  };
-
   // Перевірка авторизації та прав адміністратора
   async function checkAdminAccess() {
     const token = window.auth?.getToken();
@@ -860,19 +108,18 @@
       const userData = await window.auth.getUserData();
       console.log('👤 Дані користувача в admin.js:', userData);
       
-      // ТИМЧАСОВО: пропускаємо всіх для тесту
-      // if (!userData || userData.role !== 'admin') {
-      //   showToast('❌ Доступ заборонено. Потрібні права адміністратора', 'error');
-      //   setTimeout(() => {
-      //     window.location.href = 'index.html';
-      //   }, 2000);
-      //   return false;
-      // }
+      if (!userData || userData.role !== 'admin') {
+        showToast('❌ Доступ заборонено. Потрібні права адміністратора', 'error');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+        return false;
+      }
       return true;
     } catch (error) {
       console.error('Помилка перевірки прав:', error);
-      showToast('⚠️ Демо-режим: сервер не відповідає', 'info');
-      return true;
+      showToast('⚠️ Помилка перевірки прав', 'error');
+      return false;
     }
   }
 
@@ -933,31 +180,23 @@
       
       const data = await response.json();
       
-      if (data.success && data.items && data.items.length > 0) {
+      if (data.success && data.items) {
         console.log(`✅ Отримано ${data.items.length} карток з сервера для ${type}`);
-        // Зберігаємо в демо-дані
-        demoData[type] = data.items;
         renderItems(type, data.items);
       } else {
-        console.log(`📋 Використовуємо демо-дані для ${type}: ${initialDemoData[type]?.length} карток`);
-        // Зберігаємо в демо-дані
-        demoData[type] = initialDemoData[type] || [];
-        renderItems(type, demoData[type]);
-        showToast(`ℹ️ Завантажено ${demoData[type].length} ${type}ів (демо-режим)`, 'info');
+        console.log(`❌ Немає даних для ${type}`);
+        renderItems(type, []);
       }
     } catch (error) {
       console.error('❌ Помилка завантаження:', error);
-      console.log(`📋 Сервер не відповідає, використовуємо демо-дані для ${type}: ${initialDemoData[type]?.length} карток`);
-      // Зберігаємо в демо-дані
-      demoData[type] = initialDemoData[type] || [];
-      renderItems(type, demoData[type]);
-      showToast(`ℹ️ Завантажено ${demoData[type].length} ${type}ів (демо-режим)`, 'info');
+      showToast('❌ Помилка завантаження даних з сервера', 'error');
+      renderItems(type, []);
     }
   }
 
-  // Відображення карток - ВИПРАВЛЕНО!
+  // Відображення карток
   function renderItems(type, items) {
-    console.log(`🔄 renderItems викликано для типу: ${type}, отримано елементів:`, items?.length);
+    console.log(`🔄 renderItems для типу: ${type}, елементів:`, items?.length);
     
     // Правильні ID для кожної категорії
     let gridId;
@@ -988,8 +227,6 @@
     const typeNamePlural = type === 'tour' ? 'турів' : 
                           type === 'cruise' ? 'круїзів' : 
                           type === 'island' ? 'островів' : 'путівок';
-
-    console.log(`📦 Відображаємо ${items.length} карток для ${typeNamePlural} в елементі #${gridId}`);
 
     // Картка для додавання
     let html = `<div class="add-card" onclick="openAddModal('${type}')" style="cursor: pointer; border: 2px dashed #0f4c81; background: #f0f7ff; border-radius: 16px; min-height: 320px; display: flex; align-items: center; justify-content: center;">
@@ -1033,7 +270,6 @@
     }
 
     grid.innerHTML = html;
-    console.log(`✅ Відображено ${items.length} карток для типу ${type} в елементі #${gridId}`);
   }
 
   // Відкриття модального вікна для додавання
@@ -1073,10 +309,6 @@
         }
       }
       
-      if (!item && initialDemoData[type]) {
-        item = initialDemoData[type].find(i => i.id == id);
-      }
-      
       if (item) {
         fillEditForm(type, item);
       } else {
@@ -1084,12 +316,7 @@
       }
     } catch (error) {
       console.error('Помилка:', error);
-      const item = initialDemoData[type]?.find(i => i.id == id);
-      if (item) {
-        fillEditForm(type, item);
-      } else {
-        showToast('Помилка завантаження даних', 'error');
-      }
+      showToast('Помилка завантаження даних', 'error');
     }
   };
 
@@ -1235,24 +462,11 @@
         }
       }
       
-      // Видаляємо з демо-даних
-      const index = demoData[type].findIndex(item => item.id == id);
-      if (index !== -1) {
-        demoData[type].splice(index, 1);
-        showToast('✅ Запис видалено (демо-режим)', 'success');
-        renderItems(type, demoData[type]);
-      }
+      showToast('❌ Помилка видалення', 'error');
       
     } catch (error) {
       console.error('❌ Помилка:', error);
-      
-      // Видаляємо з демо-даних при помилці
-      const index = demoData[type].findIndex(item => item.id == id);
-      if (index !== -1) {
-        demoData[type].splice(index, 1);
-        showToast('✅ Запис видалено (демо-режим)', 'success');
-        renderItems(type, demoData[type]);
-      }
+      showToast('❌ Помилка видалення', 'error');
     }
   };
 
@@ -1297,7 +511,6 @@
 
     // Збираємо дані
     const formData = {
-      id: isEdit ? parseInt(id) : Date.now(), // Генеруємо ID для нових карток
       title: qs('#title').value,
       price: price.toString().includes('грн') ? price : price + ' грн',
       duration: formattedDuration,
@@ -1340,44 +553,16 @@
           showToast(isEdit ? '✅ Запис оновлено' : '✅ Запис додано', 'success');
           closeModal();
           loadItems(type);
-          return;
+        } else {
+          showToast(data.message || '❌ Помилка', 'error');
         }
-      }
-      
-      // Якщо сервер не відповідає, працюємо в демо-режимі
-      if (!isEdit) {
-        // Додаємо нову картку
-        demoData[type].push(formData);
-        showToast('✅ Картку створено (демо-режим)', 'success');
       } else {
-        // Редагуємо існуючу картку
-        const index = demoData[type].findIndex(item => item.id == id);
-        if (index !== -1) {
-          demoData[type][index] = formData;
-          showToast('✅ Картку оновлено (демо-режим)', 'success');
-        }
+        showToast(`❌ Помилка сервера: ${response.status}`, 'error');
       }
-      
-      closeModal();
-      renderItems(type, demoData[type]);
       
     } catch (error) {
       console.error('❌ Помилка:', error);
-      
-      // Працюємо в демо-режимі при помилці
-      if (!isEdit) {
-        demoData[type].push(formData);
-        showToast('✅ Картку створено (демо-режим)', 'success');
-      } else {
-        const index = demoData[type].findIndex(item => item.id == id);
-        if (index !== -1) {
-          demoData[type][index] = formData;
-          showToast('✅ Картку оновлено (демо-режим)', 'success');
-        }
-      }
-      
-      closeModal();
-      renderItems(type, demoData[type]);
+      showToast('❌ Помилка з\'єднання з сервером', 'error');
     }
   });
 
@@ -1397,17 +582,11 @@
         }
       }
       
-      renderUsers([
-        { id: 1, name: 'Admin', email: 'admintest1@gmail.com', phone: '+380501234567', registered: '01.01.2025', role: 'admin' },
-        { id: 2, name: 'Тестовий користувач', email: 'user@test.com', phone: '+380671234567', registered: '15.02.2025', role: 'user' }
-      ]);
+      showToast('❌ Помилка завантаження користувачів', 'error');
       
     } catch (error) {
       console.error('Помилка завантаження користувачів:', error);
-      renderUsers([
-        { id: 1, name: 'Admin', email: 'admintest1@gmail.com', phone: '+380501234567', registered: '01.01.2025', role: 'admin' },
-        { id: 2, name: 'Тестовий користувач', email: 'user@test.com', phone: '+380671234567', registered: '15.02.2025', role: 'user' }
-      ]);
+      showToast('❌ Помилка завантаження користувачів', 'error');
     }
   }
 
@@ -1479,11 +658,11 @@
         }
       }
       
-      showToast('✅ Роль оновлено (демо-режим)', 'success');
+      showToast('❌ Помилка оновлення ролі', 'error');
       
     } catch (error) {
       console.error('Помилка:', error);
-      showToast('✅ Роль оновлено (демо-режим)', 'success');
+      showToast('❌ Помилка оновлення ролі', 'error');
     }
   };
 
@@ -1503,17 +682,11 @@
         }
       }
       
-      renderBookings([
-        { id: 1, user_name: 'Тестовий користувач', user_email: 'user@test.com', title: 'Таїланд: Пхукет', price: '39 900 грн', bookingdate: '15.03.2026', category: 'beach' },
-        { id: 2, user_name: 'Admin', user_email: 'admintest1@gmail.com', title: 'Мальдіви', price: '67 800 грн', bookingdate: '05.03.2026', category: 'tropical' }
-      ]);
+      showToast('❌ Помилка завантаження бронювань', 'error');
       
     } catch (error) {
       console.error('Помилка завантаження бронювань:', error);
-      renderBookings([
-        { id: 1, user_name: 'Тестовий користувач', user_email: 'user@test.com', title: 'Таїланд: Пхукет', price: '39 900 грн', bookingdate: '15.03.2026', category: 'beach' },
-        { id: 2, user_name: 'Admin', user_email: 'admintest1@gmail.com', title: 'Мальдіви', price: '67 800 грн', bookingdate: '05.03.2026', category: 'tropical' }
-      ]);
+      showToast('❌ Помилка завантаження бронювань', 'error');
     }
   }
 
@@ -1643,11 +816,6 @@
   // Ініціалізація
   window.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 admin.js завантажено');
-    console.log('🔍 Елементи сторінки:');
-    console.log('- tours-grid:', document.getElementById('tours-grid'));
-    console.log('- cruises-grid:', document.getElementById('cruises-grid'));
-    console.log('- islands-grid:', document.getElementById('islands-grid'));
-    console.log('- hot-grid:', document.getElementById('hot-grid'));
 
     const hasAccess = await checkAdminAccess();
     if (!hasAccess) return;
@@ -1658,6 +826,7 @@
     initTabs();
     setupEventListeners();
     
+    // Завантажуємо тури за замовчуванням
     loadItems('tour');
   });
 })();
