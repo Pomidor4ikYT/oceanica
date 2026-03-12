@@ -49,7 +49,7 @@ async function addItem(req, res) {
 
   const {
     title, description, price, duration, groupSize,
-    accommodation, badge, category, image, departureDates, chips, meta
+    accommodation, badge, category, image, departureDates, chips
   } = req.body;
 
   if (!title || !price) {
@@ -73,12 +73,12 @@ async function addItem(req, res) {
       result = await query(
         `INSERT INTO tours (
           type, title, description, price, duration, groupSize, 
-          accommodation, badge, category, image, departureDates, chips, meta
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
+          accommodation, badge, category, image, departureDates, chips
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
         [
           type, title, description || '', priceWithCurrency, formattedDuration || '', 
           formattedGroup || '', formattedAccom || '', badge || '', category || '',
-          image || '', JSON.stringify(departureDates || []), JSON.stringify(chips || []), meta || ''
+          image || '', JSON.stringify(departureDates || []), JSON.stringify(chips || [])
         ]
       );
       const newItem = result.rows[0];
@@ -88,12 +88,12 @@ async function addItem(req, res) {
       result = await query(
         `INSERT INTO tours (
           type, title, description, price, duration, groupSize, 
-          accommodation, badge, category, image, departureDates, chips, meta
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          accommodation, badge, category, image, departureDates, chips
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           type, title, description || '', priceWithCurrency, formattedDuration || '', 
           formattedGroup || '', formattedAccom || '', badge || '', category || '',
-          image || '', JSON.stringify(departureDates || []), JSON.stringify(chips || []), meta || ''
+          image || '', JSON.stringify(departureDates || []), JSON.stringify(chips || [])
         ]
       );
       // Для SQLite потрібно отримати ID
@@ -115,7 +115,7 @@ async function updateItem(req, res) {
 
   const {
     title, description, price, duration, groupSize,
-    accommodation, badge, category, image, departureDates, chips, meta
+    accommodation, badge, category, image, departureDates, chips
   } = req.body;
 
   try {
@@ -157,7 +157,6 @@ async function updateItem(req, res) {
     if (image !== undefined) addUpdate('image', image);
     if (departureDates !== undefined) addUpdate('departureDates', JSON.stringify(departureDates));
     if (chips !== undefined) addUpdate('chips', JSON.stringify(chips));
-    if (meta !== undefined) addUpdate('meta', meta);
 
     if (updates.length === 0) {
       return res.status(400).json({ success: false, message: 'Немає даних для оновлення' });
