@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Віддаємо статичні файли з папки public (фронтенд)
+// Статичні файли фронтенду
 app.use(express.static(path.join(__dirname, '../public')));
 
 // API маршрути
@@ -22,7 +22,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/favorites', require('./routes/favorites'));
 
-// Базовий маршрут для API інформації (не обов'язково, але можна залишити)
+// Базовий маршрут для інформації про API
 app.get('/api', (req, res) => {
   res.json({
     message: 'Oceanica API Server',
@@ -50,18 +50,45 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ✅ ВАЖЛИВО: Всі інші запити віддаємо index.html (для підтримки маршрутів фронтенду)
+// Віддаємо index.html для будь-яких інших запитів (SPA)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Запускаємо сервер
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('\n🚀 Сервер успішно запущено!');
-  console.log(`📡 Порт: ${PORT}`);
-  console.log(`🌍 Середовище: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📁 Фронтенд: public папка`);
-  console.log(`🔗 URL: https://oceanica-0m18.onrender.com\n`);
+// Функція ініціалізації бази даних (тільки в production)
+async function initializeDatabase() {
+  if (process.env.NODE_ENV === 'production') {
+    console.log('🔄 Перевірка/створення таблиць PostgreSQL...');
+    try {
+      const initDB = require('./database/init-pg');
+      await initDB();
+      console.log('✅ Таблиці готові');
+    } catch (err) {
+      console.error('❌ Помилка ініціалізації БД:', err);
+      // Не зупиняємо сервер, але логуємо критичну помилку
+    }
+  } else {
+    console.log('ℹ️ Розробка: використовується SQLite, ініціалізація не потрібна');
+  }
+}
+
+// Запуск сервера після ініціалізації БД
+initializeDatabase().then(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log('\n🚀 Сервер успішно запущено!');
+    console.log(`📡 Порт: ${PORT}`);
+    console.log(`🌍 Середовище: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📁 Фронтенд: public папка`);
+    if (process.env.NODE_ENV === 'production') {
+      console.log(`🐘 База даних: PostgreSQL (${process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'підключено'})`);
+    } else {
+      console.log(`🗄️ База даних: SQLite (локальна)`);
+    }
+    console.log(`🔗 URL: https://oceanica-0m18.onrender.com\n`);
+  });
+}).catch(err => {
+  console.error('❌ Критична помилка при ініціалізації БД:', err);
+  process.exit(1);
 });
 
 module.exports = app;

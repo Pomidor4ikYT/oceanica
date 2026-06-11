@@ -1,12 +1,16 @@
 {
   "name": "oceanica-api",
   "version": "1.0.0",
-  "private": true, 
-  "description": "Oceanica API Server",
+  "private": true,
+  "description": "Oceanica API Server with PostgreSQL support",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "db:init": "node server/database/init-pg.js",
+    "db:migrate": "node server/database/migration.js",
+    "db:seed": "node server/database/seed-pg.js",
+    "postinstall": "npm run db:init"
   },
   "engines": {
     "node": "20.x"
