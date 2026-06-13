@@ -99,38 +99,31 @@ async function ensureDefaultAdmin() {
     
     const adminEmail = 'admin@gmail.com';
     const adminPassword = 'admin1';
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    const registered = new Date().toLocaleDateString('uk-UA');
     
-    // Перевіряємо чи існує адмін
-    let existingAdmin;
     if (process.env.NODE_ENV === 'production') {
-      const result = await query('SELECT id FROM users WHERE email = $1', [adminEmail]);
-      existingAdmin = result.rows[0];
+      await query(`
+        INSERT INTO users (name, email, password, registered, role)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (email) DO UPDATE 
+        SET role = 'admin', password = EXCLUDED.password
+      `, ['Admin', adminEmail, hashedPassword, registered, 'admin']);
     } else {
-      const result = await query('SELECT id FROM users WHERE email = ?', [adminEmail]);
-      existingAdmin = result[0];
-    }
-    
-    if (!existingAdmin) {
-      const hashedPassword = await bcrypt.hash(adminPassword, 10);
-      const registered = new Date().toLocaleDateString('uk-UA');
-      
-      if (process.env.NODE_ENV === 'production') {
-        await query(
-          'INSERT INTO users (name, email, password, registered, role) VALUES ($1, $2, $3, $4, $5)',
-          ['Admin', adminEmail, hashedPassword, registered, 'admin']
-        );
-      } else {
+      // SQLite не підтримує ON CONFLICT, спочатку видалимо якщо є?
+      const existing = await query('SELECT id FROM users WHERE email = ?', [adminEmail]);
+      if (existing.length === 0) {
         await query(
           'INSERT INTO users (name, email, password, registered, role) VALUES (?, ?, ?, ?, ?)',
           ['Admin', adminEmail, hashedPassword, registered, 'admin']
         );
+      } else {
+        await query('UPDATE users SET role = ? WHERE email = ?', ['admin', adminEmail]);
       }
-      console.log(`✅ Створено адміністратора за замовчуванням: ${adminEmail} / ${adminPassword}`);
-    } else {
-      console.log(`ℹ️ Адміністратор ${adminEmail} вже існує`);
     }
+    console.log(`✅ Адміністратор ${adminEmail} готовий (пароль: ${adminPassword})`);
   } catch (error) {
-    console.error('❌ Помилка створення адміністратора за замовчуванням:', error);
+    console.error('❌ Помилка створення адміна:', error);
   }
 }
 
