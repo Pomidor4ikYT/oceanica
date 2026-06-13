@@ -20,6 +20,23 @@ async function seedPostgreSQL() {
       console.log('ℹ️ Адмін вже існує');
     }
 
+    // Додайте цей код після перевірки adminExists
+const adminExists2 = await query('SELECT email FROM users WHERE email = $1', ['admin@gmail.com']);
+if (adminExists2.rows.length === 0) {
+  const hashedPassword = await bcrypt.hash('admin1', 10);
+  const registered = new Date().toLocaleDateString('uk-UA');
+  await query(
+    'INSERT INTO users (name, email, password, registered, role) VALUES ($1, $2, $3, $4, $5)',
+    ['Admin', 'admin@gmail.com', hashedPassword, registered, 'admin']
+  );
+  console.log('✅ Адміністратора admin@gmail.com створено');
+} else {
+  // Оновити роль і пароль, якщо потрібно
+  const hashedPassword = await bcrypt.hash('admin1', 10);
+  await query('UPDATE users SET role = $1, password = $2 WHERE email = $3', ['admin', hashedPassword, 'admin@gmail.com']);
+  console.log('✅ Користувача admin@gmail.com оновлено до адміністратора');
+}
+
     // Перевіряємо чи є тури
     const toursCount = await query('SELECT COUNT(*) FROM tours');
     if (parseInt(toursCount.rows[0].count) === 0) {

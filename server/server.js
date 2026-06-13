@@ -22,21 +22,6 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/favorites', require('./routes/favorites'));
 
-// Обробник 404 для API-запитів (повертає JSON)
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ success: false, message: 'API endpoint not found' });
-});
-
-// Глобальний обробник помилок (перехоплює помилки з middleware та контролерів)
-app.use((err, req, res, next) => {
-  console.error('❌ Server error:', err);
-  // Якщо заголовки вже відправлені – делегуємо стандартному обробнику
-  if (res.headersSent) {
-    return next(err);
-  }
-  res.status(500).json({ success: false, message: 'Внутрішня помилка сервера' });
-});
-
 // Базовий маршрут для інформації про API
 app.get('/api', (req, res) => {
   res.json({

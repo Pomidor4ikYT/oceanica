@@ -8,8 +8,9 @@ const {
   deleteBooking
 } = require('../controllers/bookingsController');
 
-router.get('/bookings', authenticateToken, getBookings);
-router.post('/bookings', authenticateToken, addBooking);
-router.delete('/bookings/:id', authenticateToken, deleteBooking);
+// Видаляємо зайвий префікс '/bookings' – використовуємо кореневий маршрут
+router.get('/', authenticateToken, getBookings);
+router.post('/', authenticateToken, addBooking);
+router.delete('/:id', authenticateToken, deleteBooking);
 
 module.exports = router;
