@@ -12,8 +12,4 @@ router.get('/', authenticateToken, getBookings);
 router.post('/', authenticateToken, addBooking);
 router.delete('/:id', authenticateToken, deleteBooking);
 
-module.exports = {
-  getBookings,
-  addBooking,
-  deleteBooking
-};
+module.exports = router;   // ← головне виправлення
