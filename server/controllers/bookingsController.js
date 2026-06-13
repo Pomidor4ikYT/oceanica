@@ -1,3 +1,7 @@
+// server/controllers/bookingsController.js
+const { query } = require('../database/db');
+const { safeJsonParse } = require('../utils/helpers');
+
 async function getBookings(req, res) {
   try {
     let result;
@@ -62,3 +66,37 @@ async function addBooking(req, res) {
     res.status(500).json({ success: false, message: 'Помилка бронювання: ' + error.message });
   }
 }
+
+async function deleteBooking(req, res) {
+  const id = req.params.id;
+  try {
+    let result;
+    if (process.env.NODE_ENV === 'production') {
+      result = await query(
+        'DELETE FROM bookings WHERE id = $1 AND user_email = $2',
+        [id, req.user.email]
+      );
+      if (result.rowCount === 0) {
+        return res.status(404).json({ success: false, message: 'Бронювання не знайдено' });
+      }
+    } else {
+      result = await query(
+        'DELETE FROM bookings WHERE id = ? AND user_email = ?',
+        [id, req.user.email]
+      );
+      if (result.changes === 0) {
+        return res.status(404).json({ success: false, message: 'Бронювання не знайдено' });
+      }
+    }
+    res.json({ success: true, message: 'Бронювання скасовано' });
+  } catch (error) {
+    console.error('❌ Помилка видалення бронювання:', error);
+    res.status(500).json({ success: false, message: 'Помилка видалення' });
+  }
+}
+
+module.exports = {
+  getBookings,
+  addBooking,
+  deleteBooking
+};
