@@ -7,7 +7,8 @@ const {
   toggleFavorite
 } = require('../controllers/favoritesController');
 
-router.get('/favorites', authenticateToken, getFavorites);
-router.post('/favorites', authenticateToken, toggleFavorite);
+// Змінюємо '/favorites' на '/'
+router.get('/', authenticateToken, getFavorites);
+router.post('/', authenticateToken, toggleFavorite);
 
 module.exports = router;

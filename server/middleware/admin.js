@@ -11,38 +11,26 @@ async function authenticateAdmin(req, res, next) {
     return res.status(401).json({ success: false, message: 'Токен відсутній' });
   }
 
-  try {
-    const user = jwt.verify(token, SECRET_KEY);
-    console.log('🔍 Перевірка адміністратора для:', user.email);
-    
-    let userRole;
-    
-    if (process.env.NODE_ENV === 'production') {
-      // PostgreSQL - використовуємо $1
-      const result = await query('SELECT role FROM users WHERE email = $1', [user.email]);
-      userRole = result.rows?.[0]?.role;
-      console.log('📦 PostgreSQL результат:', result.rows);
-    } else {
-      // SQLite - використовуємо ?
-      const result = await query('SELECT role FROM users WHERE email = ?', [user.email]);
-      userRole = result?.[0]?.role;
-      console.log('📦 SQLite результат:', result);
-    }
-    
-    console.log('👤 Роль в базі:', userRole);
-    
-    // Перевіряємо чи користувач є адміністратором
-    if (userRole !== 'admin') {
-      console.log('⛔ Доступ заборонено: не адміністратор');
-      return res.status(403).json({ success: false, message: 'Доступ заборонено. Потрібні права адміністратора' });
-    }
-    
-    req.user = user;
-    next();
-  } catch (err) {
-    console.error('❌ Помилка перевірки токена:', err);
-    return res.status(403).json({ success: false, message: 'Недійсний токен' });
+// server/middleware/admin.js (фрагмент)
+try {
+  const user = jwt.verify(token, SECRET_KEY);
+  let userRole;
+  if (process.env.NODE_ENV === 'production') {
+    const result = await query('SELECT role FROM users WHERE email = $1', [user.email]);
+    userRole = result.rows?.[0]?.role;
+  } else {
+    const result = await query('SELECT role FROM users WHERE email = ?', [user.email]);
+    userRole = result?.[0]?.role;
   }
+  if (userRole !== 'admin') {
+    return res.status(403).json({ success: false, message: 'Доступ заборонено. Потрібні права адміністратора' });
+  }
+  req.user = user;
+  next();
+} catch (err) {
+  console.error('❌ Помилка перевірки адміністратора:', err);
+  return res.status(403).json({ success: false, message: 'Недійсний токен' });
+}
 }
 
 module.exports = { authenticateAdmin };
