@@ -6,8 +6,9 @@ async function getBookings(req, res) {
   try {
     let result;
     if (process.env.NODE_ENV === 'production') {
+      // PostgreSQL: використовуємо booking_date
       result = await query(
-        'SELECT id, title, image, price, meta, badge, chips, category, bookingDate FROM bookings WHERE user_email = $1',
+        'SELECT id, title, image, price, meta, badge, chips, category, booking_date as "bookingDate" FROM bookings WHERE user_email = $1',
         [req.user.email]
       );
       const bookings = result.rows.map(row => ({
@@ -16,6 +17,7 @@ async function getBookings(req, res) {
       }));
       res.json({ success: true, bookings });
     } else {
+      // SQLite: використовуємо bookingDate
       result = await query(
         'SELECT id, title, image, price, meta, badge, chips, category, bookingDate FROM bookings WHERE user_email = ?',
         [req.user.email]
@@ -44,11 +46,13 @@ async function addBooking(req, res) {
 
   try {
     if (process.env.NODE_ENV === 'production') {
+      // PostgreSQL: колонка booking_date
       await query(
-        'INSERT INTO bookings (user_email, title, image, price, meta, badge, chips, category, bookingDate) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+        'INSERT INTO bookings (user_email, title, image, price, meta, badge, chips, category, booking_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
         [req.user.email, title, image || '', price || '', meta || '', badge || '', chipsJson, category || '', date]
       );
     } else {
+      // SQLite: колонка bookingDate
       await query(
         'INSERT INTO bookings (user_email, title, image, price, meta, badge, chips, category, bookingDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [req.user.email, title, image || '', price || '', meta || '', badge || '', chipsJson, category || '', date]

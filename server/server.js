@@ -63,12 +63,13 @@ async function initializeDatabase() {
       const initDB = require('./database/init-pg');
       await initDB();
       console.log('✅ Таблиці готові');
+      await ensureDefaultAdmin(); // <-- Додати тут
     } catch (err) {
       console.error('❌ Помилка ініціалізації БД:', err);
-      // Не зупиняємо сервер, але логуємо критичну помилку
     }
   } else {
     console.log('ℹ️ Розробка: використовується SQLite, ініціалізація не потрібна');
+    await ensureDefaultAdmin(); // <-- І для SQLite теж
   }
 }
 
@@ -90,5 +91,47 @@ initializeDatabase().then(() => {
   console.error('❌ Критична помилка при ініціалізації БД:', err);
   process.exit(1);
 });
+
+async function ensureDefaultAdmin() {
+  try {
+    const bcrypt = require('bcryptjs');
+    const { query } = require('./database/db');
+    
+    const adminEmail = 'admin@gmail.com';
+    const adminPassword = 'admin1';
+    
+    // Перевіряємо чи існує адмін
+    let existingAdmin;
+    if (process.env.NODE_ENV === 'production') {
+      const result = await query('SELECT id FROM users WHERE email = $1', [adminEmail]);
+      existingAdmin = result.rows[0];
+    } else {
+      const result = await query('SELECT id FROM users WHERE email = ?', [adminEmail]);
+      existingAdmin = result[0];
+    }
+    
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      const registered = new Date().toLocaleDateString('uk-UA');
+      
+      if (process.env.NODE_ENV === 'production') {
+        await query(
+          'INSERT INTO users (name, email, password, registered, role) VALUES ($1, $2, $3, $4, $5)',
+          ['Admin', adminEmail, hashedPassword, registered, 'admin']
+        );
+      } else {
+        await query(
+          'INSERT INTO users (name, email, password, registered, role) VALUES (?, ?, ?, ?, ?)',
+          ['Admin', adminEmail, hashedPassword, registered, 'admin']
+        );
+      }
+      console.log(`✅ Створено адміністратора за замовчуванням: ${adminEmail} / ${adminPassword}`);
+    } else {
+      console.log(`ℹ️ Адміністратор ${adminEmail} вже існує`);
+    }
+  } catch (error) {
+    console.error('❌ Помилка створення адміністратора за замовчуванням:', error);
+  }
+}
 
 module.exports = app;
